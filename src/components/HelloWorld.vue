@@ -135,7 +135,7 @@ export default {
               { cmd: "audio", content: item.q, wait: wait },
               function (response) {
                 console.log(response);
-                resolve();
+                if (response) resolve();
               }
             );
           }, 100);

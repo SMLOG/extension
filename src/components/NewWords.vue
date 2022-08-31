@@ -120,6 +120,7 @@ export default {
     },
     toggleItemIsNew(item) {
       item.n = item.n > 0 ? 0 : 1;
+      item.i = item.n ? 0 : item.i;
 
       this.changeItemNew(item);
     },
@@ -153,7 +154,7 @@ export default {
           },
           function (response) {
             console.log(response);
-            resolve();
+            if (response) resolve();
           }
         );
       });
@@ -256,7 +257,10 @@ table tr:nth-child(even) {
   cursor: pointer;
 }
 .cur {
-  color: red;
+}
+.cur div {
+  color: green !important;
+  font-weight: bold;
 }
 .detach {
   color: red;

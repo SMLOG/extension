@@ -290,7 +290,7 @@ let serviceMap = {
 
       ret.contents = loadUnGZipStore(request.type) || [];
       let nwords = loadUnGZipStore(NWORD, 1) || [];
-      ret.contents.unshift(...nwords.reverse());
+      ret.contents.unshift(...nwords);
     } else ret.contents = loadUnGZipStore(request.type) || [];
 
     ret.done = !cnt;
