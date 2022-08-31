@@ -59,7 +59,7 @@ export default {
         controls: "progress,current,durration,volume",
         crossOrigin: false, //设置视频的 CORS 设置。
         textTrackDisplay: true,
-        playbackRates: [0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 2, 3, 4],
+        playbackRates: [0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 2],
         fill: true,
         fluid: true,
         plugins: {
@@ -134,6 +134,7 @@ export default {
             });
           }
         );
+
         this.$emit("initPlayer", player);
         window.player = player;
 
@@ -155,7 +156,13 @@ export default {
         player.on("play", () => {
           this.$emit("play");
         });
+
+        player.on("ratechange", () => {
+          console.log("change rate");
+          localStorage.playbackrate = player.playbackRate();
+        });
       }
+      let rate = localStorage.playbackrate;
       if (this.source)
         this.player.src([
           {
@@ -170,6 +177,12 @@ export default {
         ]);
 
       this.player.play();
+
+      if (rate) {
+        setTimeout(() => {
+          player.playbackRate(rate);
+        }, 100);
+      }
     },
   },
   mounted() {
