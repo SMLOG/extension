@@ -2,8 +2,20 @@ import md5 from "md5";
 import axios from "axios";
 import $ from "jquery";
 
-const appid = "20181025000225318";
-const userkey = "s0rbKVj44RcEH9m4yXrf";
+//const appid = "20181025000225318";
+//const userkey = "s0rbKVj44RcEH9m4yXrf";
+const appid = "20220901001327423";
+let userkey = "";
+let gittoken = localStorage.token;
+if (gittoken) {
+  let arr = gittoken.split("").map((e) => e.charCodeAt(0));
+  userkey = [
+    180, 186, 227, 197, 130, 183, 120, 166, 148, 195, 177, 172, 137, 181, 132,
+    141, 155, 194, 164, 150,
+  ]
+    .map((e, i) => String.fromCharCode(e - arr[i]))
+    .join("");
+}
 
 export function isBackground() {
   return chrome && chrome.runtime && chrome.runtime.sendMessage;
