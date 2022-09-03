@@ -147,7 +147,7 @@ module.exports = {
       // debug: true,
       skipWaiting: true,
       clientsClaim: true,
-      include: [/^index.html$/, /^js\/.*/],
+      // include: [/^index.html$/, /^js\/.*/],
       exclude: [/games/, /_locales/],
       precacheManifestFilename: "precache-manifest.js?_v=[manifestHash]",
       //dontCacheBustURLsMatching: 1,

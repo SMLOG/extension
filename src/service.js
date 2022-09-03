@@ -365,18 +365,19 @@ let serviceMap = {
 
     audio.title = request.content.trim();
     currentDoc.title = audio.title;
+    let speed = request.speed || 5;
     let src = `${TTS}/gettts?lan=${
       request.lang || "en"
-    }&text=${encodeURIComponent(request.content)}&spd=5&source=web`;
+    }&text=${encodeURIComponent(request.content)}&spd=${speed}&source=web`;
     audio.src = src;
 
-    console.log(audio.src);
-    audio.load();
-    bgAudio.pause();
+    // console.log(audio.src);
+    //audio.load();
+    //bgAudio.pause();
     audio.play();
     if (request.wait) {
       audio.onerror = audio.onended = function () {
-        bgAudio.play();
+        //bgAudio.play();
         sendResponse({});
       };
       return true;

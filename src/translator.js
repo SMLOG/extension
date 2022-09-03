@@ -1,12 +1,13 @@
 import md5 from "md5";
 import axios from "axios";
 import $ from "jquery";
+import storejs from "storejs";
 
 //const appid = "20181025000225318";
 //const userkey = "s0rbKVj44RcEH9m4yXrf";
 const appid = "20220901001327423";
 let userkey = "";
-let gittoken = localStorage.token;
+let gittoken = storejs.get("token");
 if (gittoken) {
   let arr = gittoken.split("").map((e) => e.charCodeAt(0));
   userkey = [

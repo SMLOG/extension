@@ -142,7 +142,7 @@ export default {
         .join(" ");
       return str;
     },
-    async tts(lan, content, wait) {
+    async tts(lan, content, wait, speed) {
       return new Promise((resolve) => {
         service(
           null,
@@ -151,9 +151,9 @@ export default {
             content: content,
             wait: wait,
             lang: lan,
+            speed: speed,
           },
           function (response) {
-            console.log(response);
             if (response) resolve();
           }
         );
@@ -212,8 +212,9 @@ export default {
           if (this.isSpell) {
             await this.sleep(1000);
             let chars = this.curPlay.split("").map((e) => e);
+            // .join(" ");
             for (let d = 0; d < chars.length; d++)
-              await this.tts("en", chars[d], true);
+              await this.tts("en", chars[d], true, 6);
           }
           await this.playSound(list[i], true, "zh");
           await this.sleep(1000);
