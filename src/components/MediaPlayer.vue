@@ -9,6 +9,7 @@
             @initPlayer="initPlayer"
             :cc="cc"
             @ended="end"
+            :title="title"
           ></VideoJsPlayer>
         </div>
         <div v-if="isAliPlayer" class="ali">

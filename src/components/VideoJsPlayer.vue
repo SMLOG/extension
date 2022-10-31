@@ -11,6 +11,7 @@
     class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
     poster=""
     autoplay="false"
+    :title="title"
   ></video>
 </template>
 
@@ -29,7 +30,7 @@ require("@silvermine/videojs-airplay")(videojs);
 Vue.prototype.$video = videojs;
 
 export default {
-  props: ["source", "cc"],
+  props: ["source", "cc", "title"],
   data() {
     return {
       player: null,
