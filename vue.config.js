@@ -200,6 +200,20 @@ module.exports = {
           },
         },
         {
+          urlPattern: /.*?\/(clips|\d{4}\/\d{2}\/\d{2})\/.*m3u8/,
+          handler: "cacheFirst",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "vcache2",
+            expiration: {
+              maxAgeSeconds: 86400 * 15,
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+
+        {
           urlPattern: /.*?\.mp[34]/,
           handler: "cacheFirst",
           method: "GET",
