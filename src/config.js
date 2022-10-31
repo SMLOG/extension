@@ -207,6 +207,25 @@ export async function getVideos() {
   return ret;
 }
 
+export async function getAndPrepareNextExtra(item, mediaType, nextItem) {
+  console.error(nextItem);
+  if (nextItem) {
+    setTimeout(() => {
+      (async () => {
+        await getExtra(nextItem, mediaType);
+        if (nextItem.cc) {
+          await fetch(nextItem.cc);
+        }
+        console.error("next item");
+        console.error(nextItem);
+        nextItem.loaded = 1;
+      })();
+    }, 1000);
+  }
+  if (item.loaded) return item;
+  return await getExtra(item, mediaType);
+}
+
 export async function getExtra(item, mediaType) {
   if (mediaType == 1) {
     return await getCnnExtra(item, mediaType);

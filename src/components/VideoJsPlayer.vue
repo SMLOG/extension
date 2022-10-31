@@ -139,8 +139,8 @@ export default {
         window.player = player;
 
         player.on("ended", () => {
-          document.querySelector("video").currentTime = 0;
-          player.play();
+          // document.querySelector("video").currentTime = 0;
+          // player.play();
           this.$emit("ended");
         });
         player.on("error", () => {

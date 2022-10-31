@@ -90,7 +90,7 @@ import { htmlTrans } from "@/HtmlTrans";
 
 import PlayerControllers from "../components/PlayerControllers";
 
-import { getExtra } from "@/config";
+import { getAndPrepareNextExtra } from "@/config";
 import "video.js/dist/video-js.css";
 
 import VideoJsPlayer from "./VideoJsPlayer.vue";
@@ -485,10 +485,10 @@ export default {
       });
       return temp.html().replace(/&gt;/g, ">");
     },
-    async loadVideo(item, mediaType) {
+    async loadVideo(item, mediaType, nextItem) {
       let skip = 0;
 
-      await getExtra(item, mediaType);
+      await getAndPrepareNextExtra(item, mediaType, nextItem);
 
       this.onCuesChangeSync2 = 0;
       this.text = "";
@@ -532,7 +532,7 @@ export default {
     let self = this;
 
     this.init();
-    bus.$on("videoId", (mediaType, item, click, index, index2) => {
+    bus.$on("videoId", (mediaType, item, click, index, index2, nextItem) => {
       if (click) this.show = 1;
       this.videoId = item.vid;
       this.title = item.title;
@@ -553,7 +553,7 @@ export default {
         this.url = this.$refs.audio.src = this.videoId;
         this.$refs.audio.play();
       } else {
-        this.loadVideo(item, mediaType)
+        this.loadVideo(item, mediaType, nextItem)
           .then(() => {
             this.$refs.audio && this.$refs.audio.pause();
           })

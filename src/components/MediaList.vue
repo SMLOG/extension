@@ -434,7 +434,7 @@ export default {
       else return mediaArr.filter((e) => search(e, s));
     },
 
-    play(item, click, index, index2) {
+    play(item, click, index, index2, nextItem) {
       this.curVideoId = item.vid;
       console.log("vidoeId" + item.vid);
       let run = 1;
@@ -474,7 +474,10 @@ export default {
           item,
           click,
           index,
-          index2
+          index2,
+          !nextItem && !index2
+            ? this.pageList[index + 1 < this.pageList.length ? index + 1 : 0]
+            : 0
         );
 
       if (click) {
@@ -493,6 +496,7 @@ export default {
       let index = i;
       let index2 = i2;
 
+      let nextItem;
       if (this.mediaType != 4) {
         if (reverse) {
           index--;
@@ -511,8 +515,10 @@ export default {
           index2++;
           if (index2 >= mlen) index2 = 0;
         }
+
+        if (index > 0) nextItem = list[index - 1];
       }
-      this.play(list[index], 0, index, index2);
+      this.play(list[index], 0, index, index2, nextItem);
     });
   },
 
