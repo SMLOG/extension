@@ -53,13 +53,13 @@ export default {
         src: "",
         preload: true, //是否预下载，默认为true
         autoplay: false, //是否自动播放（兼容性不太好），默认为false
-        isLoop: false, //是否循环，默认不循环
+        // isLoop: false, //是否循环，默认不循环
         playsinline: true, //h5是否行内播放，默认false，有兼容性问题
         // poster: "https://oimdztrab.qnssl.com/Frp4SyVe5PosdkUKRaE-krjK7B5z", //封面，仅视频有
         controls: "progress,current,durration,volume",
         crossOrigin: false, //设置视频的 CORS 设置。
         textTrackDisplay: true,
-        playbackRates: [0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 2],
+        playbackRates: [0.7, 0.8, 0.9, 1],
         fill: true,
         fluid: true,
         plugins: {
@@ -140,6 +140,7 @@ export default {
 
         player.on("ended", () => {
           document.querySelector("video").currentTime = 0;
+          player.play();
           this.$emit("ended");
         });
         player.on("error", () => {

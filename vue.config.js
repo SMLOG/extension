@@ -195,8 +195,8 @@ module.exports = {
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "cache",
-            cacheableResponse: { statuses: [200] },
+            cacheName: "vcache",
+            cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
@@ -205,8 +205,8 @@ module.exports = {
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "media",
-            cacheableResponse: { statuses: [200] },
+            cacheName: "vcache",
+            cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
@@ -217,6 +217,20 @@ module.exports = {
             //networkTimeoutSeconds: 20,
             cacheName: "cache",
             cacheableResponse: { statuses: [200] },
+          },
+        },
+        {
+          urlPattern: /.*?\.(ts|aac)/,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 15,
+            },
+            cacheName: "vcache",
+            cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
@@ -239,7 +253,7 @@ module.exports = {
             cacheableResponse: { statuses: [0, 200] },
             expiration: {
               maxAgeSeconds: 60 * 60 * 24 * 14, // 2 Week
-              maxEntries: 100,
+              //  maxEntries: 100,
             },
           },
         },
@@ -253,7 +267,7 @@ module.exports = {
             cacheableResponse: { statuses: [0, 200, 502] },
             expiration: {
               maxAgeSeconds: 60 * 60 * 1000, // 2 Week
-              maxEntries: 100,
+              // maxEntries: 100,
             },
           },
         },

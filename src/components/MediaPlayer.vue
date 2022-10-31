@@ -46,9 +46,13 @@
               v-model="isAliPlayer"
               :checked="isAliPlayer"
             />
-            AliPlayer</a
+            Ali</a
           >
 
+          <a class="loop"
+            ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
+            Loop</a
+          >
           <a class="up"
             ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
           >
@@ -98,6 +102,7 @@ export default {
       isAliPlayer: 0,
 
       cc: 0,
+      isLoop: 0,
       cueIndex: 0,
       item: {},
       isCc: 0,
@@ -266,8 +271,13 @@ export default {
       this.end(1);
     },
     end(reverse) {
+      /*let video = document.querySelector("video");
+      if (this.isLoop && video) {
+        video.currentTime = 0;
+        video.play();
+        return;
+      }*/
       this.scroll(true);
-
       bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
     },
 
@@ -361,6 +371,7 @@ export default {
         }
         let upper = r.match(/[A-Z]/g);
         let lower = r.match(/[a-z]/gi, "");
+        this.cc = 0;
         if (upper && lower && upper.length / lower.length > 0.4) {
           var ar = r.split(/\n+/).filter((e) => e.indexOf(":") != 2);
           ar.shift();
@@ -589,6 +600,9 @@ export default {
           $(window).resize();
         }, 100);
       }
+    },
+    isLoop(b) {
+      document.querySelector("video").loop = b;
     },
   },
 };
