@@ -104,6 +104,7 @@ export async function translate(q, opts) {
 }
 
 async function tranApi(q) {
+  if (!userkey) return;
   let salt = new Date().getTime();
   /* 待翻译文本 传入url */
   /* 从页面获取选择的目标语言 传入url */

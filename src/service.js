@@ -521,13 +521,14 @@ async function forEachCommitsAsc(
   let curPage = 1;
   let commits = [];
   for (;;) {
-    let pageCommits = await fetch(commitsUrl + "&page=" + curPage, {
+    let req = await fetch(commitsUrl + "&page=" + curPage, {
       method: "get",
       headers: headers,
-    }).then((response) => {
-      if (response.status == 200) return response.json();
-      else throw response;
     });
+    if (req.status != 200) {
+      throw await req.json();
+    }
+    let pageCommits = await req.json();
     commits.unshift(...pageCommits.reverse());
     if (pageCommits.length < 100) break;
     curPage++;

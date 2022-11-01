@@ -7,9 +7,6 @@
         <span @click="refresh(true)"
           >Refresh<span v-if="refreshIndicator">...</span></span
         >
-        HKD:<span :class="{ red: hkdcny.p > 0, green: hkdcny.p < 0 }"
-          >{{ hkdcny.now }} ({{ hkdcny.p }}%)</span
-        >
       </div>
     </div>
     <div
@@ -116,16 +113,6 @@
           /></label>
 
           <label>
-            HKD
-            <input
-              type="checkbox"
-              v-model="config.hkd"
-              @change="
-                updateConfig();
-                hkd();
-              "
-          /></label>
-          <label>
             MJ
             <input type="checkbox" v-model="config.mj" @change="updateConfig()"
           /></label>
@@ -158,7 +145,6 @@ export default {
         showvideos: 0,
         showwords: 0,
         autoSound: 0,
-        hkd: 0,
       },
     };
   },
@@ -181,7 +167,6 @@ export default {
         this.refresh();
       }, 1000 * 3600 * 3);
     });
-    this.hkd();
   },
 
   methods: {
@@ -190,38 +175,7 @@ export default {
         event.target.focus();
       }, 1000);
     },
-    hkd() {
-      let self = this;
-      let hkd = () => {
-        /* let url =
-        "https://push2.eastmoney.com/api/qt/stock/get?invt=2&fltt=1&fields=f58%2Cf107%2Cf57%2Cf43%2Cf59%2Cf169%2Cf170%2Cf152%2Cf60%2Cf119%2Cf120%2Cf121%2Cf122%2Cf86%2Cf174%2Cf175&secid=120.HKDCNYC&ut=fa5fd1943c7b386f172d6893dbfba10b";
-      $.ajax({
-        url: url,
-        dataType: "jsonp",
-        jsonp: "cb",
-        success: function (data) {
-          self.$store.commit("hkdcny", {
-            now: data.data.f43 / 10000,
-            p: data.data.f170 / 100,
-          });
-        },
-      });*/
-        fetch(
-          "https://push2.eastmoney.com/api/qt/stock/get?invt=2&fltt=1&fields=f58%2Cf107%2Cf57%2Cf43%2Cf59%2Cf169%2Cf170%2Cf152%2Cf60%2Cf119%2Cf120%2Cf121%2Cf122%2Cf86%2Cf174%2Cf175&secid=120.HKDCNYC&ut=fa5fd1943c7b386f172d6893dbfba10b" +
-            "&cb=cb"
-        )
-          .then((r) => r.text())
-          .then((r) => {
-            let data = JSON.parse(r.replace(/^cb\((.*?)\);/, "$1"));
-            self.$store.commit("hkdcny", {
-              now: data.data.f43 / 10000,
-              p: data.data.f170 / 100,
-            });
-          });
-      };
-      hkd();
-      if (this.config.hkd) setInterval(hkd, 60000);
-    },
+
     mUpload() {
       this.$store.commit("setLoading", 1);
 
@@ -304,7 +258,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["curTab", "showApp", "curItem", "hkdcny"]),
+    ...mapState(["curTab", "showApp", "curItem"]),
   },
   watch: {},
 };
