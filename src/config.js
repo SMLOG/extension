@@ -171,6 +171,9 @@ export const config = {
   },
 };
 
+export async function crossOrigs(url, type) {
+  return config.crossOrigs(1, url, type);
+}
 export async function getVideos() {
   let t = parseInt(new Date().getTime() / 7200000);
   let srcs = Object.keys(config.mods.videos.m);

@@ -12,6 +12,7 @@
       </div>
 
       <MediaPlayer />
+      <news2 />
       <news v-if="showNews" />
     </div>
     <div id="root" ref="root" :style="{ zIndex: zIndex }" v-show="showApp">
@@ -84,6 +85,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 import NewWords from "./components/NewWords.vue";
 import MediaPlayer from "./components/MediaPlayer.vue";
 import News from "./components/News.vue";
+import News2 from "./components/News2.vue";
 import Setting from "./components/Setting.vue";
 
 import bus from "./bus";
@@ -115,7 +117,7 @@ export default {
       return "";
     },
   },
-  components: { HelloWorld, NewWords, MediaPlayer, Setting, News },
+  components: { HelloWorld, NewWords, MediaPlayer, Setting, News, News2 },
   mounted() {
     $(this.$refs.rootnav).on("click", () => {
       this.clearSelect();
