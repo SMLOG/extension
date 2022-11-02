@@ -50,7 +50,9 @@
             />
             Ali</a
           >
-
+          <a class="loop"
+            ><input type="checkbox" v-model="isBg" :checked="isBg" /> BG</a
+          >
           <a class="loop"
             ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
             Loop</a
@@ -89,6 +91,7 @@ import $ from "jquery";
 import { mapState } from "vuex";
 import bus from "@/bus";
 import { htmlTrans } from "@/HtmlTrans";
+import { service } from "@/service";
 
 import PlayerControllers from "../components/PlayerControllers";
 
@@ -123,6 +126,7 @@ export default {
       isAutoScroll: true,
       playing: 0,
       sps: [],
+      isBg: 0,
     };
   },
   created() {},
@@ -253,6 +257,19 @@ export default {
       }
     },
 
+    async bg() {
+      return new Promise((resolve) => {
+        service(
+          null,
+          {
+            cmd: "bg",
+          },
+          function (response) {
+            if (response) resolve();
+          }
+        );
+      });
+    },
     markNewWords(t) {
       var dict = this.words;
       window.words = dict;
@@ -605,6 +622,16 @@ export default {
     },
     isLoop(b) {
       document.querySelector("video").loop = b;
+    },
+    isBg(b) {
+      if (b) {
+        (async () => {
+          for (; this.isBg; ) await this.bg();
+          await new Promise((resolve) => {
+            setTimeout(resolve, 1000);
+          });
+        })();
+      }
     },
   },
 };

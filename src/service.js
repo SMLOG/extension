@@ -24,7 +24,7 @@ window.pako = pako;
 window.storejs = storejs;
 let currentDoc = ifr.contentDocument || ifr.contentWindow.document;
 currentDoc.body.innerHTML = `<audio id="sound" controls "></audio>
-<audio id="bg" controls   ></audio>`;
+<audio id="bg" controls src="3s.mp3"  ></audio>`;
 
 let audio = currentDoc.querySelector("audio#sound");
 let bgAudio = currentDoc.querySelector("audio#bg");
@@ -346,13 +346,21 @@ let serviceMap = {
       })
     );
   },
-  bg: (request) => {
+  bg: (request, sendResponse) => {
     if (request.pause) {
-      // bgAudio.pause();
+      bgAudio.pause();
+      sendResponse({});
+      return false;
     } else {
-      bgAudio.currentTime = 0;
-      // bgAudio.play();
+      bgAudio.title = +new Date();
+      currentDoc.title = bgAudio.title;
+      bgAudio.play();
     }
+    bgAudio.onerror = bgAudio.onended = function () {
+      //bgAudio.play();
+      sendResponse({});
+    };
+    return true;
   },
   audio: (request, sendResponse) => {
     if (request.pause) {
