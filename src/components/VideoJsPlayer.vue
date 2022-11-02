@@ -30,7 +30,7 @@ require("@silvermine/videojs-airplay")(videojs);
 Vue.prototype.$video = videojs;
 
 export default {
-  props: ["source", "cc", "title"],
+  props: ["source", "cc", "title", "mediaItem"],
   data() {
     return {
       player: null,
@@ -145,6 +145,19 @@ export default {
         player.on("ended", () => {
           // document.querySelector("video").currentTime = 0;
           // player.play();
+          let item = self.mediaItem;
+          let session = sessionStorage;
+          setTimeout(() => {
+            item._d = +new Date();
+            let doneVideoMap = session.doneVideoMap
+              ? JSON.parse(session.doneVideoMap)
+              : {};
+
+            doneVideoMap[item.vid] = item._d;
+
+            session.doneVideoMap = JSON.stringify(doneVideoMap);
+          }, 1000);
+
           this.$emit("ended");
         });
         player.on("error", () => {
@@ -164,10 +177,10 @@ export default {
 
         player.on("ratechange", () => {
           console.log("change rate");
-          localStorage.playbackrate = player.playbackRate();
+          sessionStorage.playbackrate = player.playbackRate();
         });
       }
-      let rate = localStorage.playbackrate;
+      let rate = sessionStorage.playbackrate;
       if (this.source)
         this.player.src([
           {
@@ -180,8 +193,7 @@ export default {
                 : "application/x-mpegURL",
           },
         ]);
-
-      this.player.play();
+      if (player.paused()) this.player.play();
 
       if (rate) {
         setTimeout(() => {

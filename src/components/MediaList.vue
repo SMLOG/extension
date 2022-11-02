@@ -15,6 +15,7 @@
             v-for="(item, i) in pageList"
             :key="item.vid || item.title"
             style="cursor: pointer"
+            :class="{ _d: item._d }"
           >
             <td>
               <template>
@@ -58,6 +59,10 @@
       </div>
     </div>
     <div style="text-align: right; background: gray; padding-right: 5px">
+      <label v-if="mediaType == 1"
+        ><input type="checkbox" v-model="done" />
+        Done
+      </label>
       <select v-show="opts1.length" v-model="curOpt1" @change="page = 1">
         <option value="">All</option>
         <option v-for="src in opts1" :key="src" :value="src">
@@ -164,6 +169,7 @@ export default {
       busy: 0,
       mediaType: 1,
       subIndex: 0,
+      done: 0,
     };
   },
   created() {},
@@ -403,6 +409,7 @@ export default {
         let videos = this.videos;
 
         if (this.curOpt1) videos = videos.filter((e) => e.src == this.curOpt1);
+        if (this.done) videos = videos.filter((e) => e._d);
 
         if (!s) return videos;
 
@@ -562,5 +569,8 @@ table tr:nth-child(even) {
   display: inline-block;
   padding-right: 5px;
   cursor: pointer;
+}
+._d .ni {
+  color: blue;
 }
 </style>

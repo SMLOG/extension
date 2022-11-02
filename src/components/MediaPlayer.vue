@@ -10,6 +10,7 @@
             :cc="cc"
             @ended="end"
             :title="title"
+            :mediaItem="item"
           ></VideoJsPlayer>
         </div>
         <div v-if="isAliPlayer" class="ali">

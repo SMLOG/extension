@@ -82,6 +82,22 @@ export default new Vuex.Store({
       state.words = words;
     },
     videos(state, videos) {
+      let ctime = +new Date() - 604800000;
+
+      let session = sessionStorage;
+      if (session.doneVideoMap) {
+        let doneVideoMap = JSON.parse(session.doneVideoMap);
+
+        for (let k in doneVideoMap) {
+          if (doneVideoMap[k] < ctime) delete doneVideoMap[k];
+        }
+        session.doneVideoMap = JSON.stringify(doneVideoMap);
+        if (videos)
+          for (let item of videos.filter((e) => !e._d)) {
+            item._d = doneVideoMap[item.vid];
+          }
+      }
+
       state.videos = videos;
     },
     news(state, news) {
