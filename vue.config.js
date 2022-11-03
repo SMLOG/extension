@@ -200,6 +200,16 @@ module.exports = {
           },
         },
         {
+          urlPattern: /.*?\.(png|gif|jpg)/i,
+          handler: "cacheFirst",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "img",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
           urlPattern: /.*?\/(clips|\d{4}\/\d{2}\/\d{2})\/.*m3u8/,
           handler: "cacheFirst",
           method: "GET",
