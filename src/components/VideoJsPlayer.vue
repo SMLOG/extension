@@ -178,10 +178,10 @@ export default {
 
         player.on("ratechange", () => {
           console.log("change rate");
-          sessionStorage.playbackrate = player.playbackRate();
         });
       }
-      let rate = sessionStorage.playbackrate;
+      let rate = (sessionStorage.playbackrate = player.playbackRate());
+
       if (this.source)
         this.player.src([
           {
