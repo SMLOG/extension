@@ -5,7 +5,7 @@
         ref="videoCon"
         class="videoCon"
         v-show="0 != mediaType"
-        :class="{ audio: isAudio }"
+        :class="{ audio: !av }"
       >
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
@@ -60,7 +60,7 @@
           >
           <a class="loop"
             ><input type="checkbox" v-model="isAudio" :checked="isAudio" />
-            Audio</a
+            A+</a
           >
           <a class="loop"
             ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
@@ -110,7 +110,6 @@ import "video.js/dist/video-js.css";
 import VideoJsPlayer from "./VideoJsPlayer.vue";
 import AliPlayer from "./AliPlayer.vue";
 import { Parser } from "m3u8-parser";
-const parser = new Parser();
 
 export default {
   data() {
@@ -139,6 +138,7 @@ export default {
       sps: [],
       isBg: 0,
       isAudio: sessionStorage.isAudio == "1" ? 1 : 0,
+      av: 1,
     };
   },
   created() {},
@@ -539,25 +539,35 @@ export default {
         this.videoUrl = item.url;
         this.ajustTextHeight();
       }
-
+      this.av = 1;
       if (this.isAudio) {
         try {
           let manifest = await fetch(item.url).then((r) => r.text());
+          let parser = new Parser();
 
           parser.push(manifest);
           parser.end();
 
           var parsedManifest = parser.manifest;
           console.log(parsedManifest);
+          this.av = parsedManifest.mediaGroups.AUDIO.audio_aac ? 0 : 1;
+
           this.videoUrl =
             this.videoUrl +
             "/../" +
-            parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri;
+            (this.av
+              ? parsedManifest.playlists.sort(
+                  (a, b) => a.attributes.BANDWIDTH - b.attributes.BANDWIDTH
+                )[0].uri
+              : parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri);
           console.log(this.videoUrl);
         } catch (e) {
           console.error(e);
           throw e;
         }
+        setTimeout(() => {
+          this.ajustTextHeight();
+        }, 1000);
       }
     },
 

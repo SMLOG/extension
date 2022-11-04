@@ -388,7 +388,9 @@ let serviceMap = {
     // audio.load();
     //bgAudio.pause();
 
-    audio.onerror = function () {
+    let ok = 0;
+
+    let onError = function () {
       if (audio.src.indexOf("youdao") > -1 || lan != "en") {
         sendResponse({});
       } else {
@@ -397,14 +399,22 @@ let serviceMap = {
           encodeURIComponent(content) +
           "&type=2";
         audio.play();
+        ok = 1;
       }
     };
+    audio.onerror = onError;
     if (request.wait) {
       audio.onended = function () {
         //bgAudio.play();
+        ok = 1;
         sendResponse({});
       };
       audio.play();
+      setTimeout(() => {
+        if (!ok && audio.currentTime == 0) {
+          onError();
+        }
+      }, 1000);
       return true;
     } else {
       audio.play();
