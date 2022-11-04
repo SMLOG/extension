@@ -17,7 +17,9 @@ const NWORD = "nwords";
 //import sounds from "@/../public/3s.mp3";
 //console.log(sounds);
 const jsonparse = JSON.parse;
-let mya = $(`<iframe id="myaudio" style="display:none;"/>`);
+let mya = $(
+  `<iframe id="myaudio" style="display:none;" referrerpolicy="no-referrer" />`
+);
 mya.appendTo("body");
 let ifr = mya[0];
 window.pako = pako;
@@ -363,7 +365,7 @@ let serviceMap = {
     return true;
   },
   audio: (request, sendResponse) => {
-    if (request.pause) {
+    if (request.pause || !request.content) {
       audio.pause();
       //bgAudio.pause();
       sendResponse({});
@@ -374,22 +376,38 @@ let serviceMap = {
     audio.title = request.content.trim();
     currentDoc.title = audio.title;
     let speed = request.speed || 5;
-    let src = `${TTS}/gettts?lan=${
-      request.lang || "en"
-    }&text=${encodeURIComponent(request.content)}&spd=${speed}&source=web`;
+    let lan = request.lang || "en";
+    let src = `${TTS}/gettts?lan=${lan}&text=${encodeURIComponent(
+      request.content
+    )}&spd=${speed}&source=web`;
     audio.src = src;
 
+    let content = request.content;
+
     // console.log(audio.src);
-    //audio.load();
+    // audio.load();
     //bgAudio.pause();
-    audio.play();
+
+    audio.onerror = function () {
+      if (audio.src.indexOf("youdao") > -1 || lan != "en") {
+        sendResponse({});
+      } else {
+        audio.src =
+          "https://dict.youdao.com/dictvoice?audio=" +
+          encodeURIComponent(content) +
+          "&type=2";
+        audio.play();
+      }
+    };
     if (request.wait) {
-      audio.onerror = audio.onended = function () {
+      audio.onended = function () {
         //bgAudio.play();
         sendResponse({});
       };
+      audio.play();
       return true;
     } else {
+      audio.play();
       sendResponse({});
       return false;
     }

@@ -609,12 +609,7 @@ export default {
       this.scroll();
     },
     show(n) {
-      if (!n) {
-        if (this.mediaType == 1)
-          setTimeout(() => {
-            this.setQuality(0);
-          }, 1000);
-      } else {
+      if (n) {
         setTimeout(() => {
           $(window).resize();
         }, 100);

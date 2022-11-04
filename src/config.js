@@ -149,6 +149,10 @@ export const config = {
           ]),{to:'string'})) ; */
               urls: decode(
                 "H4sIAAAAAAAAA62TwU4EIQyG32XPdvFgjPFVjAcGOgtZhpK2gL69w0STPcvcSEo//v9v+bgE1SLvxvTer26RjF2ujjbTokcyX4GNo5TQaaS8H7dCGbMapQKixBEFVmIgVXN5+i9tvwotpmRvCI08JKsoOqBwdIIn4gn+WlMCLFHI73ptVRrPzAgmpmxb5CqH4KFUXEBfE07mwFiIVU5ItCPeMXsYPZM4CdRBA0ItKa46SXt9hi3mus8YqCFr3PAEuxqiwEacY77BwjZ7nBkxNjxIJ6T36HcKxOhh9wVLqrOJjY0dqYnVyt5+/yU3gXx5g0CVp3et5gc9k7DVOjwWN9tRmaQNkNo7Uv39Ap8/+hmTQkEFAAA="
+              ).filter((e) =>
+                [2, 3, 4, 5].includes(new Date().getDay())
+                  ? e.indexOf("weekend") == -1
+                  : 1
               ),
               conv: function (resp, src) {
                 return resp.items

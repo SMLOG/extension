@@ -54,7 +54,7 @@ export default {
         src: "",
         preload: true, //是否预下载，默认为true
         autoplay: false, //是否自动播放（兼容性不太好），默认为false
-        // isLoop: false, //是否循环，默认不循环
+        isLoop: false, //是否循环，默认不循环
         playsinline: true, //h5是否行内播放，默认false，有兼容性问题
         // poster: "https://oimdztrab.qnssl.com/Frp4SyVe5PosdkUKRaE-krjK7B5z", //封面，仅视频有
         controls: "progress,current,durration,volume",
@@ -86,11 +86,11 @@ export default {
   },
   created() {},
   computed: {},
-  updated() {
+  /*updated() {
     this.$nextTick(() => {
       this.init();
     });
-  },
+  },*/
   methods: {
     init() {
       let player = this.player;
@@ -198,7 +198,7 @@ export default {
       if (rate) {
         setTimeout(() => {
           player.playbackRate(rate);
-        }, 100);
+        }, 1000);
       }
     },
   },
