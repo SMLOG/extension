@@ -138,6 +138,9 @@ export default {
             });
           }
         );
+        player.on("loadeddata", function () {
+          player.playbackRate(sessionStorage.playbackrate);
+        });
 
         this.$emit("initPlayer", player);
         window.player = player;
@@ -176,11 +179,14 @@ export default {
           this.$emit("play");
         });
 
-        player.on("ratechange", () => {
+        player.on("ratechange", (e) => {
           console.log("change rate");
+          console.log(e);
+          if (player.currentTime() > 1000 || player.playbackRate() != 1)
+            sessionStorage.playbackrate = player.playbackRate();
         });
       }
-      let rate = (sessionStorage.playbackrate = player.playbackRate());
+      //let rate = (sessionStorage.playbackrate = player.playbackRate());
 
       if (this.source)
         this.player.src([
@@ -196,11 +202,11 @@ export default {
         ]);
       if (player.paused()) this.player.play();
 
-      if (rate) {
+      /* if (rate) {
         setTimeout(() => {
           player.playbackRate(rate);
         }, 1000);
-      }
+      }*/
     },
   },
   mounted() {

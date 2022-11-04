@@ -569,6 +569,7 @@ table tr:nth-child(even) {
   display: inline-block;
   padding-right: 5px;
   cursor: pointer;
+  padding-left: 5px;
 }
 ._d .ni {
   color: blue;

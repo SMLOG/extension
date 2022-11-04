@@ -796,6 +796,6 @@ video::cue(i),
   color: red;
 }
 .audio >>> .video-js.vjs-16-9 {
-  padding-top: 60px !important;
+  padding-top: 90px !important;
 }
 </style>
