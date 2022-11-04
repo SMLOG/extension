@@ -1,7 +1,12 @@
 <template>
   <div>
     <div v-show="show" ref="top" class="top">
-      <div ref="videoCon" class="videoCon" v-show="0 != mediaType">
+      <div
+        ref="videoCon"
+        class="videoCon"
+        v-show="0 != mediaType"
+        :class="{ audio: isAudio }"
+      >
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -54,6 +59,10 @@
             ><input type="checkbox" v-model="isBg" :checked="isBg" /> BG</a
           >
           <a class="loop"
+            ><input type="checkbox" v-model="isAudio" :checked="isAudio" />
+            Audio</a
+          >
+          <a class="loop"
             ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
             Loop</a
           >
@@ -100,6 +109,8 @@ import "video.js/dist/video-js.css";
 
 import VideoJsPlayer from "./VideoJsPlayer.vue";
 import AliPlayer from "./AliPlayer.vue";
+import { Parser } from "m3u8-parser";
+const parser = new Parser();
 
 export default {
   data() {
@@ -127,6 +138,7 @@ export default {
       playing: 0,
       sps: [],
       isBg: 0,
+      isAudio: sessionStorage.isAudio == "1" ? 1 : 0,
     };
   },
   created() {},
@@ -527,6 +539,26 @@ export default {
         this.videoUrl = item.url;
         this.ajustTextHeight();
       }
+
+      if (this.isAudio) {
+        try {
+          let manifest = await fetch(item.url).then((r) => r.text());
+
+          parser.push(manifest);
+          parser.end();
+
+          var parsedManifest = parser.manifest;
+          console.log(parsedManifest);
+          this.videoUrl =
+            this.videoUrl +
+            "/../" +
+            parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri;
+          console.log(this.videoUrl);
+        } catch (e) {
+          console.error(e);
+          throw e;
+        }
+      }
     },
 
     scrollMid(span, $parent) {
@@ -627,6 +659,10 @@ export default {
           });
         })();
       }
+    },
+    isAudio(b) {
+      sessionStorage.isAudio = b ? 1 : 0;
+      this.loadVideo(this.item, this.mediaType, 0);
     },
   },
 };
@@ -758,5 +794,8 @@ video::cue(i),
 }
 #bts a.enable {
   color: red;
+}
+.audio >>> .video-js.vjs-16-9 {
+  padding-top: 60px !important;
 }
 </style>

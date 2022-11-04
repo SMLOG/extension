@@ -162,9 +162,10 @@ export default {
         });
         player.on("error", () => {
           //this.$emit("error");
-          setTimeout(() => {
+          /* setTimeout(() => {
             if (!player.paused()) this.$emit("ended");
-          }, 2000);
+          }, 2000);*/
+          this.$emit("ended");
         });
 
         player.on("pause", () => {
