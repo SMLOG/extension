@@ -1,14 +1,15 @@
 <template>
-  <div class="navbar is-fixed-bottom is-hidden-desktop">
+  <div
+    :class="{ hover: isM() || isHover }"
+    class="navbar is-fixed-bottom is-hidden-desktop"
+    @mouseenter="isHover = 1"
+    @mouseleave="isHover = 0"
+  >
     <div ref="mediaList">
       <Video v-show="showList" @selectItem="showList = 0" />
     </div>
     <div
-      class="
-        columns
-        has-text-centered
-        is-mobile is-size-7 is-marginless is-paddingless
-      "
+      class="columns has-text-centered is-mobile is-size-7 is-marginless is-paddingless"
       style="user-select: none"
     >
       <div class="column is-marginless">
@@ -34,11 +35,18 @@ import { mapState } from "vuex";
 import Video from "./MediaList.vue";
 import bus from "@/bus";
 
+function isMobile() {
+  let mobile = navigator.userAgent.match(
+    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+  );
+  return mobile != null;
+}
 export default {
   data() {
     return {
       show: 0,
       showList: 0,
+      isHover: 0,
     };
   },
   props: ["playing"],
@@ -49,6 +57,10 @@ export default {
   },
   components: { Video },
   methods: {
+    isM() {
+      return isMobile();
+    },
+
     togglePlay() {
       bus.$emit("togglePlay");
     },
@@ -89,11 +101,15 @@ export default {
 .navbar.is-fixed-bottom {
   bottom: 0;
 }
+.hover.navbar.navbar.is-fixed-bottom {
+  right: 0;
+}
 .navbar.is-fixed-bottom,
 .navbar.is-fixed-top {
-  left: 0;
   position: fixed;
-  right: 0;
+  right: calc(30px - 100%);
+
+  width: 100%;
   z-index: 10001 !important;
   padding: 0;
   margin: 0;
