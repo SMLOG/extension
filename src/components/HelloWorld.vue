@@ -18,7 +18,7 @@
           class="to"
           >{{ to.to }}</span
         >
-        <span class="src">{{ to.src }}</span>
+        <span class="src" @click="playSound(to, 1, to.src)">{{ to.src }}</span>
       </div>
       <div class="row" v-if="curItem.error">{{ curItem.error }}</div>
       <div class="row" v-if="curItem.errorUrl">
@@ -123,7 +123,7 @@ export default {
         document.selection.empty();
       }
     },
-    playSound(item, wait) {
+    playSound(item, wait, speeker) {
       let self = this;
       return new Promise((resolve) => {
         clearTimeout(timer);
@@ -132,7 +132,7 @@ export default {
           timer = setTimeout(() => {
             this.sendMessage(
               null,
-              { cmd: "audio", content: item.q, wait: wait },
+              { cmd: "audio", content: item.q, wait: wait, speeker: speeker },
               function (response) {
                 console.log(response);
                 if (response) resolve();
@@ -367,6 +367,7 @@ table tr:nth-child(even) {
   cursor: pointer;
   position: absolute;
   right: 0;
+  user-select: none;
 }
 .row {
   position: relative;

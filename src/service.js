@@ -14,6 +14,7 @@ const pako = require("pako");
 window.pako = pako;
 const RWORD = "words";
 const NWORD = "nwords";
+let lastAutoSound = "";
 //import sounds from "@/../public/3s.mp3";
 //console.log(sounds);
 const jsonparse = JSON.parse;
@@ -371,54 +372,66 @@ let serviceMap = {
       sendResponse({});
       return false;
     }
-    let TTS = "https://fanyi.baidu.com";
-
     audio.title = request.content.trim();
     currentDoc.title = audio.title;
-    let speed = request.speed || 5;
     let lan = request.lang || "en";
-    let src = `${TTS}/gettts?lan=${lan}&text=${encodeURIComponent(
-      request.content
-    )}&spd=${speed}&source=web`;
-    audio.src = src;
+    let speed = request.speed || 5;
 
+    let config = getConf();
     let content = request.content;
 
-    // console.log(audio.src);
-    // audio.load();
-    //bgAudio.pause();
-
-    let ok = 0;
-
-    let onError = function () {
-      if (audio.src.indexOf("youdao") > -1 || lan != "en") {
+    if (
+      request.speeker != "YD" &&
+      (config.autoSound == "BD" ||
+        (config.autoSound != "BD" && lastAutoSound !== "YD"))
+    ) {
+      let TTS = "https://fanyi.baidu.com";
+      let src = `${TTS}/gettts?lan=${lan}&text=${encodeURIComponent(
+        content
+      )}&spd=${speed}&source=web`;
+      audio.src = src;
+    } else if (
+      request.speeker != "BD" &&
+      (config.autoSound == "YD" ||
+        (config.autoSound != "YD" && lastAutoSound != "BD"))
+    ) {
+      if (lan != "en") {
         sendResponse({});
-      } else {
+      } else
         audio.src =
           "https://dict.youdao.com/dictvoice?audio=" +
           encodeURIComponent(content) +
           "&type=2";
-        audio.play();
+    }
+
+    let ok = 0;
+
+    let onEnded = function () {
+      if (!ok) {
         ok = 1;
       }
+      sendResponse({});
+    };
+    let onError = function () {
+      lastAutoSound = lastAutoSound == "BD" ? "YD" : "BD";
+      onEnded();
     };
     audio.onerror = onError;
+
+    setTimeout(() => {
+      if (!ok && audio.currentTime == 0) {
+        onError();
+      }
+    }, 1000);
+
+    audio.onended = onEnded;
     if (request.wait) {
-      audio.onended = function () {
-        //bgAudio.play();
-        ok = 1;
-        sendResponse({});
-      };
       audio.play();
-      setTimeout(() => {
-        if (!ok && audio.currentTime == 0) {
-          onError();
-        }
-      }, 1000);
+
       return true;
     } else {
       audio.play();
-      sendResponse({});
+
       return false;
     }
   },

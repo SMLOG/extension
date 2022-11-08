@@ -137,7 +137,7 @@ async function tranApi(q) {
             console.log(data);
             console.log(data.trans_result[0].dst);
             resolve({
-              from: data.trans_result[0].src,
+              q: data.trans_result[0].src,
               to: data.trans_result[0].dst,
             });
           },

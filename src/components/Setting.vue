@@ -72,18 +72,6 @@
         Enable:
         <div>
           <label>
-            transHtml
-            <input
-              type="checkbox"
-              v-model="transHtml"
-              @change="changeTransHtml()"
-          /></label>
-        </div>
-      </div>
-      <div style="text-align: left">
-        Enable:
-        <div>
-          <label>
             News
             <input
               type="checkbox"
@@ -104,18 +92,21 @@
               v-model="config.showwords"
               @change="updateConfig()"
           /></label>
-          <label>
-            Sound
-            <input
-              type="checkbox"
-              v-model="config.autoSound"
-              @change="updateConfig()"
-          /></label>
 
           <label>
             MJ
             <input type="checkbox" v-model="config.mj" @change="updateConfig()"
           /></label>
+        </div>
+
+        <div style="text-align: left; margin: 5px 0">
+          Sound:
+          <select v-model="config.autoSound" @change="updateConfig()">
+            <option value="">No sound</option>
+            <option value="BD">BD</option>
+            <option value="YD">YD</option>
+            <option value="auto">auto</option>
+          </select>
         </div>
       </div>
     </div>

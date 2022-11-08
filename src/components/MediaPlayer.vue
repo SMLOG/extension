@@ -29,24 +29,8 @@
         ref="audio"
         v-show="mediaType == 0"
       />
-      <div style="position: relative">
-        <a
-          @click="clickUrl(url)"
-          :title="title"
-          style="color: blue; cursor: pointer"
-          >{{ title }}</a
-        >
-        <div
-          style="
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: white;
-            padding-left: 10px;
-          "
-          id="bts"
-          ref="bts"
-        >
+      <div style="position: relative; z-index: 10000">
+        <div style="background: white; padding: 2px 5px" id="bts" ref="bts">
           <a class="up"
             ><input
               type="checkbox"
@@ -539,7 +523,7 @@ export default {
         this.videoUrl = item.url;
         this.ajustTextHeight();
       }
-      this.av = 1;
+
       if (this.isAudio) {
         try {
           let manifest = await fetch(item.url).then((r) => r.text());
@@ -568,7 +552,7 @@ export default {
         setTimeout(() => {
           this.ajustTextHeight();
         }, 1000);
-      }
+      } else this.av = 1;
     },
 
     scrollMid(span, $parent) {
