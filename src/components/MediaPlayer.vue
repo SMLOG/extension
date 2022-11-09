@@ -598,14 +598,15 @@ export default {
         this.url = this.$refs.audio.src = this.videoId;
         this.$refs.audio.play();
       } else {
-        this.loadVideo(item, mediaType, nextItem)
-          .then(() => {
+        (async () => {
+          try {
+            await this.loadVideo(item, mediaType, nextItem);
             this.$refs.audio && this.$refs.audio.pause();
-          })
-          .catch((e) => {
+          } catch (e) {
             console.error(e);
             this.end();
-          });
+          }
+        })();
       }
     });
     bus.$on("videos", (videos) => {
@@ -656,7 +657,15 @@ export default {
     },
     isAudio(b) {
       sessionStorage.isAudio = b ? 1 : 0;
-      this.loadVideo(this.item, this.mediaType, 0);
+
+      (async () => {
+        try {
+          await this.loadVideo(this.item, this.mediaType, 0);
+        } catch (e) {
+          console.error(e);
+          this.end();
+        }
+      })();
     },
   },
 };
