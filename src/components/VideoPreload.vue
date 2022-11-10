@@ -79,7 +79,7 @@ export default {
     async loadItem(type, list, index) {
       let item = list[index];
       await getExtra(item);
-      fetch(item.cc);
+      item.cc && fetch(item.cc);
       let videoUrl = item.url;
       this.curIndex = index;
       this.list = item;

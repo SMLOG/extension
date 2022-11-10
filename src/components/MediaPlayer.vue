@@ -31,7 +31,12 @@
         v-show="mediaType == 0"
       />
       <div style="position: relative; z-index: 10000">
-        <div style="background: white; padding: 2px 5px" id="bts" ref="bts">
+        <div
+          :class="{ preload: preload }"
+          style="padding: 2px 5px"
+          id="bts"
+          ref="bts"
+        >
           <a class="up"
             ><input
               type="checkbox"
@@ -771,6 +776,11 @@ video::cue(i),
 }
 #bts {
   text-align: right;
+  background: white;
+}
+#bts.preload {
+  background: #ddd;
+  border-bottom: 1px solid green;
 }
 #bts a {
   display: inline-block;

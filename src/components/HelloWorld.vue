@@ -145,13 +145,14 @@ export default {
       (async () => {
         var self = this;
         var stop = false;
-
+        if (!event) return;
+        let target = event.target;
         let handle = function () {
           stop = true;
-          event.target.removeEventListener("mouseout", handle);
+          target && event.target.removeEventListener("mouseout", handle);
         };
 
-        event.target.addEventListener("mouseout", handle);
+        target && event.target.addEventListener("mouseout", handle);
         for (let i = 0; i < 100; i++) {
           console.log(stop);
           console.log(stop);
