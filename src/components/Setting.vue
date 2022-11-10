@@ -39,11 +39,13 @@
             @blur="submitToken()"
           />
         </div>
-        <div>{{ tokenMessage }}</div>
+        <div style="color: red; font-weight: bold">{{ tokenMessage }}</div>
       </div>
       <div>
-        Merge upload:
-        <a @click="mUpload()" style="cursor: pointer; color: red">upload</a>
+        Word upload:
+        <a @click="mUpload()" style="cursor: pointer; color: red"
+          >upload {{ uploadDate }}</a
+        >
       </div>
       <div>
         Upload
@@ -99,14 +101,31 @@
           /></label>
         </div>
 
-        <div style="text-align: left; margin: 5px 0">
-          Sound:
-          <select v-model="config.autoSound" @change="updateConfig()">
-            <option value="">No sound</option>
-            <option value="BD">BD</option>
-            <option value="YD">YD</option>
-            <option value="auto">auto</option>
-          </select>
+        <div
+          style="
+            text-align: left;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+          "
+        >
+          <div>
+            Sound:
+            <select v-model="config.autoSound" @change="updateConfig()">
+              <option value="">No sound</option>
+              <option value="BD">BD</option>
+              <option value="YD">YD</option>
+              <option value="auto">auto</option>
+            </select>
+          </div>
+          <div>
+            Preload:
+            <input
+              type="checkbox"
+              v-model="config.preload"
+              @change="updateConfig()"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -128,6 +147,7 @@ export default {
       showSetting: 0,
       refreshIndicator: 0,
       transHtml: storejs.get("transHtml"),
+      uploadDate: "",
 
       config: {
         fzWords: 0,
@@ -136,6 +156,7 @@ export default {
         showvideos: 0,
         showwords: 0,
         autoSound: 0,
+        preload: 0,
       },
     };
   },
@@ -157,6 +178,14 @@ export default {
       setInterval(() => {
         this.refresh();
       }, 1000 * 3600 * 3);
+    });
+
+    service(null, { cmd: "get", name: "user" }, (resp) => {
+      this.tokenMessage = resp;
+    });
+
+    service(null, { cmd: "get", name: "uploadDate" }, (resp) => {
+      this.uploadDate = resp;
     });
   },
 
@@ -244,6 +273,13 @@ export default {
       this.tokenMessage = "";
       service(null, { cmd: "token", content: this.token }, (resp) => {
         this.tokenMessage = resp.message || resp.name;
+        if (!resp.name) {
+          setTimeout(() => {
+            service(null, { cmd: "token" }, (resp) => {
+              this.tokenMessage = resp;
+            });
+          }, 5000);
+        }
       });
     },
   },

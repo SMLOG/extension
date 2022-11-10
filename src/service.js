@@ -246,21 +246,31 @@ export function service(tab, request, sendResponse) {
   }
 }
 let serviceMap = {
+  get: (request, sendResponse) => {
+    sendResponse(storejs.get(request.name));
+  },
   token: (request, sendResponse) => {
-    var auth = "token " + request.content;
+    if (request.content) {
+      var auth = "token " + request.content;
 
-    fetch("https://api.github.com/user", {
-      method: "get",
-      headers: {
-        accept: "application/vnd.github.v3+json",
-        Authorization: auth,
-      },
-    })
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.name) storejs.set("token", request.content);
-        sendResponse(json);
-      });
+      fetch("https://api.github.com/user", {
+        method: "get",
+        headers: {
+          accept: "application/vnd.github.v3+json",
+          Authorization: auth,
+        },
+      })
+        .then((r) => r.json())
+        .then((json) => {
+          if (json.name) {
+            storejs.set("token", request.content);
+            storejs.set("user", json.name);
+          }
+          sendResponse(json);
+        });
+    } else {
+      sendResponse(storejs.get("user"));
+    }
   },
 
   lists: async (request, sendResponse) => {
@@ -715,6 +725,8 @@ const LOADERS = {
       let updateIndex = await fetch(httpsRep + "updateIndex.json?t=" + ts).then(
         (r) => r.json()
       );
+
+      storejs.set("uploadDate", updateIndex.date);
 
       if (updateIndex.date > lastSyncDate) {
         let updateData = await fetch(httpsRep + "updateData.json?t=" + ts).then(
