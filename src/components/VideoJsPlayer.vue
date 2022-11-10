@@ -26,6 +26,7 @@ import "videojs-contrib-quality-levels";
 import "@silvermine/videojs-airplay/dist/silvermine-videojs-airplay.css";
 
 require("@silvermine/videojs-airplay")(videojs);
+import bus from "@/bus";
 
 Vue.prototype.$video = videojs;
 
@@ -173,10 +174,12 @@ export default {
 
         player.on("pause", () => {
           this.$emit("pause");
+          bus.$emit("pause");
         });
 
         player.on("play", () => {
           this.$emit("play");
+          bus.$emit("play");
         });
 
         player.on("ratechange", (e) => {

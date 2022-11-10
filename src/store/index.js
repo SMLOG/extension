@@ -20,6 +20,7 @@ export default new Vuex.Store({
       showwords: 0,
       autoSound: 0,
       mj: 0,
+      preload: 0,
     },
     curItem: {
       q: "",

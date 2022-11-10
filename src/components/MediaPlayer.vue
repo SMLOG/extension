@@ -17,6 +17,7 @@
             :title="title"
             :mediaItem="item"
           ></VideoJsPlayer>
+          <VideoPreload :isAudio="isAudio" :preload="preload" />
         </div>
         <div v-if="isAliPlayer" class="ali">
           <AliPlayer :source="videoUrl" @ended="end" :isLive="mediaType == 3" />
@@ -89,11 +90,13 @@ import { service } from "@/service";
 import PlayerControllers from "../components/PlayerControllers";
 
 import { getAndPrepareNextExtra } from "@/config";
+import { getAAduio } from "@/lib";
+
 import "video.js/dist/video-js.css";
 
 import VideoJsPlayer from "./VideoJsPlayer.vue";
+import VideoPreload from "./VideoPreload.vue";
 import AliPlayer from "./AliPlayer.vue";
-import { Parser } from "m3u8-parser";
 
 export default {
   data() {
@@ -104,6 +107,7 @@ export default {
       isLoop: 0,
       cueIndex: 0,
       item: {},
+      nextItem: {},
       isCc: 0,
       mediaType: 1,
       videoUrl: "",
@@ -128,8 +132,11 @@ export default {
   created() {},
   computed: {
     ...mapState(["curItem", "words"]),
+    preload() {
+      return this.$store.state.config.preload;
+    },
   },
-  components: { PlayerControllers, VideoJsPlayer, AliPlayer },
+  components: { PlayerControllers, VideoJsPlayer, AliPlayer, VideoPreload },
   methods: {
     initPlayer(player) {
       this.player = player;
@@ -526,24 +533,10 @@ export default {
 
       if (this.isAudio) {
         try {
-          let manifest = await fetch(item.url).then((r) => r.text());
-          let parser = new Parser();
+          let ret = await getAAduio(item);
+          this.videoUrl = ret[0];
+          this.av = ret[1];
 
-          parser.push(manifest);
-          parser.end();
-
-          var parsedManifest = parser.manifest;
-          console.log(parsedManifest);
-          this.av = parsedManifest.mediaGroups.AUDIO.audio_aac ? 0 : 1;
-
-          this.videoUrl =
-            this.videoUrl +
-            "/../" +
-            (this.av
-              ? parsedManifest.playlists.sort(
-                  (a, b) => a.attributes.BANDWIDTH - b.attributes.BANDWIDTH
-                )[0].uri
-              : parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri);
           console.log(this.videoUrl);
         } catch (e) {
           console.error(e);
@@ -579,6 +572,7 @@ export default {
     this.init();
     bus.$on("videoId", (mediaType, item, click, index, index2, nextItem) => {
       if (click) this.show = 1;
+      this.nextItem = nextItem;
       this.videoId = item.vid;
       this.title = item.title;
       this.item = item;
@@ -660,7 +654,7 @@ export default {
 
       (async () => {
         try {
-          await this.loadVideo(this.item, this.mediaType, 0);
+          await this.loadVideo(this.item, this.mediaType, this.nextItem);
         } catch (e) {
           console.error(e);
           this.end();

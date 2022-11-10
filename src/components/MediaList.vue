@@ -472,7 +472,7 @@ export default {
           );
         }
       }
-      if (run)
+      if (run) {
         bus.$emit(
           "videoId",
           parseInt(
@@ -486,6 +486,18 @@ export default {
             ? this.pageList[index + 1 < this.pageList.length ? index + 1 : 0]
             : 0
         );
+
+        let nIndex = index + 1 < this.pageList.length ? index + 1 : 0;
+
+        bus.$emit(
+          "nVideoId",
+          parseInt(
+            item.mediaType != undefined ? item.mediaType : this.mediaType
+          ),
+          this.pageList,
+          nIndex
+        );
+      }
 
       if (click) {
         this.$emit("selectItem", item);
@@ -509,8 +521,17 @@ export default {
           index--;
           if (index < 0) index = list.length - 1;
         } else {
-          index++;
-          if (index >= list.length) index = 0;
+          for (;;) {
+            index++;
+            if (index >= list.length) index = 0;
+
+            if (
+              list.length <= 0 ||
+              !list[index].error ||
+              list.filter((e) => !e.error).length == 0
+            )
+              break;
+          }
         }
       } else {
         let mlen = list[index].urls.length;
