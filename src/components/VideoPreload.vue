@@ -66,18 +66,25 @@ export default {
         );
 
         this.player.on("error", () => {
-          this.list[this.curIndex].error = 1;
-          this.loadItem(
-            this.type,
-            this.list,
-            this.list.length > this.curIndex + 1 ? 0 : this.curIndex + 1
-          );
+          this.error();
           //bus.$emit();
         });
       }
     },
+    error() {
+      if (this.list[this.curIndex]) {
+        this.list[this.curIndex].error = 1;
+      }
+
+      this.loadItem(
+        this.type,
+        this.list,
+        this.list.length > this.curIndex + 1 ? 0 : this.curIndex + 1
+      );
+    },
     async loadItem(type, list, index) {
       let item = list[index];
+      if (!item) return;
       await getExtra(item);
       item.cc && fetch(item.cc);
       let videoUrl = item.url;
