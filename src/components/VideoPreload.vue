@@ -11,7 +11,7 @@
     class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
     poster=""
     autoplay="false"
-    v-show="0"
+    v-show="false"
   ></video>
 </template>
 
@@ -41,7 +41,7 @@ export default {
         inactivityTimeout: 5000,
         type: "application/x-mpegURL",
         src: "",
-        preload: true, //是否预下载，默认为true
+        preload: false, //是否预下载，默认为true
         autoplay: true, //是否自动播放（兼容性不太好），默认为false
         muted: true,
         isLoop: false, //是否循环，默认不循环
