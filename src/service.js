@@ -1092,13 +1092,14 @@ async function uploadData() {
       words: allWords,
     })
   );
+  let date = new Date(new Date().getTime() + 1000).toISOString();
   if (json.commit)
     json = await updateRepFile(
       name,
       rep,
       "updateIndex.json",
       JSON.stringify({
-        date: new Date(new Date().getTime() + 1000).toISOString(),
+        date: date,
       })
     );
   if (json.commit) {
@@ -1106,6 +1107,8 @@ async function uploadData() {
 
     gzipAndStore(NWORD, nwords, 1);
     console.info("merge ok");
+    storejs.set("uploadDate", date);
+
     return allWords;
   }
   return 0;
