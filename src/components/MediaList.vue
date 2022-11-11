@@ -595,4 +595,7 @@ table tr:nth-child(even) {
 ._d .ni {
   color: blue;
 }
+._d.ni.cur {
+  color: orangered !important;
+}
 </style>

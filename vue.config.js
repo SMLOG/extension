@@ -64,6 +64,21 @@ module.exports = {
       config.plugins.delete("pwa");
       config.plugins.delete("workbox");
     }
+    config.plugin("define").tap((args) => {
+      console.log(args[0]);
+      args[0]["process.env"].version = [new Date()]
+        .map((e) =>
+          [
+            e.getFullYear(),
+            e.getMonth() + 1,
+            e.getDate(),
+            e.getHours(),
+            e.getMinutes(),
+          ].join("")
+        )
+        .join("");
+      return args;
+    });
   },
   pluginOptions: {
     browserExtension: {
