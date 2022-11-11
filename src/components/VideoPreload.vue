@@ -72,15 +72,17 @@ export default {
       }
     },
     error() {
-      if (this.list[this.curIndex]) {
-        this.list[this.curIndex].error = 1;
-      }
+      if (this.type == 1) {
+        if (this.list[this.curIndex]) {
+          this.list[this.curIndex].error = 1;
+        }
 
-      this.loadItem(
-        this.type,
-        this.list,
-        this.list.length > this.curIndex + 1 ? 0 : this.curIndex + 1
-      );
+        this.loadItem(
+          this.type,
+          this.list,
+          this.list.length > this.curIndex + 1 ? 0 : this.curIndex + 1
+        );
+      }
     },
     async loadItem(type, list, index) {
       let item = list[index];
@@ -113,18 +115,23 @@ export default {
   },
   mounted() {
     bus.$on("nVideoId", (type, list, index) => {
-      setTimeout(() => {
-        if (this.preload) {
-          this.loadItem(type, list, index);
-        }
-      }, 10000);
+      this.type = type;
+      if (this.type == 1)
+        setTimeout(() => {
+          if (this.preload) {
+            this.loadItem(type, list, index);
+          }
+        }, 10000);
+      else {
+        this.player.pause();
+      }
     });
 
     bus.$on("pause", () => {
       this.player.pause();
     });
     bus.$on("play", () => {
-      this.player.play();
+      if (this.type == 1) this.player.play();
     });
     this.$nextTick(() => {
       this.init();
