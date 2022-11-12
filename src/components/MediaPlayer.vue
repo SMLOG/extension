@@ -215,6 +215,11 @@ export default {
             //  console.log("scroll " + new Date().getSeconds());
             let s = parseInt(this.player.currentTime());
             //let s = parseInt(this.player.currentTime() - 500);
+            if (this.cueIndex >= sp.length) {
+              this.cueIndex = 0;
+              $text.find("span.cur").removeClass("cur");
+            }
+
             if (this.cueIndex > 0) {
               let t = sp.eq(this.cueIndex);
               t.addClass("cur");
@@ -292,7 +297,6 @@ export default {
     next() {
       console.log("next");
       this.end(0);
-      this.cueIndex = 0;
     },
     prev() {
       this.end(1);
@@ -304,6 +308,7 @@ export default {
         video.play();
         return;
       }*/
+      this.cueIndex = 0;
       this.scroll(true);
       bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
     },
@@ -555,6 +560,7 @@ export default {
 
     scrollMid(span, $parent) {
       if (!span || !span.offset) return;
+      if (!span.offset()) return;
       let y =
         span.offset().top +
         $parent[0].scrollTop -
