@@ -3,6 +3,8 @@ import { htmlTrans } from "./HtmlTrans";
 import $ from "jquery";
 import storejs from "storejs";
 import bus from "@/bus";
+//import fetchJSONP from "fetch-jsonp";
+
 //const audio = new Audio();
 import { translate, isBackground } from "./translator";
 import { getVideos } from "@/config";
@@ -34,6 +36,36 @@ let bgAudio = currentDoc.querySelector("audio#bg");
 
 Axios.defaults.timeout = 5000;
 
+let json2jsonpProxy = async function (enable, url) {
+  if (enable) {
+    let jurl = `https://json2jsonp.com/?url=${encodeURIComponent(url)}`;
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: jurl,
+        dataType: "jsonp",
+        jsonp: "callback",
+        jsonpCallback: "jsonpCb",
+        success: (data) => {
+          resolve(data);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+
+    /* return await fetchJSONP(jurl, {
+      timeout: 10000,
+      mode: "cors",
+    }).then((r) => r.json());*/
+  } else {
+    return await ifr.contentWindow
+      .fetch(url, {
+        mode: "cors",
+      })
+      .then((r) => r.json());
+  }
+};
 const translators = [
   async (content) => {
     //yaoudao
@@ -87,16 +119,12 @@ const translators = [
     if (local) {
       Object.assign(ret, local);
     } else {
-      let r = await ifr.contentWindow
-        .fetch(
-          `https://dict.iciba.com/dictionary/word/suggestion?word=${encodeURIComponent(
-            content.q
-          )}&nums=1&timestamp=0&is_need_mean=1`,
-          {
-            mode: "cors",
-          }
-        )
-        .then((r) => r.json());
+      let r = await json2jsonpProxy(
+        1,
+        `https://dict.iciba.com/dictionary/word/suggestion?word=${encodeURIComponent(
+          content.q
+        )}&nums=1&timestamp=0&is_need_mean=1`
+      );
 
       console.log(r);
       if (r.message.length > 0) {
