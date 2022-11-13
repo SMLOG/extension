@@ -95,6 +95,7 @@ export default {
       this.type = type;
 
       if (this.isAudio) {
+        let errCount = 0;
         for (let i = index; i < list.length; i++) {
           try {
             let res = await getAAduio(list[i], this.isAudio);
@@ -102,6 +103,8 @@ export default {
             break;
           } catch (e) {
             console.error(e);
+            errCount++;
+            if (errCount > 5) return;
           }
         }
       }
