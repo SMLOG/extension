@@ -55,10 +55,15 @@
               <option value="A">A</option>
             </select>
           </a>
-          <a class="loop"
-            ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
-            Loop</a
-          >
+
+          <a class="loop">
+            <select v-model="isLoop">
+              <option value="">Seq</option>
+              <option value="LSeq">LSeq</option>
+              <option value="Loop">Loop</option>
+            </select>
+          </a>
+
           <a class="up"
             ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
           >
@@ -112,7 +117,7 @@ export default {
       isAliPlayer: 0,
 
       cc: 0,
-      isLoop: 0,
+      isLoop: "",
       cueIndex: 0,
       item: {},
       nextItem: {},
@@ -219,6 +224,9 @@ export default {
             let s = parseInt(this.player.currentTime());
             //let s = parseInt(this.player.currentTime() - 500);
             if (this.cueIndex >= sp.length) {
+              if (this.isLoop == "Lseq") {
+                this.end();
+              }
               this.cueIndex = 0;
               $text.find("span.cur").removeClass("cur");
             }
@@ -269,6 +277,13 @@ export default {
           }
 
           this.top = Math.floor(100 * Math.min(1, (1.0 * st) / s)) + "%";
+
+          if (
+            this.isLoop == "Lseq" &&
+            this.player.duration() - this.player.currentTime() <= 2000
+          ) {
+            this.end();
+          }
         }, 2000);
       }
     },
@@ -652,7 +667,7 @@ export default {
       }
     },
     isLoop(b) {
-      document.querySelector("video").loop = b;
+      document.querySelector("video").loop = b ? true : false;
     },
     isBg(b) {
       if (b) {
