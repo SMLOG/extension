@@ -31,7 +31,7 @@ import bus from "@/bus";
 Vue.prototype.$video = videojs;
 
 export default {
-  props: ["source", "cc", "title", "mediaItem"],
+  props: ["source", "cc", "title", "mediaItem", "timeupdate"],
   data() {
     return {
       player: null,
@@ -141,6 +141,9 @@ export default {
         );
         player.on("loadeddata", function () {
           player.playbackRate(sessionStorage.playbackrate);
+        });
+        player.on("timeupdate", (e) => {
+          this.$emit("timeupdate", e, player);
         });
 
         this.$emit("initPlayer", player);

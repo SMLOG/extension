@@ -16,6 +16,7 @@
             @ended="end"
             :title="title"
             :mediaItem="item"
+            @timeupdate="LseqNext"
           ></VideoJsPlayer>
           <VideoPreload :isAudio="isAudio" :preload="preload" />
         </div>
@@ -33,7 +34,7 @@
       <div style="position: relative; z-index: 10000">
         <div
           :class="{ preload: preload }"
-          style="padding: 2px 5px"
+          style="padding: 2px 5px; width: 100%"
           id="bts"
           ref="bts"
         >
@@ -67,15 +68,15 @@
           <a class="up"
             ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
           >
-          <a @click="next()"> Next</a>
-          <a @click="prev()"> Prev</a>
+          <a @click="next()"> Ne</a>
+          <a @click="prev()"> Pr</a>
           <a class="up"
             ><input
               type="checkbox"
               v-model="isAutoScroll"
               :checked="isAutoScroll"
             />
-            Up {{ top }}</a
+            {{ top }}</a
           >
         </div>
       </div>
@@ -198,6 +199,23 @@ export default {
         }
       };
     },
+    LseqNext(event, player) {
+      if (
+        this.isLoop == "LSeq" &&
+        player &&
+        player.duration() - player.currentTime() < 1 &&
+        !this.loadingNext
+      ) {
+        this.loadingNext = 1;
+        setTimeout(() => {
+          console.error("next");
+          this.next();
+          setTimeout(() => {
+            this.loadingNext = 0;
+          }, 10000);
+        }, 1000);
+      }
+    },
     scroll(clear) {
       clearInterval(this.scrollTimer);
       this.onCuesChangeSync = 0;
@@ -224,9 +242,6 @@ export default {
             let s = parseInt(this.player.currentTime());
             //let s = parseInt(this.player.currentTime() - 500);
             if (this.cueIndex >= sp.length) {
-              if (this.isLoop == "Lseq") {
-                this.end();
-              }
               this.cueIndex = 0;
               $text.find("span.cur").removeClass("cur");
             }
@@ -277,13 +292,6 @@ export default {
           }
 
           this.top = Math.floor(100 * Math.min(1, (1.0 * st) / s)) + "%";
-
-          if (
-            this.isLoop == "Lseq" &&
-            this.player.duration() - this.player.currentTime() <= 2000
-          ) {
-            this.end();
-          }
         }, 2000);
       }
     },
@@ -544,7 +552,11 @@ export default {
       this.text = "";
 
       if (this.show) {
-        if (!this.isAliPlayer) await this.loadTTV(item.cc);
+        try {
+          if (!this.isAliPlayer) await this.loadTTV(item.cc);
+        } catch (e) {
+          console.error(e);
+        }
         if (!item.cc) {
           skip = 0;
           this.cc = 2;
@@ -569,12 +581,10 @@ export default {
           console.error(e);
           throw e;
         }
-        setTimeout(() => {
-          this.ajustTextHeight();
-        }, 1000);
       } else this.av = 1;
-
-      this.ajustTextHeight();
+      setTimeout(() => {
+        this.ajustTextHeight();
+      }, 1000);
     },
 
     scrollMid(span, $parent) {
@@ -599,6 +609,7 @@ export default {
   mounted() {
     let self = this;
 
+    this.isLoop = !sessionStorage.isLoop ? "" : sessionStorage.isLoop;
     this.init();
     bus.$on("videoId", (mediaType, item, click, index, index2, nextItem) => {
       if (click) this.show = 1;
@@ -667,6 +678,7 @@ export default {
       }
     },
     isLoop(b) {
+      sessionStorage.isLoop = b;
       document.querySelector("video").loop = b ? true : false;
     },
     isBg(b) {
@@ -810,7 +822,7 @@ video::cue(i),
 #bts a {
   display: inline-block;
   margin: 0px 0px 5px 5px;
-  padding: 6px 8px;
+  padding: 6px 6px;
   font-size: 14px;
   outline: none;
   text-align: center;
