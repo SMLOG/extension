@@ -48,10 +48,13 @@
           <a class="loop"
             ><input type="checkbox" v-model="isBg" :checked="isBg" /> BG</a
           >
-          <a class="loop"
-            ><input type="checkbox" v-model="isAudio" :checked="isAudio" />
-            A+</a
-          >
+          <a class="loop">
+            <select v-model="isAudio">
+              <option value="">AT</option>
+              <option value="A+">A+</option>
+              <option value="A">A</option>
+            </select>
+          </a>
           <a class="loop"
             ><input type="checkbox" v-model="isLoop" :checked="isLoop" />
             Loop</a
@@ -130,7 +133,7 @@ export default {
       playing: 0,
       sps: [],
       isBg: 0,
-      isAudio: sessionStorage.isAudio == "1" ? 1 : 0,
+      isAudio: !sessionStorage.isAudio ? "" : sessionStorage.isAudio,
       av: 1,
     };
   },
@@ -538,12 +541,11 @@ export default {
 
       if (!skip) {
         this.videoUrl = item.url;
-        this.ajustTextHeight();
       }
 
       if (this.isAudio) {
         try {
-          let ret = await getAAduio(item);
+          let ret = await getAAduio(item, this.isAudio);
           this.videoUrl = ret[0];
           this.av = ret[1];
 
@@ -556,6 +558,8 @@ export default {
           this.ajustTextHeight();
         }, 1000);
       } else this.av = 1;
+
+      this.ajustTextHeight();
     },
 
     scrollMid(span, $parent) {
@@ -661,7 +665,7 @@ export default {
       }
     },
     isAudio(b) {
-      sessionStorage.isAudio = b ? 1 : 0;
+      sessionStorage.isAudio = b;
 
       (async () => {
         try {

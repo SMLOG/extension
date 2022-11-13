@@ -1,8 +1,13 @@
 <template>
   <div>
-    <div style="position: sticky; top: 0">
+    <div style="position: sticky; top: 0; display: flex">
       <input
-        style="width: 100%; box-sizing: border-box"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          margin-top: 20px;
+          flex-grow: 1;
+        "
         v-model="url"
         @blur="fetchUrl"
         @focus="url = ''"

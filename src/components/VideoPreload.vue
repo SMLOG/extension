@@ -95,8 +95,15 @@ export default {
       this.type = type;
 
       if (this.isAudio) {
-        let res = await getAAduio(item);
-        videoUrl = res[0];
+        for (let i = index; i < list.length; i++) {
+          try {
+            let res = await getAAduio(list[i], this.isAudio);
+            videoUrl = res[0];
+            break;
+          } catch (e) {
+            console.error(e);
+          }
+        }
       }
 
       this.player.src([
