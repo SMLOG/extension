@@ -41,13 +41,23 @@
           <a class="up"
             ><input
               type="checkbox"
+              v-model="isAutoScroll"
+              :checked="isAutoScroll"
+            />{{ top }}</a
+          >
+          <a class="up"
+            ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
+          >
+          <a class="up"
+            ><input
+              type="checkbox"
               v-model="isAliPlayer"
               :checked="isAliPlayer"
             />
             Ali</a
           >
           <a class="loop"
-            ><input type="checkbox" v-model="isBg" :checked="isBg" /> BG</a
+            ><input type="checkbox" v-model="isBg" :checked="isBg" /> B</a
           >
           <a class="loop">
             <select v-model="isAudio">
@@ -65,19 +75,8 @@
             </select>
           </a>
 
-          <a class="up"
-            ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
-          >
-          <a @click="next()"> Ne</a>
           <a @click="prev()"> Pr</a>
-          <a class="up"
-            ><input
-              type="checkbox"
-              v-model="isAutoScroll"
-              :checked="isAutoScroll"
-            />
-            {{ top }}</a
-          >
+          <a @click="next()"> Ne</a>
         </div>
       </div>
       <div ref="text" class="text">
@@ -814,6 +813,7 @@ video::cue(i),
 #bts {
   text-align: right;
   background: white;
+  float: right;
 }
 #bts.preload {
   background: #ddd;

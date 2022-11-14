@@ -282,6 +282,17 @@ export default {
         }
       });
     },
+    toggleHl() {
+      if ($("html > head #newwordHl").length > 0) {
+        $("html > head #newwordHl").remove();
+      } else {
+        $("html > head").append(
+          $(`<style id="newwordHl" type = "text/css">
+      .newWordb{   display:none;}
+      </style>`)
+        );
+      }
+    },
   },
 
   computed: {
