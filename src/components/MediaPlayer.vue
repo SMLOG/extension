@@ -565,10 +565,6 @@ export default {
         }
       }
 
-      if (!skip) {
-        this.videoUrl = item.url;
-      }
-
       if (this.isAudio) {
         try {
           let ret = await getAAduio(item, this.isAudio);
@@ -580,7 +576,12 @@ export default {
           console.error(e);
           throw e;
         }
-      } else this.av = 1;
+      } else {
+        this.av = 1;
+        if (!skip) {
+          this.videoUrl = item.url;
+        }
+      }
       setTimeout(() => {
         this.ajustTextHeight();
       }, 1000);
