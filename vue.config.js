@@ -232,7 +232,7 @@ module.exports = {
             //networkTimeoutSeconds: 20,
             cacheName: "vcache2",
             expiration: {
-              maxAgeSeconds: 86400 * 15,
+              maxAgeSeconds: 86400 * 10,
             },
             cacheableResponse: { statuses: [0, 200] },
           },
@@ -259,14 +259,14 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?\.(ts|aac)/,
+          urlPattern: /.*?\/(clips|\d{4}\/\d{2}\/\d{2})\/.*?\.(ts|aac).*?/,
           handler: "cacheFirst",
           method: "GET",
 
           options: {
             //networkTimeoutSeconds: 20,
             expiration: {
-              maxAgeSeconds: 86400 * 15,
+              maxAgeSeconds: 86400 * 10,
             },
             cacheName: "vcache",
             cacheableResponse: { statuses: [0, 200] },
