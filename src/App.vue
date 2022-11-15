@@ -13,7 +13,6 @@
 
       <MediaPlayer />
       <news2 />
-      <news v-if="showNews" />
     </div>
     <div id="root" ref="root" :style="{ zIndex: zIndex }" v-show="showApp">
       <div id="nav" ref="rootnav">
@@ -199,17 +198,6 @@ export default {
     toggleAutoPlay() {
       bus.$emit("toggleAutoPlay");
     },
-    toggleHl() {
-      if ($("html > head #newwordHl").length > 0) {
-        $("html > head #newwordHl").remove();
-      } else {
-        $("html > head").append(
-          $(`<style id="newwordHl" type = "text/css">
-      .newWordb{   display:none;}
-      </style>`)
-        );
-      }
-    },
 
     showError() {
       alert(this.error + ":" + this.errorUrl);
@@ -248,9 +236,9 @@ export default {
 
   computed: {
     ...mapState(["curTab", "showApp", "curItem", "curPlay", "loading"]),
-    showNews() {
+    /* showNews() {
       return this.$store.state.config.showNews;
-    },
+    },*/
   },
   watch: {
     showApp(n) {

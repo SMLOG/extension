@@ -74,13 +74,6 @@
         Enable:
         <div>
           <label>
-            News
-            <input
-              type="checkbox"
-              v-model="config.shownews"
-              @change="updateConfig()"
-          /></label>
-          <label>
             Vidoes
             <input
               type="checkbox"
