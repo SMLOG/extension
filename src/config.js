@@ -234,6 +234,7 @@ export async function getAndPrepareNextExtra(item, mediaType, nextItem) {
 }
 
 export async function getExtra(item, mediaType) {
+  if (!item) return;
   if (mediaType == 1) {
     return await getCnnExtra(item, mediaType);
   } else if (config.mods.videos.m[item.src]) {

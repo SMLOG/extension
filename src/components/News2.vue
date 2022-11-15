@@ -20,7 +20,7 @@
     >
       <div style="padding: 5px; background: white">
         <table style="text-align: left; width: 100%">
-          <tr v-for="(item, i) in pageList" :key="i">
+          <tr v-for="(item, i) in pageList" :key="item.title">
             <td>
               <h4
                 class="title"
