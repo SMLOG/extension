@@ -276,6 +276,7 @@ let serviceMap = {
     sendResponse(storejs.get(request.name));
   },
   token: (request, sendResponse) => {
+    console.error(request);
     if (request.content) {
       var auth = "token " + request.content;
 

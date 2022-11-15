@@ -32,32 +32,43 @@
         v-show="mediaType == 0"
       />
       <div style="position: relative; z-index: 10000">
-        <div
-          :class="{ preload: preload }"
-          style="padding: 2px 5px; width: 100%"
-          id="bts"
-          ref="bts"
-        >
-          <a class="up"
-            ><input
-              type="checkbox"
-              v-model="isAutoScroll"
-              :checked="isAutoScroll"
-            />{{ top }}</a
+        <div :class="{ preload: preload }" id="bts" ref="bts">
+          <a
+            class="up"
+            style="margin-left: 0"
+            :class="{ selected: isAutoScroll }"
+            @click="isAutoScroll = !isAutoScroll"
           >
-          <a class="up"
-            ><input type="checkbox" v-model="isCc" :checked="isCc" /> cc</a
+            <font-awesome-icon
+              v-show="isAutoScroll"
+              size="xs"
+              icon="fa-solid fa-check"
+            />
+            {{ top }}</a
           >
-          <a class="up"
-            ><input
-              type="checkbox"
-              v-model="isAliPlayer"
-              :checked="isAliPlayer"
+          <a class="up" :class="{ selected: isCc }" @click="isCc = !isCc">
+            cc</a
+          >
+          <a
+            class="up"
+            :class="{ selected: isAliPlayer }"
+            @click="isAliPlayer = !isAliPlayer"
+          >
+            <font-awesome-icon
+              v-show="isAliPlayer"
+              size="xs"
+              icon="fa-solid fa-check"
             />
             Ali</a
           >
-          <a class="loop"
-            ><input type="checkbox" v-model="isBg" :checked="isBg" /> B</a
+          <a class="loop" :class="{ selected: isBg }" @click="isBg = !isBg">
+            <font-awesome-icon
+              v-show="isBg"
+              size="xs"
+              icon="fa-solid fa-check"
+            />
+
+            BG</a
           >
           <a class="loop">
             <select v-model="isAudio">
@@ -75,8 +86,13 @@
             </select>
           </a>
 
-          <a @click="prev()"> Pr</a>
-          <a @click="next()"> Ne</a>
+          <a @click="prev()">
+            <font-awesome-icon icon="fa-solid fa-angle-left"
+          /></a>
+
+          <a @click="next()">
+            <font-awesome-icon icon="fa-solid fa-angle-right"
+          /></a>
         </div>
       </div>
       <div ref="text" class="text">
@@ -647,7 +663,11 @@ export default {
     bus.$on("videos", (videos) => {
       this.videos = videos;
     });
+    bus.$on("playing", (status) => {
+      this.playing = status;
+    });
     bus.$on("togglePlay", () => {
+      console.error("togglePlayer");
       if (this.mediaType == 2) {
         if (this.playing) this.$refs.audio.pause();
         else this.$refs.audio.play();
@@ -814,8 +834,11 @@ video::cue(i),
 #bts {
   text-align: right;
   background: white;
-  float: right;
+  display: flex;
+  justify-content: space-around;
+  padding: 2px 5px;
 }
+
 #bts.preload {
   background: #ddd;
   border-bottom: 1px solid green;
@@ -824,14 +847,14 @@ video::cue(i),
   display: inline-block;
   margin: 0px 0px 5px 5px;
   padding: 6px 6px;
-  font-size: 14px;
   outline: none;
   text-align: center;
-  line-height: 1em;
   cursor: pointer;
   color: white;
   background-color: rgba(0, 64, 156, 0.8);
   user-select: none;
+  line-height: 1.2em;
+  flex-grow: 1;
 }
 #bts input {
   margin: 0;
@@ -840,7 +863,11 @@ video::cue(i),
 #bts a.enable {
   color: red;
 }
+
 .audio >>> .video-js.vjs-16-9 {
   padding-top: 90px !important;
+}
+a.selected {
+  font-weight: bold;
 }
 </style>

@@ -178,11 +178,13 @@ export default {
         player.on("pause", () => {
           this.$emit("pause");
           bus.$emit("pause");
+          bus.$emit("playing", 0);
         });
 
         player.on("play", () => {
           this.$emit("play");
           bus.$emit("play");
+          bus.$emit("playing", 1);
         });
 
         player.on("ratechange", (e) => {

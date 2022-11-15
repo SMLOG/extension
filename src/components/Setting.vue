@@ -164,7 +164,8 @@ export default {
     },
   },
   mounted() {
-    service(null, { cmd: "getConfig", reqId: +new Date() }, (resp) => {
+    let reqId = +new Date();
+    service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
       Object.assign(this.config, resp);
       this.refresh();
 
@@ -173,13 +174,18 @@ export default {
       }, 1000 * 3600 * 3);
     });
 
-    service(null, { cmd: "get", name: "user" }, (resp) => {
+    service(null, { cmd: "get", name: "user", reqId: ++reqId }, (resp) => {
+      console.error("usr");
       this.tokenMessage = resp;
     });
 
-    service(null, { cmd: "get", name: "uploadDate" }, (resp) => {
-      this.uploadDate = resp;
-    });
+    service(
+      null,
+      { cmd: "get", name: "uploadDate", reqId: ++reqId },
+      (resp) => {
+        this.uploadDate = resp;
+      }
+    );
   },
 
   methods: {
