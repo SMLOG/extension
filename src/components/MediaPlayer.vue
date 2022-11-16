@@ -836,7 +836,7 @@ video::cue(i),
   background: white;
   display: flex;
   justify-content: space-around;
-  padding: 2px 5px;
+  padding: 0;
 }
 
 #bts.preload {

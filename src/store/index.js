@@ -95,7 +95,7 @@ export default new Vuex.Store({
         session.doneVideoMap = JSON.stringify(doneVideoMap);
         if (videos)
           for (let item of videos.filter((e) => !e._d)) {
-            item._d = doneVideoMap[item.vid];
+            item._d = doneVideoMap[item.vid] || 0;
           }
       }
 

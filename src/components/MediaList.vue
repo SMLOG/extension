@@ -134,8 +134,8 @@ let mediaTypes = [
       return lang && lang.indexOf(v) > -1;
     },
     title: function (item) {
-      let c = item["tvg-country"];
-      return c + ":" + item.title;
+      // let c = item["tvg-country"];
+      return item.title;
     },
     cnt: {},
   },

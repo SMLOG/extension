@@ -875,7 +875,7 @@ const LOADERS = {
             ).toISOString();
             storejs.set(sinceName, lastSyncDate);
 
-            words.unshift(...rnewList);
+            words.unshift(...rnewList.filter((e) => e.n));
             gzipAndStore(RWORD, words);
 
             nwords.length = 0;
