@@ -232,7 +232,7 @@ module.exports = {
             //networkTimeoutSeconds: 20,
             cacheName: "vcache2",
             expiration: {
-              maxAgeSeconds: 86400 * 10,
+              maxAgeSeconds: 86400 * 5,
             },
             cacheableResponse: { statuses: [0, 200] },
           },
@@ -266,7 +266,7 @@ module.exports = {
           options: {
             //networkTimeoutSeconds: 20,
             expiration: {
-              maxAgeSeconds: 86400 * 10,
+              maxAgeSeconds: 86400 * 5,
             },
             cacheName: "vcache",
             cacheableResponse: { statuses: [0, 200] },
@@ -291,7 +291,7 @@ module.exports = {
             cacheName: "cache",
             cacheableResponse: { statuses: [0, 200] },
             expiration: {
-              maxAgeSeconds: 60 * 60 * 24 * 14, // 2 Week
+              maxAgeSeconds: 60 * 60 * 24 * 5, // 2 Week
               //  maxEntries: 100,
             },
           },
