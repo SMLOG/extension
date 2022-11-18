@@ -430,10 +430,18 @@ export default {
               let m;
               let vtt = "WEBVTT\n\n";
 
+              let padding = -1;
               while ((m = p.exec(r)) != null) {
-                vtt += `${m[1]}0 --> ${m[2]}0\n${m[3]
-                  .replace(/<.*?>\s*/g, " ")
-                  .trim()}\n\n`;
+                if (padding == -1) padding = m[1].length == 12 ? 0 : 1;
+                if (padding) {
+                  vtt += `${m[1]}0 --> ${m[2]}0\n${m[3]
+                    .replace(/<.*?>\s*/g, " ")
+                    .trim()}\n\n`;
+                } else {
+                  vtt += `${m[1]} --> ${m[2]}\n${m[3]
+                    .replace(/<.*?>\s*/g, " ")
+                    .trim()}\n\n`;
+                }
               }
               r = vtt;
               this.cc = 1;

@@ -185,13 +185,18 @@ export const config = {
                 return resp.subCards
                   .filter((e) => e.type == "video")
                   .map((e) => {
+                    let closedCaptions = e.videoMetadata.closedCaptions;
+
                     let r = dtd({
                       vid: e.id,
                       url: e.externalVideoFiles.sort((a) =>
                         a.url.indexOf("m3u8-aapl") > -1 ? -1 : 0
                       )[0].url,
                       title: e.title,
-                      cc: 0,
+                      cc:
+                        closedCaptions &&
+                        closedCaptions.length &&
+                        closedCaptions[0].href,
                       src: src,
                     });
                     r.dt = new Date(e.publishedDateTime).getTime();
