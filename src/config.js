@@ -75,6 +75,7 @@ export const config = {
     videos: {
       m: {
         cnn: {
+          enable: 1,
           ext: getCnnExtra,
           res: [
             {
@@ -124,6 +125,7 @@ export const config = {
           ],
         },
         cbs: {
+          enable: 1,
           res: [
             {
               type: "json",
@@ -170,6 +172,43 @@ export const config = {
             },
           ],
         },
+        msn: {
+          enable: 1,
+          res: [
+            {
+              type: "json",
+              crossOrig: 0,
+              urls: [
+                "https://assets.msn.com/service/MSN/Feed/me?$top=10&DisableTypeSerialization=true&activityId=7E2F0C44-D701-4998-A932-A31D48A50A60&apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&contentType=video&location=21.3744|110.248&market=en-us&query=news%20video&queryType=myfeed&responseSchema=cardview&timeOut=1000&wrapodata=false",
+              ],
+              conv: function (resp, src) {
+                return resp.subCards
+                  .filter((e) => e.type == "video")
+                  .map((e) => {
+                    let r = dtd({
+                      vid: e.id,
+                      url: e.externalVideoFiles.sort((a) =>
+                        a.url.indexOf("m3u8-aapl") > -1 ? -1 : 0
+                      )[0].url,
+                      title: e.title,
+                      cc: 0,
+                      src: src,
+                    });
+                    r.dt = new Date(e.publishedDateTime).getTime();
+                    r.d = [new Date(r.dt)]
+                      .map(
+                        (e) =>
+                          `${e.getFullYear()}/${
+                            e.getMonth() + 1
+                          }/${e.getDate()}`
+                      )
+                      .join("");
+                    return r;
+                  });
+              },
+            },
+          ],
+        },
       },
     },
   },
@@ -184,6 +223,8 @@ export async function getVideos() {
   let rVideos = [];
   for (let i = 0; i < srcs.length; i++) {
     let src = srcs[i];
+    console.error(src);
+    if (!config.mods.videos.m[src].enable) continue;
     let item = config.mods.videos.m[src];
     let res = item.res;
     for (let j = 0; j < res.length; j++) {
@@ -197,6 +238,7 @@ export async function getVideos() {
             item.type
           );
           rVideos.push(...(await item.conv(resp, src)));
+          console.error(rVideos);
         } catch (e) {
           console.error(e);
         }

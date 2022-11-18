@@ -9,15 +9,14 @@ export async function getAAduio(item, type) {
 
   var parsedManifest = parser.manifest;
   console.log(parsedManifest);
-  let av = parsedManifest.mediaGroups.AUDIO.audio_aac ? 0 : 1;
+  let audio = parsedManifest.mediaGroups.AUDIO;
+  audio = JSON.stringify(audio).replace(/[{}]/g, "").trim();
+  let av = audio ? 0 : 1;
   let videoUrl;
 
   if (type == "A") {
     av = 0;
-    videoUrl =
-      item.url +
-      "/../" +
-      parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri;
+    videoUrl = item.url + "/../" + audio.match(/uri":\s*"(.*?)"/)[1];
   } else {
     videoUrl =
       item.url +
@@ -26,7 +25,7 @@ export async function getAAduio(item, type) {
         ? parsedManifest.playlists.sort(
             (a, b) => a.attributes.BANDWIDTH - b.attributes.BANDWIDTH
           )[0].uri
-        : parsedManifest.mediaGroups.AUDIO.audio_aac.English.uri);
+        : audio.match(/uri":\s*"(.*?)"/)[1]);
   }
 
   return [videoUrl, av];
