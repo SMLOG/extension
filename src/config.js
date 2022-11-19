@@ -178,9 +178,12 @@ export const config = {
             {
               type: "json",
               crossOrig: 0,
-              urls: [
-                "https://assets.msn.com/service/MSN/Feed/me?$top=10&DisableTypeSerialization=true&activityId=7E2F0C44-D701-4998-A932-A31D48A50A60&apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&contentType=video&location=21.3744|110.248&market=en-us&query=news%20video&queryType=myfeed&responseSchema=cardview&timeOut=1000&wrapodata=false",
-              ],
+              /** btoa(pako.gzip( JSON.stringify([
+              "https://assets.msn.com/service/MSN/Feed/me?$top=20&DisableTypeSerialization=true&activityId=7E2F0C44-D701-4998-A932-A31D48A50A60&apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&contentType=video&location=21.3744|110.248&market=en-us&query=news%20video&queryType=myfeed&responseSchema=cardview&timeOut=1000&wrapodata=false"
+          ]),{to:'string'})) ; */
+              urls: decode(
+                "H4sIAAAAAAAAAyWP206DQBRF/6XReQNmgFpqMjHYS2LSSyrEeokPp3BqJ4UZnDnQ0Pjxavu6k7322h+DA1Hj7oMAnENyfu20X5g6cGg7VWCwzFbBHLEMany4IdPIkLOpcrCrMO8bzNAqqNQZSBktybbIoCDVKeqfSjmahXM+iWNvOuLCi8fjxEvHUeilkZjGSTrk6R1n0Kgj9pJv9uvX6EUPxdvkrGi3gOdjnj9CSdvmK18lq/fFlk9ENluywmhCTf/7slMlGlaZ4moQCj8axfGPENwP44TVYI9IErXXOvbdou2lxpO7Dfm1eIkuoLrf/91kFl1jtMOsOGANsgBbdgpPjFSN65ak4Jyzk4XGlEAg91A5HHz+ApDd/ttHAQAA"
+              ),
               conv: function (resp, src) {
                 return resp.subCards
                   .filter((e) => e.type == "video")
