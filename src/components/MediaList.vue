@@ -34,6 +34,7 @@
                     }}</span
                   >
                   <span class="src" v-if="item.src">{{ item.src }}</span>
+                  <span class="src" v-if="item.org">{{ item.org }}</span>
 
                   <span v-if="item.rate"> rate:{{ item.rate }} </span>
 

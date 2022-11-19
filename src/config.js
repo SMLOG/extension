@@ -198,6 +198,7 @@ export const config = {
                         closedCaptions.length &&
                         closedCaptions[0].href,
                       src: src,
+                      org: e.provider && e.provider.name,
                     });
                     r.dt = new Date(e.publishedDateTime).getTime();
                     r.d = [new Date(r.dt)]

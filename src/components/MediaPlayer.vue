@@ -101,6 +101,7 @@
         }}</a>
         <div v-if="item.src">
           source:<a target="_blank" :href="item.src">{{ item.src }}</a>
+          <a v-if="item.org" style="padding-left: 5px">{{ item.org }}</a>
         </div>
         <div v-html="text" ref="lynx"></div>
       </div>
