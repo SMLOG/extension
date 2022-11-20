@@ -392,8 +392,11 @@ let serviceMap = {
       sendResponse({});
       return false;
     } else {
-      bgAudio.title = +new Date();
-      currentDoc.title = bgAudio.title;
+      if (request.title) {
+        bgAudio.title = request.title;
+        currentDoc.title = bgAudio.title;
+      }
+
       bgAudio.play();
     }
     bgAudio.onerror = bgAudio.onended = function () {

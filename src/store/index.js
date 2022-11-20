@@ -21,6 +21,7 @@ export default new Vuex.Store({
       autoSound: 0,
       mj: 0,
       preload: 0,
+      dict: 0,
     },
     curItem: {
       q: "",

@@ -92,6 +92,14 @@
             MJ
             <input type="checkbox" v-model="config.mj" @change="updateConfig()"
           /></label>
+
+          <label>
+            Dict
+            <input
+              type="checkbox"
+              v-model="config.dict"
+              @change="updateConfig()"
+          /></label>
         </div>
 
         <div
@@ -150,6 +158,7 @@ export default {
         showwords: 0,
         autoSound: 0,
         preload: 0,
+        dict: 0,
       },
     };
   },
@@ -232,8 +241,10 @@ export default {
                   if (resp.done) {
                     resolve();
                   }
-                  if (resp.contents)
+                  if (resp.contents) {
+                    console.error(modules[i], resp.contents);
                     self.$store.commit(modules[i], resp.contents);
+                  }
                 }
               );
             }),

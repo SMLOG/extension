@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="show" ref="top" class="top">
+    <div v-show="show" ref="top" class="top" :class="'fs-' + fs">
       <div
         ref="videoCon"
         class="videoCon"
@@ -49,6 +49,7 @@
           <a class="up" :class="{ selected: isCc }" @click="isCc = !isCc">
             cc</a
           >
+          <a class="up" @click="fs >= 4 ? (fs = 1) : fs++"> {{ fs }}</a>
           <a
             class="up"
             :class="{ selected: isAliPlayer }"
@@ -82,6 +83,7 @@
             <select v-model="isLoop">
               <option value="">Seq</option>
               <option value="LSeq">LSeq</option>
+              <option value="LSe2">LSe2</option>
               <option value="Loop">Loop</option>
             </select>
           </a>
@@ -133,8 +135,10 @@ export default {
     return {
       isAliPlayer: 0,
 
+      fs: 2,
       cc: 0,
       isLoop: "",
+      loopCount: 0,
       cueIndex: 0,
       item: {},
       nextItem: {},
@@ -164,6 +168,9 @@ export default {
     ...mapState(["curItem", "words"]),
     preload() {
       return this.$store.state.config.preload;
+    },
+    dict() {
+      return this.$store.state.config.dict;
     },
   },
   components: { PlayerControllers, VideoJsPlayer, AliPlayer, VideoPreload },
@@ -217,7 +224,7 @@ export default {
     },
     LseqNext(event, player) {
       if (
-        this.isLoop == "LSeq" &&
+        (this.isLoop == "LSeq" || this.isLoop == "LSe2") &&
         player &&
         player.duration() - player.currentTime() < 1 &&
         !this.loadingNext
@@ -225,7 +232,17 @@ export default {
         this.loadingNext = 1;
         setTimeout(() => {
           console.error("next");
-          this.next();
+          if (this.isLoop == "LSe") {
+            this.loopCount = 0;
+            this.next();
+          } else if (this.isLoop == "LSe2") {
+            this.loopCount++;
+            if (this.loopCount <= 2) {
+              this.loopCount = 0;
+              this.next();
+            }
+          }
+
           setTimeout(() => {
             this.loadingNext = 0;
           }, 10000);
@@ -266,6 +283,11 @@ export default {
               let t = sp.eq(this.cueIndex);
               t.addClass("cur");
 
+              if (this.dict) {
+                let title = t.find(".newWord").text().trim();
+                title && (this.title = title);
+              }
+
               if (!t.attr("skip")) this.scrollMid(t, $text);
               this.cueIndex++;
             } else
@@ -275,7 +297,10 @@ export default {
                   //if (j == this.cueIndex) break;
                   $text.find("span.cur").removeClass("cur");
                   t.addClass("cur");
-
+                  if (this.dict) {
+                    let title = t.find(".newWord").text().trim();
+                    title && (this.title = title);
+                  }
                   // sp.eq(this.cueIndex).removeClass("cur");
                   this.cueIndex = j + 1;
                   this.scrollMid(t, $text);
@@ -318,6 +343,7 @@ export default {
           null,
           {
             cmd: "bg",
+            title: this.title,
           },
           function (response) {
             if (response) resolve();
@@ -878,5 +904,29 @@ video::cue(i),
 }
 a.selected {
   font-weight: bold;
+}
+.fs-1 >>> .vjs-text-track-cue,
+.fs-1 >>> .text,
+.fs-1 video::-webkit-media-text-track-display,
+fs-4 ::cue {
+  font-size: 100% !important;
+}
+.fs-2 >>> .vjs-text-track-cue,
+.fs-2 >>> .text,
+.fs-2 video::-webkit-media-text-track-display,
+fs-2 ::cue {
+  font-size: 150% !important;
+}
+.fs-3 >>> .vjs-text-track-cue,
+.fs-3 >>> .text,
+.fs-3 video::-webkit-media-text-track-display,
+fs-3 ::cue {
+  font-size: 200% !important;
+}
+.fs-4 >>> .vjs-text-track-cue,
+.fs-4 >>> .text,
+.fs-4 video::-webkit-media-text-track-display,
+fs-4 ::cue {
+  font-size: 250% !important;
 }
 </style>

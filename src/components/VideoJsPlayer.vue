@@ -96,7 +96,7 @@ export default {
     init() {
       let player = this.player;
       let self = this;
-      document.title = this.title;
+
       //this.$refs.videoPlayer.setAttribute("title", this.title);
       //alert(this.title);
       if (!this.player) {
@@ -226,6 +226,9 @@ export default {
   watch: {
     source() {
       this.init();
+    },
+    title() {
+      document.title = this.title;
     },
   },
 };
