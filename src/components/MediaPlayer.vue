@@ -227,7 +227,9 @@ export default {
         this.loadingNext = 1;
         setTimeout(() => {
           console.error("next");
-          if (this.isLoop == "LSe") {
+          console.error(this.isLoop);
+
+          if (this.isLoop == "LSeq") {
             this.loopCount = 0;
             this.next();
           } else if (this.isLoop == "LSe2") {
