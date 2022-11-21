@@ -226,7 +226,7 @@ table tr:nth-child(even) {
 }
 .desc {
   background: #eee;
-  font-size: 1.3em;
+  font-size: 1.6em;
   line-height: 1.4em;
   padding: 5px;
 }

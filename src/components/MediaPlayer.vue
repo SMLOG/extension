@@ -1,12 +1,7 @@
 <template>
   <div>
     <div v-show="show" ref="top" class="top" :class="'fs-' + fs">
-      <div
-        ref="videoCon"
-        class="videoCon"
-        v-show="0 != mediaType"
-        :class="{ audio: !av }"
-      >
+      <div ref="videoCon" class="videoCon" v-show="0 != mediaType">
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -83,7 +78,7 @@
             <select v-model="isLoop">
               <option value="">Seq</option>
               <option value="LSeq">LSeq</option>
-              <option value="LSe2">LSe2</option>
+              <option value="LSe2">LSe2{{ loopCount }}</option>
               <option value="Loop">Loop</option>
             </select>
           </a>
@@ -237,7 +232,7 @@ export default {
             this.next();
           } else if (this.isLoop == "LSe2") {
             this.loopCount++;
-            if (this.loopCount <= 2) {
+            if (this.loopCount >= 2) {
               this.loopCount = 0;
               this.next();
             }
@@ -906,27 +901,36 @@ a.selected {
   font-weight: bold;
 }
 .fs-1 >>> .vjs-text-track-cue,
-.fs-1 >>> .text,
+.fs-1 >>> .text {
+  font-size: 125% !important;
+}
 .fs-1 video::-webkit-media-text-track-display,
-fs-4 ::cue {
+.fs-1 ::cue {
   font-size: 100% !important;
 }
+
 .fs-2 >>> .vjs-text-track-cue,
-.fs-2 >>> .text,
-.fs-2 video::-webkit-media-text-track-display,
-fs-2 ::cue {
+.fs-2 >>> .text {
   font-size: 150% !important;
 }
-.fs-3 >>> .vjs-text-track-cue,
-.fs-3 >>> .text,
+.fs-2 video::-webkit-media-text-track-display,
+.fs-2 ::cue {
+  font-size: 125% !important;
+}
+.fs-3 >>> .text {
+  font-size: 175% !important;
+}
+
 .fs-3 video::-webkit-media-text-track-display,
-fs-3 ::cue {
+.fs-3 ::cue {
+  font-size: 150% !important;
+}
+.fs-4 >>> .text {
   font-size: 200% !important;
 }
-.fs-4 >>> .vjs-text-track-cue,
-.fs-4 >>> .text,
+
 .fs-4 video::-webkit-media-text-track-display,
-fs-4 ::cue {
-  font-size: 250% !important;
+.fs-4 ::cue {
+  font-size: 170% !important;
 }
 </style>
