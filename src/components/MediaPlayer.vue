@@ -536,6 +536,8 @@ export default {
       let player = this.player;
       let tracks = player.textTracks();
       for (var d = 0; d < tracks.length; d++) {
+        console.error(tracks[d].label);
+
         if (tracks[d].label == "new word")
           player.removeRemoteTextTrack(tracks[d]);
       }

@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       player: null,
+      nextUrl: "",
       curIndex: 0,
       options: {
         inactivityTimeout: 5000,
@@ -94,8 +95,7 @@ export default {
       this.list = item;
       this.type = type;
 
-      if (this.isAudio) {
-        let errCount = 0;
+      if (this.isAudio == "A") {
         for (let i = index; i < list.length; i++) {
           try {
             let res = await getAAduio(list[i], this.isAudio);
@@ -103,12 +103,11 @@ export default {
             break;
           } catch (e) {
             console.error(e);
-            errCount++;
-            if (errCount > 5) return;
           }
         }
       }
 
+      this.nextUrl = videoUrl;
       this.player.src([
         {
           src: videoUrl,

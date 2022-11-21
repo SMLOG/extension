@@ -141,6 +141,14 @@ export default {
         );
         player.on("loadeddata", function () {
           player.playbackRate(sessionStorage.playbackrate);
+          setTimeout(() => {
+            let tracks = player.textTracks();
+            for (var d = 0; d < tracks.length; d++) {
+              console.error(tracks[d].label);
+
+              if (tracks[d].label !== "new word") tracks[d].mode = "disabled";
+            }
+          }, 0);
         });
         player.on("timeupdate", (e) => {
           this.$emit("timeupdate", e, player);
