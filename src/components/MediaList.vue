@@ -175,6 +175,9 @@ export default {
   },
   created() {},
   computed: {
+    preload() {
+      return this.$store.state.config.preload;
+    },
     cnt() {
       return this.mediaTypes[this.mediaType].cnt;
     },
@@ -525,6 +528,24 @@ export default {
           for (;;) {
             index++;
             if (index >= list.length) index = 0;
+
+            if (this.preload && sessionStorage.isAudio == "A") {
+              for (let k = index; k < list.length; k++) {
+                if (list[k].a) {
+                  index = k;
+                  break;
+                }
+              }
+              if (index != 0 && !list[index].a) {
+                index = 0;
+                for (let k = index; k < list.length; k++) {
+                  if (list[k].a) {
+                    index = k;
+                    break;
+                  }
+                }
+              }
+            }
 
             if (
               list.length <= 0 ||

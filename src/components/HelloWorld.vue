@@ -71,7 +71,7 @@ export default {
       var left = isMobile
         ? 0
         : (s.left + s.right) / 2 + $(window).scrollLeft() - 20;
-      let root = $(".mytranslate-extension #root");
+      let root = $(".mytranslate-extension #root_1");
       let top = s.bottom + $(window).scrollTop() + 8;
       root.css({
         position: "absolute",

@@ -243,7 +243,7 @@ export default {
           setTimeout(() => {
             this.loadingNext = 0;
           }, 10000);
-        }, 1000);
+        }, (player.duration() - player.currentTime()) * 1000);
       }
     },
     scroll(clear) {

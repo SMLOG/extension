@@ -14,7 +14,7 @@
       <MediaPlayer />
       <news2 />
     </div>
-    <div id="root" ref="root" :style="{ zIndex: zIndex }" v-show="showApp">
+    <div id="root_1" ref="root" :style="{ zIndex: zIndex }" v-show="showApp">
       <div id="nav" ref="rootnav">
         <div style="display: inline-block">
           <input
@@ -275,7 +275,7 @@ export default {
 #app {
   all: initial; /* blocking inheritance for all properties */
 }
-#root {
+#root_1 {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -291,7 +291,7 @@ export default {
   max-width: 100%;
 }
 
-#root #nav {
+#root_1 #nav {
   padding: 5px;
   text-align: left;
   position: relative;
@@ -325,8 +325,8 @@ export default {
 }
 </style>
 <style scoped>
-#root >>> input,
-#root >>> select {
+#root_1 >>> input,
+#root_1 >>> select {
   color: black !important;
 }
 </style>

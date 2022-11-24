@@ -95,11 +95,14 @@ export default {
       this.list = item;
       this.type = type;
 
+      console.log("preload");
       if (this.isAudio == "A") {
         for (let i = index; i < list.length; i++) {
           try {
             let res = await getAAduio(list[i], this.isAudio);
+
             videoUrl = res[0];
+            list[i].a = res[0];
             break;
           } catch (e) {
             console.error(e);
