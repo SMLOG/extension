@@ -187,7 +187,7 @@ export const config = {
               conv: function (resp, src) {
                 return resp.subCards
                   .filter(
-                    (e) => e.type == "video" || e.provider.name != "BuzzVideos"
+                    (e) => e.type == "video" && e.provider.name != "BuzzVideos"
                   )
                   .map((e) => {
                     let closedCaptions = e.videoMetadata.closedCaptions;

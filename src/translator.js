@@ -284,7 +284,7 @@ export async function translate2(q, opts) {
   console.log(opts);
   if (!token)
     await axios.get("https://fanyi.baidu.com/#/en/zh").then((resp) => {
-      gtk = resp.data.match(/window.gtk = '(.*?)'/)[1];
+      gtk = resp.data.match(/window.gtk = "(.*?)"/)[1];
       token = resp.data.match(/token: '(.*?)'/)[1];
       console.log(gtk + " " + token);
       window.gtk = gtk;
