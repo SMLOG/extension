@@ -195,11 +195,12 @@ export default {
           bus.$emit("playing", 1);
         });
 
-        player.on("ratechange", (e) => {
+        player.on("ratechange", () => {
           console.log("change rate");
-          console.log(e);
-          if (player.currentTime() > 1000 || player.playbackRate() != 1)
+          if (player.currentTime() > 1) {
             sessionStorage.playbackrate = player.playbackRate();
+            console.log(sessionStorage.playbackrate);
+          }
         });
       }
       //let rate = (sessionStorage.playbackrate = player.playbackRate());

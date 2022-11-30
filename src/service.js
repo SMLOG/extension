@@ -990,7 +990,7 @@ const LOADERS = {
 };
 
 async function loadMjUrls(request, sendResponse) {
-  let DataRep = storejs.get("user");
+  let DataRep = "smlog";
   if (DataRep)
     await getBlobContent(
       DataRep,
@@ -999,6 +999,8 @@ async function loadMjUrls(request, sendResponse) {
       0,
       request.content.cache
     )
+      //return fetch("https://smlog.github.io/data/mj.json?" + request.content.cache)
+      //.then(r=>r.text())
       .then((content) => {
         // let compressed = atob(content);
         let compressed = pako.ungzip(window.atob(content), {
@@ -1009,7 +1011,7 @@ async function loadMjUrls(request, sendResponse) {
       .catch(() => {
         sendResponse({ content: 0 });
       });
-  else sendResponse({ content: 0 });
+  //else sendResponse({ content: 0 });
 }
 /*
 function unGzip(content) {

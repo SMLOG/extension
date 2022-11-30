@@ -248,6 +248,7 @@ export default {
       this.search = "";
     },
     changeMediaType() {
+      console.log(this.mediaType);
       switch (this.mediaTypes[this.mediaType].n) {
         case "TV":
           if (this.mediaTypes[this.mediaType].data.length == 0) {
@@ -344,6 +345,7 @@ export default {
           if (this.mediaTypes[this.mediaType].data.length == 0) {
             if (this.loading) return;
             this.loading = 1;
+
             service(
               null,
               { cmd: "urls", content: { p: "mj.json", cache: 86400000 } },
