@@ -59,7 +59,7 @@
           <a class="up" :class="{ selected: isCc }" @click="isCc = !isCc">
             cc</a
           >
-          <a class="up" @click="fs >= 4 ? (fs = 1) : fs++"> {{ fs }}</a>
+          <a class="up" @click="fs >= 5 ? (fs = 1) : fs++"> {{ fs }}</a>
           <a
             class="up"
             :class="{ selected: isAliPlayer }"
@@ -947,7 +947,8 @@ a.selected {
 .fs-2 ::cue {
   font-size: 125% !important;
 }
-.fs-3 >>> .text {
+.fs-3 >>> .text,
+.fs-3 >>> .vjs-text-track-cue {
   font-size: 175% !important;
 }
 
@@ -955,12 +956,24 @@ a.selected {
 .fs-3 ::cue {
   font-size: 150% !important;
 }
-.fs-4 >>> .text {
+.fs-4 >>> .text,
+.fs-4 >>> .vjs-text-track-cue {
   font-size: 200% !important;
 }
 
 .fs-4 video::-webkit-media-text-track-display,
 .fs-4 ::cue {
   font-size: 170% !important;
+}
+
+.fs-5 >>> .vjs-text-track-cue {
+  font-size: 250% !important;
+}
+.fs-4 >>> .text {
+  font-size: 220% !important;
+}
+.fs-5 video::-webkit-media-text-track-display,
+.fs-5 ::cue {
+  font-size: 200% !important;
 }
 </style>

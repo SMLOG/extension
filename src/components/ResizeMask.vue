@@ -10,7 +10,7 @@
       :isConflictCheck="true"
       :snap="true"
       :snapTolerance="20"
-      style="background: rgba(0, 0, 0, 0.9); border: none"
+      style="background: rgba(0, 0, 0, 1); border: none"
     >
     </vdr>
   </div>
