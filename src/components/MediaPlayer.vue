@@ -1,7 +1,18 @@
 <template>
   <div>
-    <div v-show="show" ref="top" class="top" :class="'fs-' + fs">
-      <div ref="videoCon" class="videoCon" v-show="0 != mediaType">
+    <div
+      @click="onTouch()"
+      v-show="show"
+      ref="top"
+      class="top"
+      :class="'fs-' + fs"
+    >
+      <div
+        ref="videoCon"
+        class="videoCon"
+        style="position: relative"
+        v-show="0 != mediaType"
+      >
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -18,6 +29,7 @@
         <div v-if="isAliPlayer" class="ali">
           <AliPlayer :source="videoUrl" @ended="end" :isLive="mediaType == 3" />
         </div>
+        <ResizeMask v-if="isMask" />
       </div>
       <audio
         controls
@@ -26,7 +38,10 @@
         ref="audio"
         v-show="mediaType == 0"
       />
-      <div style="position: relative; z-index: 10000">
+      <div
+        style="position: relative; z-index: 10000"
+        v-show="isMask < 2 || isTouch"
+      >
         <div :class="{ preload: preload }" id="bts" ref="bts">
           <a
             class="up"
@@ -57,14 +72,18 @@
             />
             Ali</a
           >
-          <a class="loop" :class="{ selected: isBg }" @click="isBg = !isBg">
+          <a
+            class="loop"
+            :class="{ selected: isMask }"
+            @click="isMask >= 2 ? (isMask = 0) : isMask++"
+          >
             <font-awesome-icon
-              v-show="isBg"
+              v-show="isMask"
               size="xs"
               icon="fa-solid fa-check"
             />
 
-            BG</a
+            M{{ isMask }}</a
           >
           <a class="loop">
             <select v-model="isAudio">
@@ -92,7 +111,7 @@
           /></a>
         </div>
       </div>
-      <div ref="text" class="text">
+      <div ref="text" class="text" v-show="isMask < 2">
         <a @click="clickUrl(videoUrl)" style="color: blue; cursor: pointer">{{
           title
         }}</a>
@@ -115,6 +134,7 @@ import { htmlTrans } from "@/HtmlTrans";
 import { service } from "@/service";
 
 import PlayerControllers from "../components/PlayerControllers";
+import ResizeMask from "../components/ResizeMask";
 
 import { getAndPrepareNextExtra } from "@/config";
 import { getAAduio } from "@/lib";
@@ -153,9 +173,10 @@ export default {
       isAutoScroll: true,
       playing: 0,
       sps: [],
-      isBg: 0,
+      isMask: 0,
       isAudio: !sessionStorage.isAudio ? "" : sessionStorage.isAudio,
       av: 1,
+      isTouch: 0,
     };
   },
   created() {},
@@ -168,8 +189,22 @@ export default {
       return this.$store.state.config.dict;
     },
   },
-  components: { PlayerControllers, VideoJsPlayer, AliPlayer, VideoPreload },
+  components: {
+    PlayerControllers,
+    VideoJsPlayer,
+    AliPlayer,
+    VideoPreload,
+    ResizeMask,
+  },
   methods: {
+    onTouch() {
+      clearTimeout(this.isTouch);
+
+      this.isTouch = setTimeout(() => {
+        clearTimeout(this.isTouch);
+        this.isTouch = 0;
+      }, 3000);
+    },
     initPlayer(player) {
       this.player = player;
     },
@@ -735,16 +770,7 @@ export default {
       sessionStorage.isLoop = b;
       document.querySelector("video").loop = b ? true : false;
     },
-    isBg(b) {
-      if (b) {
-        (async () => {
-          for (; this.isBg; ) await this.bg();
-          await new Promise((resolve) => {
-            setTimeout(resolve, 1000);
-          });
-        })();
-      }
-    },
+
     isAudio(b) {
       sessionStorage.isAudio = b;
 
