@@ -3,19 +3,21 @@ import axios from "axios";
 import $ from "jquery";
 import storejs from "storejs";
 
-//const appid = "20181025000225318";
-//const userkey = "s0rbKVj44RcEH9m4yXrf";
-const appid = "20220901001327423";
-let userkey = "";
+const appids = ["20221205001484671", "20181025000225318"];
+const userkeys = ["Ul_aVRQDvqQJOYHRAKDy", "s0rbKVj44RcEH9m4yXrf"];
+
 let gittoken = storejs.get("token");
 if (gittoken) {
   let arr = gittoken.split("").map((e) => e.charCodeAt(0));
-  userkey = [
-    180, 186, 227, 197, 130, 183, 120, 166, 148, 195, 177, 172, 137, 181, 132,
-    141, 155, 194, 164, 150,
-  ]
-    .map((e, i) => String.fromCharCode(e - arr[i]))
-    .join("");
+  appids.push("20220901001327423");
+  userkeys.push(
+    [
+      180, 186, 227, 197, 130, 183, 120, 166, 148, 195, 177, 172, 137, 181, 132,
+      141, 155, 194, 164, 150,
+    ]
+      .map((e, i) => String.fromCharCode(e - arr[i]))
+      .join("")
+  );
 }
 
 export function isBackground() {
@@ -95,7 +97,7 @@ export async function translate(q, opts) {
     ok = 0;
   }
   if (!ok) {
-    let ret2 = await tranApi(q);
+    let ret2 = await tranApi(q, 0);
     if (ret2) ret = Object.assign(ret, ret2);
   }
 
@@ -103,19 +105,22 @@ export async function translate(q, opts) {
   return ret;
 }
 
-async function tranApi(q) {
-  if (!userkey) return;
+async function tranApi(q, index) {
+  if (userkeys.length <= index) return;
   let salt = new Date().getTime();
   /* 待翻译文本 传入url */
   /* 从页面获取选择的目标语言 传入url */
   /* md5加密，生成签名 */
+  let appid = appids[index];
+  let userkey = userkeys[index];
+  console.log(appid, userkey);
   var sign = md5(appid + q + salt + userkey);
 
   var from = "en";
   var to = "zh";
   let type = isBackground() ? "json" : "jsonp";
 
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < 1; i++) {
     try {
       let ret = await new Promise((resolve, reject) => {
         $.ajax({
@@ -135,11 +140,20 @@ async function tranApi(q) {
           },
           success: function (data) {
             console.log(data);
-            console.log(data.trans_result[0].dst);
-            resolve({
-              q: data.trans_result[0].src,
-              to: data.trans_result[0].dst,
-            });
+
+            if (!data.trans_result && data.error_code) {
+              setTimeout(() => {
+                tranApi(q, ++index)
+                  .then((r) => resolve(r))
+                  .catch((r) => reject(r));
+              }, 300);
+            } else {
+              console.log(data.trans_result[0].dst);
+              resolve({
+                q: data.trans_result[0].src,
+                to: data.trans_result[0].dst,
+              });
+            }
           },
           error: function (err) {
             reject(err);
