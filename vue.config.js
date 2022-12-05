@@ -225,7 +225,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?\/(clips|\d{4}\/\d{2}\/\d{2})\/.*m3u8/,
+          urlPattern: /.*?m3u8.*?/,
           handler: "cacheFirst",
           method: "GET",
           options: {
@@ -259,7 +259,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?\/(clips|\d{4}\/\d{2}\/\d{2})\/.*?\.(ts|aac).*?/,
+          urlPattern: /.*?(aac).*?/,
           handler: "cacheFirst",
           method: "GET",
 
@@ -269,6 +269,20 @@ module.exports = {
               maxAgeSeconds: 86400 * 5,
             },
             cacheName: "vcache",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*?(ts).*?/,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 2,
+            },
+            cacheName: "vcache2",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
