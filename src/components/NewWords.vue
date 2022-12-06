@@ -36,15 +36,10 @@
     </div>
 
     <div class="bottom">
-      <label>
-        <input
-          type="checkbox"
-          @mouseup.stop=""
-          v-model="autoplaynew"
-          :checked="autoplaynew"
-        />
-        Play
-      </label>
+      <a @click="autoplaynew = autoplaynew > 2 ? 0 : autoplaynew + 1"
+        >Play{{ autoplaynew }}</a
+      >
+
       <select v-model="playNum" @change="changePlayNum($event)">
         <option value="0">All</option>
         <option value="10">10</option>
@@ -82,7 +77,7 @@ export default {
     return {
       pageSize: 5,
       page: 1,
-      autoplaynew: false,
+      autoplaynew: 0,
       curPlay: "",
       isSpell: false,
       playNum: 0,
@@ -159,7 +154,7 @@ export default {
         );
       });
     },
-    playSound(item, wait, lan = "en") {
+    async playSound(item, wait, lan = "en") {
       let self = this;
       let content = lan == "en" ? item.q : self.cn(item);
 
@@ -208,6 +203,7 @@ export default {
           this.toPage(Math.floor(i / this.pageSize) + 1);
           this.$store.commit("curPlay", list[i]);
           this.curPlay = list[i].q;
+          console.error(this.curPlay);
           await this.playSound(list[i], true);
           if (this.isSpell) {
             await this.sleep(1000);
@@ -216,7 +212,7 @@ export default {
             for (let d = 0; d < chars.length; d++)
               await this.tts("en", chars[d], true, 6);
           }
-          await this.playSound(list[i], true, "zh");
+          if (this.autoplaynew == 2) await this.playSound(list[i], true, "zh");
           await this.sleep(1000);
         }
 

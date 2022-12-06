@@ -423,7 +423,7 @@ let serviceMap = {
     if (
       request.speeker != "YD" &&
       (config.autoSound == "BD" ||
-        (config.autoSound != "BD" && lastAutoSound !== "YD"))
+        (config.autoSound == "auto" && lastAutoSound !== "YD"))
     ) {
       let TTS = "https://fanyi.baidu.com";
       let src = `${TTS}/gettts?lan=${lan}&text=${encodeURIComponent(
@@ -433,10 +433,11 @@ let serviceMap = {
     } else if (
       request.speeker != "BD" &&
       (config.autoSound == "YD" ||
-        (config.autoSound != "YD" && lastAutoSound != "BD"))
+        (config.autoSound == "auto" && lastAutoSound != "BD"))
     ) {
       if (lan != "en") {
         sendResponse({});
+        return;
       } else
         audio.src =
           "https://dict.youdao.com/dictvoice?audio=" +
@@ -453,18 +454,26 @@ let serviceMap = {
       sendResponse({});
     };
     let onError = function () {
-      lastAutoSound = lastAutoSound == "BD" ? "YD" : "BD";
+      if (!config.autoSound)
+        lastAutoSound = lastAutoSound == "BD" ? "YD" : "BD";
+      console.log("error on");
       onEnded();
     };
     audio.onerror = onError;
 
-    setTimeout(() => {
+    let timer = setTimeout(() => {
       if (!ok && audio.currentTime == 0) {
         onError();
       }
-    }, 1000);
+    }, 3000);
+    audio.onloadeddata = function () {
+      console.error("cancel timer");
+      ok = 1;
+      clearTimeout(timer);
+    };
 
     audio.onended = onEnded;
+    console.error(request.wait);
     if (request.wait) {
       audio.play();
 
