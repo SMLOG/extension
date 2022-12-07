@@ -329,4 +329,8 @@ export default {
 #root_1 >>> select {
   color: black !important;
 }
+.curPlay,
+#root_1 {
+  font-size: 1.4em;
+}
 </style>

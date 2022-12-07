@@ -7,6 +7,7 @@
         <span @click="refresh(true)"
           >Refresh<span v-if="refreshIndicator">...</span></span
         >
+        <span class="version"> {{ version }}</span>
       </div>
     </div>
     <div
@@ -137,6 +138,7 @@ import { mapState } from "vuex";
 import $ from "jquery";
 import { service } from "@/service";
 import storejs from "storejs";
+import { version } from "@/version";
 export default {
   data() {
     return {
@@ -149,6 +151,7 @@ export default {
       refreshIndicator: 0,
       transHtml: storejs.get("transHtml"),
       uploadDate: "",
+      version: version,
 
       config: {
         fzWords: 0,
@@ -334,5 +337,9 @@ label {
   display: inline-block;
   border-bottom: 1px solid white;
   margin-right: 5px;
+}
+.version {
+  font-size: 40%;
+  float: right;
 }
 </style>
