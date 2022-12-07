@@ -420,29 +420,29 @@ let serviceMap = {
     let config = getConf();
     let content = request.content;
 
+    let BDTTS = `https://fanyi.baidu.com/gettts?lan=${lan}&text=${encodeURIComponent(
+      content
+    )}&spd=${speed}&source=web`;
+
+    let YDTTS =
+      "https://dict.youdao.com/dictvoice?audio=" +
+      encodeURIComponent(content) +
+      "&type=2";
     if (
-      request.speeker != "YD" &&
-      (config.autoSound == "BD" ||
-        (config.autoSound == "auto" && lastAutoSound !== "YD"))
+      request.speeker == "BD" ||
+      config.autoSound == "BD" ||
+      (config.autoSound == "auto" && lastAutoSound != "YD")
     ) {
-      let TTS = "https://fanyi.baidu.com";
-      let src = `${TTS}/gettts?lan=${lan}&text=${encodeURIComponent(
-        content
-      )}&spd=${speed}&source=web`;
-      audio.src = src;
+      audio.src = BDTTS;
     } else if (
-      request.speeker != "BD" &&
-      (config.autoSound == "YD" ||
-        (config.autoSound == "auto" && lastAutoSound != "BD"))
+      request.speeker == "YD" ||
+      config.autoSound == "YD" ||
+      (config.autoSound == "auto" && lastAutoSound == "YD")
     ) {
       if (lan != "en") {
         sendResponse({});
         return;
-      } else
-        audio.src =
-          "https://dict.youdao.com/dictvoice?audio=" +
-          encodeURIComponent(content) +
-          "&type=2";
+      } else audio.src = YDTTS;
     }
 
     let tryTimes = 1;
@@ -452,11 +452,21 @@ let serviceMap = {
 
       sendResponse({});
     };
-    let onError = function () {
-      if (!config.autoSound && tryTimes < 5) {
+    let onError = function (ee) {
+      console.error(audio.src);
+      console.error(ee);
+      if (config.autoSound && tryTimes > 0 && tryTimes < 5) {
         lastAutoSound = lastAutoSound == "BD" ? "YD" : "BD";
         tryTimes++;
+        try {
+          let src = lastAutoSound == "BD" ? BDTTS : YDTTS;
+          console.log(src);
+          audio.src = src;
+        } catch (eee) {
+          console.error(eee);
+        }
         audio.play();
+        return;
       }
       console.log("error on");
       onEnded();
@@ -464,14 +474,17 @@ let serviceMap = {
     audio.onerror = onError;
 
     let timer = setTimeout(() => {
-      if (!tryTimes && audio.currentTime == 0) {
+      console.log("timerout");
+      if (tryTimes && audio.currentTime == 0) {
         onError();
       }
     }, 3000);
     audio.onloadeddata = function () {
-      console.error("cancel timer");
-      tryTimes = 0;
-      clearTimeout(timer);
+      console.error("cancel timer" + audio.duration);
+      if (!isNaN(audio.duration)) {
+        tryTimes = 0;
+        clearTimeout(timer);
+      }
     };
 
     audio.onended = onEnded;
