@@ -229,7 +229,7 @@ export default {
         if (a.indexOf("show") == 0 && this.config[a]) {
           modules.push(a.substring(4));
         }
-
+      modules.sort().reverse();
       (async () => {
         for (let i = 0; i < modules.length; i++) {
           await Promise.all([

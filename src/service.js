@@ -445,30 +445,32 @@ let serviceMap = {
           "&type=2";
     }
 
-    let ok = 0;
+    let tryTimes = 1;
 
     let onEnded = function () {
-      if (!ok) {
-        ok = 1;
-      }
+      tryTimes = 0;
+
       sendResponse({});
     };
     let onError = function () {
-      if (!config.autoSound)
+      if (!config.autoSound && tryTimes < 5) {
         lastAutoSound = lastAutoSound == "BD" ? "YD" : "BD";
+        tryTimes++;
+        audio.play();
+      }
       console.log("error on");
       onEnded();
     };
     audio.onerror = onError;
 
     let timer = setTimeout(() => {
-      if (!ok && audio.currentTime == 0) {
+      if (!tryTimes && audio.currentTime == 0) {
         onError();
       }
     }, 3000);
     audio.onloadeddata = function () {
       console.error("cancel timer");
-      ok = 1;
+      tryTimes = 0;
       clearTimeout(timer);
     };
 
