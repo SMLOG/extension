@@ -205,6 +205,9 @@ export default {
           this.curPlay = list[i].q;
           console.error(this.curPlay);
           await this.playSound(list[i], true);
+
+          if (this.autoplaynew == 2) await this.playSound(list[i], true);
+
           if (this.isSpell) {
             await this.sleep(1000);
             let chars = this.curPlay.split("").map((e) => e);
@@ -212,7 +215,7 @@ export default {
             for (let d = 0; d < chars.length; d++)
               await this.tts("en", chars[d], true, 6);
           }
-          if (this.autoplaynew == 2) await this.playSound(list[i], true, "zh");
+          if (this.autoplaynew == 3) await this.playSound(list[i], true, "zh");
           await this.sleep(1000);
         }
 
