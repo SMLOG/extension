@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="font-size: 0.8em; color: white">
-      <div class="tools">
+      <div class="t_1">
         <span><input type="checkbox" @click="toggleHl()" />HL</span>
         <span @click="showSetting = !showSetting"> Setting </span>
         <span @click="refresh(true)"
@@ -317,15 +317,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.tools {
+.t_1 {
   text-align: left;
   user-select: none;
 }
-.tools > * {
+.t_1 > * {
   margin: 3px;
   color: white;
 }
-.tools > span {
+.t_1 > span {
   display: inline-block;
   cursor: pointer;
 }
