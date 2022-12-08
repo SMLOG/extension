@@ -53,7 +53,7 @@ export default {
 
       service(null, { cmd: "newWord", content: this.curItem }, (resp) => {
         // this.$store.commit("setCurItem", resp.contents);
-        this.$store.commit("newWord", resp.contents);
+        if (resp) this.$store.commit("newWord", resp.contents);
       });
     },
     updateItem() {
@@ -195,7 +195,9 @@ export default {
           .replace(/\s+/g, " ")
           .trim();
 
-        if (!text || text.length == 0) return;
+        if (!text || text.length == 0 || text.length > 120) return;
+        let chars = text.match(/[a-z]/gi);
+        if (!chars) return;
         if (text.length > 500) {
           text = text.substring(0, 500);
         }

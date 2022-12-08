@@ -127,7 +127,9 @@ async function tranApi(q, index) {
           url: "https://api.fanyi.baidu.com/api/trans/vip/translate",
           type: "get",
           dataType: type,
+          jsonpCallback: "jcb",
           timeout: 5000,
+          cache: 1,
           data: {
             q: q,
             appid: appid,

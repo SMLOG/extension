@@ -43,6 +43,7 @@ let json2jsonpProxy = async function (enable, url) {
         dataType: "jsonp",
         jsonp: "callback",
         jsonpCallback: "jsonpCb",
+        cache: 1,
         success: (data) => {
           resolve(data);
         },
@@ -73,6 +74,8 @@ const translators = [
       $.ajax({
         url: `https://fanyi.youdao.com/openapi.do`,
         type: "GET",
+        jsonpCallback: "jcby",
+        cache: 1,
         data: {
           keyfrom: "wangtuizhijia",
           key: "1048394636",
@@ -118,7 +121,7 @@ const translators = [
       Object.assign(ret, local);
     } else {
       let r = await json2jsonpProxy(
-        1,
+        isBackground() ? 0 : 1,
         `https://dict.iciba.com/dictionary/word/suggestion?word=${encodeURIComponent(
           content.q
         )}&nums=1&timestamp=0&is_need_mean=1`

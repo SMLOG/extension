@@ -241,12 +241,14 @@ export default {
                 null,
                 { cmd: "lists", force: force, type: modules[i] },
                 (resp) => {
-                  if (resp.done) {
-                    resolve();
-                  }
-                  if (resp.contents) {
-                    console.error(modules[i], resp.contents);
-                    self.$store.commit(modules[i], resp.contents);
+                  if (resp) {
+                    if (resp.done) {
+                      resolve();
+                    }
+                    if (resp.contents) {
+                      console.error(modules[i], resp.contents);
+                      self.$store.commit(modules[i], resp.contents);
+                    }
                   }
                 }
               );

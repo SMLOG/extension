@@ -22,7 +22,7 @@
         "css/chunk-common.css",
         "css/content-script.css"
       ],
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["http://*/*", "https://*/*", "file:///*/*", "<all_urls>"],
       "all_frames": false
     }
   ],

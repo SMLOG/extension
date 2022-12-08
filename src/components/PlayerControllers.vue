@@ -130,7 +130,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 2.5rem;
 }
 .is-marginless {
   margin: 0 !important;
