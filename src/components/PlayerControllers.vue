@@ -101,7 +101,7 @@ export default {
 .vb_1.is-fixed-bottom {
   bottom: 0;
 }
-.hover .vb_1.is-fixed-bottom {
+.hover.vb_1.is-fixed-bottom {
   right: 0;
 }
 .vb_1.is-fixed-bottom,

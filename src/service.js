@@ -15,8 +15,7 @@ window.pako = pako;
 const RWORD = "words";
 const NWORD = "nwords";
 let lastAutoSound = "";
-//import sounds from "@/../public/3s.mp3";
-//console.log(sounds);
+
 const jsonparse = JSON.parse;
 let mya = $(
   `<iframe id="myaudio" style="display:none;" referrerpolicy="no-referrer" />`
@@ -27,7 +26,7 @@ window.pako = pako;
 window.storejs = storejs;
 let currentDoc = ifr.contentDocument || ifr.contentWindow.document;
 currentDoc.body.innerHTML = `<audio id="sound" controls "></audio>
-<audio id="bg" controls src="3s.mp3"  ></audio>`;
+<audio id="bg" controls  ></audio>`;
 
 let audio = currentDoc.querySelector("audio#sound");
 let bgAudio = currentDoc.querySelector("audio#bg");
