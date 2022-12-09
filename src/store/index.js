@@ -22,6 +22,7 @@ export default new Vuex.Store({
       mj: 0,
       preload: 0,
       dict: 0,
+      news: 0,
     },
     curItem: {
       q: "",

@@ -101,6 +101,14 @@
               v-model="config.dict"
               @change="updateConfig()"
           /></label>
+
+          <label>
+            News
+            <input
+              type="checkbox"
+              v-model="config.news"
+              @change="updateConfig()"
+          /></label>
         </div>
 
         <div
@@ -162,6 +170,7 @@ export default {
         autoSound: 0,
         preload: 0,
         dict: 0,
+        news: 0,
       },
     };
   },

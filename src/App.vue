@@ -12,7 +12,7 @@
       </div>
 
       <MediaPlayer />
-      <news2 />
+      <news2 v-if="news" />
     </div>
     <div id="root_1" ref="root" :style="{ zIndex: zIndex }" v-show="showApp">
       <div id="nav" ref="rootnav">
@@ -236,9 +236,9 @@ export default {
 
   computed: {
     ...mapState(["curTab", "showApp", "curItem", "curPlay", "loading"]),
-    /* showNews() {
-      return this.$store.state.config.showNews;
-    },*/
+    news() {
+      return this.$store.state.config.news;
+    },
   },
   watch: {
     showApp(n) {
@@ -282,13 +282,20 @@ export default {
   text-align: center;
   color: #2c3e50;
   position: absolute;
-  top: 100px;
+  top: 70px;
   right: 0;
   z-index: 100000;
   max-width: 500px;
   padding: 2px;
   background: gray;
   max-width: 100%;
+  max-height: calc(100vh - 70px);
+}
+
+@media (max-width: 420px) {
+  #root_1 {
+    width: calc(100% - 3px);
+  }
 }
 
 #root_1 #nav {
@@ -317,9 +324,9 @@ export default {
 .curPlay {
   position: fixed;
   right: 10px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   color: green;
-  padding: 5px;
+  padding: 10px;
   top: 0;
   z-index: 100000;
 }

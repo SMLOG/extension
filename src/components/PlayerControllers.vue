@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{ hover: isM() || isHover }"
-    class="navbar is-fixed-bottom is-hidden-desktop"
+    class="vb_1 is-fixed-bottom is-hidden-desktop"
     @mouseenter="isHover = 1"
     @mouseleave="isHover = 0"
   >
@@ -89,23 +89,23 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
+.vb_1 {
   background-color: #fff;
   position: relative;
   z-index: 10001;
 }
-.navbar.is-fixed-bottom {
+.vb_1.is-fixed-bottom {
   box-shadow: 0 -3px 15px #999;
   min-height: 40px;
 }
-.navbar.is-fixed-bottom {
+.vb_1.is-fixed-bottom {
   bottom: 0;
 }
-.hover.navbar.navbar.is-fixed-bottom {
+.hover .vb_1.is-fixed-bottom {
   right: 0;
 }
-.navbar.is-fixed-bottom,
-.navbar.is-fixed-top {
+.vb_1.is-fixed-bottom,
+.vb_1.is-fixed-top {
   position: fixed;
   right: calc(30px - 100%);
 
@@ -124,7 +124,7 @@ export default {
 .columns.is-mobile {
   display: flex;
 }
-.navbar.is-fixed-bottom .column {
+.vb_1.is-fixed-bottom .column {
   cursor: pointer;
   padding: 0.25rem;
   display: flex;
