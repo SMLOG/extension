@@ -200,8 +200,20 @@ export default {
         "top",
         dockside ? $(".text").offset().top + "px" : "auto"
       );
-      if (n && dockside) {
-        $(".text").css("width", "75%");
+      if (n) {
+        if (dockside) {
+          $(".text").css({
+            width: ww != vw ? Math.min(ww * 0.75, vw) + "px" : "75%",
+          });
+          $(this.$refs.curWs).css({
+            left: "auto",
+            right: "0",
+          });
+        } else
+          $(this.$refs.curWs).css({
+            left: $(".text").outerWidth() + "px",
+            right: "auto",
+          });
       } else {
         $(".text").css("width", "100%");
       }
