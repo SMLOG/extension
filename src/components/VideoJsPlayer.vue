@@ -247,6 +247,7 @@ export default {
 .video-js ::cue {
   font-size: 1.5em;
   width: 90%;
+  background: rgba(0, 0, 0, 0.8);
 }
 video::cue(u),
 .video-js >>> .vjs-text-track-cue u {

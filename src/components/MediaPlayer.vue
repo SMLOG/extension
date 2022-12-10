@@ -885,7 +885,7 @@ video::cue(i),
   border: 1px solid #ccc;
   border-radius: 4px;
 
-  padding: 10px 20px 10px 10px;
+  padding: 8px;
   overflow: overlay;
   box-sizing: border-box;
   text-align: left;

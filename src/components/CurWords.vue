@@ -1,5 +1,5 @@
 <template>
-  <div class="curWs">
+  <div class="curWs" ref="curWs">
     <div
       style="
         position: fixed;
@@ -9,12 +9,13 @@
         width: 1em;
       "
     >
+      <span v-show="autoplaynew">{{ autoplaynew }}</span>
       <font-awesome-icon
         @click="autoplaynew = autoplaynew > 2 ? 0 : autoplaynew + 1"
         icon="arrow-circle-down"
         fixed-width
         v-show="show"
-      />
+      ></font-awesome-icon>
 
       <font-awesome-icon
         @click="show = !show"
@@ -55,7 +56,7 @@
 import { mapState } from "vuex";
 import { service } from "@/service";
 import bus from "@/bus";
-
+import $ from "jquery";
 export default {
   data() {
     return {
@@ -190,6 +191,21 @@ export default {
         this.autoPlayNew();
       }
     },
+    show(n) {
+      let ww = $(window).width();
+      let vw = $(".videoCon").width();
+      let dockside = vw > 0 && ww - vw < ww * 0.25;
+
+      $(this.$refs.curWs).css(
+        "top",
+        dockside ? $(".text").offset().top + "px" : "auto"
+      );
+      if (n && dockside) {
+        $(".text").css("width", "75%");
+      } else {
+        $(".text").css("width", "100%");
+      }
+    },
   },
 };
 </script>
@@ -225,7 +241,7 @@ table tr:nth-child(even) {
 .curWs {
   position: fixed;
   z-index: 100000;
-  background: rgba(255, 255, 255, 0.8);
+  background: #f5f5f5;
   bottom: 50px;
   right: 0;
   padding-left: 3px;
@@ -233,5 +249,9 @@ table tr:nth-child(even) {
   overflow: auto;
   max-width: 25%;
   user-select: none;
+  border-left: 2px dashed #ccc;
+}
+.curWs > div:not(:last-child) {
+  border-bottom: 1px solid #ccc;
 }
 </style>
