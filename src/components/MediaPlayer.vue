@@ -130,7 +130,7 @@
 import $ from "jquery";
 import { mapState } from "vuex";
 import bus from "@/bus";
-import { htmlTrans } from "@/HtmlTrans";
+import { htmlTrans2 } from "@/HtmlTrans";
 import { service } from "@/service";
 
 import PlayerControllers from "../components/PlayerControllers";
@@ -235,15 +235,12 @@ export default {
             let beg = parseInt(cue.startTime);
             let end = parseInt(cue.endTime);
             //console.log(cue.text);
-            let t = `<span begin="${beg}" end="${end}">${htmlTrans(
+            let t = `<span begin="${beg}" end="${end}">${this.textAddNewMarks(
               this.words,
               cue.text,
               false
             ).replace(/^(\s*[A-Z][^A-Z]+)/g, "<br />$1")}</span> `;
             a.unshift(t);
-            // console.log(cue.text);
-            //  console.log(t);
-            // window.htmlTrans = htmlTrans;
           }
           if (a.length > 0) {
             //arr.push(...a);
@@ -385,8 +382,13 @@ export default {
     },
     markNewWords(t) {
       var dict = this.words;
-      window.words = dict;
-      this.text = htmlTrans(dict, t.replace(/\n/g, "<br />"));
+      this.text = this.textAddNewMarks(dict, t.replace(/\n/g, "<br />"));
+    },
+    textAddNewMarks(dict, orgContent, b) {
+      let ret = htmlTrans2(dict, orgContent, b);
+      this.$store.commit("add2CurWords", [ret[1]]);
+
+      return ret[0];
     },
     ajustTextHeight() {
       var topDom = this.$refs.text;
@@ -553,7 +555,7 @@ export default {
           return 1;
         }
         if (raw.trim()) {
-          raw = htmlTrans(this.words, raw, false);
+          raw = this.textAddNewMarks(this.words, raw, false);
         }
         if (this.cc) {
           text = this.trans(raw);
@@ -629,7 +631,7 @@ export default {
     },
     async loadVideo(item, mediaType, nextItem) {
       let skip = 0;
-
+      this.$store.commit("add2CurWords", [[], 1]);
       await getAndPrepareNextExtra(item, mediaType, nextItem);
 
       this.onCuesChangeSync2 = 0;

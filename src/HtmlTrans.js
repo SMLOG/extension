@@ -1,4 +1,7 @@
 export function htmlTrans(dict, str) {
+  return htmlTrans2(dict, str)[0];
+}
+export function htmlTrans2(dict, str) {
   //let str = q + " ";
   var dictMap = dict.reduce((map, cur) => {
     map[cur.q] = cur;
@@ -20,7 +23,9 @@ export function htmlTrans(dict, str) {
     return false;
   };
 
+  let curWords = [];
   let template = (q, to) => {
+    curWords.push(dictMap[to]);
     return `<em class="newWord"><i class="newWorda">${q}</i><u class="newWordb">${
       dictMap[to].to
     } <b class="newWordc">${
@@ -143,7 +148,7 @@ export function htmlTrans(dict, str) {
   }
 
   // console.log(cons.join("\n"));
-  return cons.join("");
+  return [cons.join(""), curWords];
 }
 /**
  * var str =

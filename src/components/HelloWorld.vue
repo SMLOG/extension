@@ -197,12 +197,11 @@ export default {
 
         if (!text || text.length == 0 || text.length > 120) return;
         let chars = text.match(/[a-z]/gi);
-        if (!chars) return;
+        if (!chars || /[\u4e00-\u9fa5]/.test(text) || /\//.test(text)) return;
+
         if (text.length > 500) {
           text = text.substring(0, 500);
         }
-        if (/[\u4e00-\u9fa5]/.test(text)) return;
-        if (/^http[s]?:/.test(text)) return;
 
         this.$store.commit("setShowApp", true);
         this.updatePos();
@@ -225,33 +224,34 @@ export default {
 
         this.$store.commit("setCurTab", "HelloWorld");
         this.$store.commit("setCurItem", item);
-
-        this.sendMessage(
-          null,
-          { cmd: "translate", content: item },
-          function (response) {
-            console.log(response);
-
-            if (response) {
-              if (!item.to && response.length > 0) {
-                let _toList = response.filter((e) => e.to != undefined);
-                item.to = _toList.length > 0 ? _toList[0].to : "";
-              }
-              if (!item.en && response.length > 0) {
-                let _toList = response.filter((e) => e.en != undefined);
-                item.en = _toList.length > 0 ? _toList[0].en : "";
-                item.am = _toList.length > 0 ? _toList[0].am : "";
-              }
-
-              item._toList = response;
-
+        if (chars.length > 1) {
+          this.sendMessage(
+            null,
+            { cmd: "translate", content: item },
+            function (response) {
               console.log(response);
-              vue.$store.commit("setCurItem", item);
-              console.log(item);
+
+              if (response) {
+                if (!item.to && response.length > 0) {
+                  let _toList = response.filter((e) => e.to != undefined);
+                  item.to = _toList.length > 0 ? _toList[0].to : "";
+                }
+                if (!item.en && response.length > 0) {
+                  let _toList = response.filter((e) => e.en != undefined);
+                  item.en = _toList.length > 0 ? _toList[0].en : "";
+                  item.am = _toList.length > 0 ? _toList[0].am : "";
+                }
+
+                item._toList = response;
+
+                console.log(response);
+                vue.$store.commit("setCurItem", item);
+                console.log(item);
+              }
             }
-          }
-        );
-        vue.playSound(item);
+          );
+          vue.playSound(item);
+        }
       }, 500);
     },
   },

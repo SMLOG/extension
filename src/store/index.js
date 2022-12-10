@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+let curWordsMap = {};
 export default new Vuex.Store({
   state: {
     loading: 0,
@@ -38,6 +39,7 @@ export default new Vuex.Store({
       tos: [],
     },
     words: [],
+    curWords: [],
     videos: [],
     news: [],
   },
@@ -84,6 +86,16 @@ export default new Vuex.Store({
     words(state, words) {
       state.words = words;
     },
+    add2CurWords(state, [words, reset]) {
+      if (reset) state.curWords.length = 0;
+      for (let word of words) {
+        if (!curWordsMap[word.q]) {
+          curWordsMap[word.q] = 1;
+          state.curWords.push(word);
+        }
+      }
+    },
+
     videos(state, videos) {
       let ctime = +new Date() - 604800000;
 
