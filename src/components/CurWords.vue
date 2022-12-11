@@ -14,26 +14,26 @@
         @click="autoplaynew = autoplaynew > 2 ? 0 : autoplaynew + 1"
         icon="arrow-circle-down"
         fixed-width
-        v-show="show"
+        v-show="showCurWords"
       ></font-awesome-icon>
 
       <font-awesome-icon
-        @click="show = !show"
+        @click="setShowCurWords(!showCurWords)"
         icon="arrow-circle-left"
         fixed-width
-        v-show="!show"
+        v-show="!showCurWords"
       />
       <font-awesome-icon
-        @click="show = !show"
+        @click="setShowCurWords(!showCurWords)"
         icon="arrow-circle-right"
         fixed-width
-        v-show="show"
+        v-show="showCurWords"
       />
 
       <font-awesome-icon @click="showApp()" icon="eye" fixed-width />
     </div>
     <div
-      v-show="show"
+      v-show="showCurWords"
       v-for="w in curWords"
       :key="w.q"
       :class="{ cur: w.q == curPlay }"
@@ -62,9 +62,6 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      show: 0,
-      pageSize: 5,
-      page: 1,
       autoplaynew: 0,
       curPlay: "",
       isSpell: false,
@@ -73,9 +70,12 @@ export default {
   },
   created() {},
   computed: {
-    ...mapState(["curWords"]),
+    ...mapState(["curWords", "showCurWords"]),
   },
   methods: {
+    setShowCurWords(b) {
+      this.$store.commit("setShowCurWords", b);
+    },
     showApp() {
       console.log("error");
       setTimeout(() => {
@@ -156,14 +156,14 @@ export default {
         setTimeout(resolve, t);
       });
     },
-    async autoPlayNew() {
+    async autoPlayNew(b) {
       let list = this.curWords;
       let end = list.length;
 
       let st = 0;
 
       for (let i = 0; i < Math.min(end, list.length); i++) {
-        if (!this.autoplaynew) {
+        if (!b && !this.autoplaynew) {
           this.curPlay = "";
 
           return;
@@ -199,6 +199,12 @@ export default {
     bus.$on("newWord", (item) => {
       this.$store.commit("add2CurWords", [[item]]);
     });
+    bus.$on("playCurWords", () => {
+      (async () => {
+        await this.autoPlayNew(1);
+        bus.$emit("finishPlayCurWords");
+      })();
+    });
   },
 
   watch: {
@@ -207,7 +213,7 @@ export default {
         this.autoPlayNew();
       }
     },
-    show(n) {
+    showCurWords(n) {
       let ww = $(window).width();
       let vw = $(".videoCon").width();
       let dockside = vw > 0 && ww - vw < ww * 0.25;

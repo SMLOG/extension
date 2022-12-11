@@ -19,7 +19,7 @@
             @cuechange="cuechange"
             @initPlayer="initPlayer"
             :cc="cc"
-            @ended="end"
+            @ended="next"
             :title="title"
             :mediaItem="item"
             @timeupdate="LseqNext"
@@ -27,7 +27,11 @@
           <VideoPreload :isAudio="isAudio" :preload="preload" />
         </div>
         <div v-if="isAliPlayer" class="ali">
-          <AliPlayer :source="videoUrl" @ended="end" :isLive="mediaType == 3" />
+          <AliPlayer
+            :source="videoUrl"
+            @ended="next"
+            :isLive="mediaType == 3"
+          />
         </div>
         <ResizeMask v-if="isMask" />
       </div>
@@ -181,7 +185,7 @@ export default {
   },
   created() {},
   computed: {
-    ...mapState(["curItem", "words"]),
+    ...mapState(["curItem", "words", "showCurWords"]),
     preload() {
       return this.$store.state.config.preload;
     },
@@ -399,7 +403,18 @@ export default {
     },
     next() {
       console.log("next");
-      this.end(0);
+      if (this.isLoop == "" && this.showCurWords) {
+        (async () => {
+          await new Promise((resolve) => {
+            bus.$once("finishPlayCurWords", () => {
+              console.log("finishPlayCurWords");
+              resolve();
+            });
+            bus.$emit("playCurWords");
+          });
+          this.end(0);
+        })();
+      } else this.end(0);
     },
     prev() {
       this.end(1);
