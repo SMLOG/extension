@@ -1,5 +1,5 @@
 <template>
-  <div class="curWs" ref="curWs">
+  <div>
     <div
       style="
         position: fixed;
@@ -7,14 +7,17 @@
         bottom: 100px;
         cursor: pointer;
         width: 1em;
+        z-index: 10001;
+        opacity: 0.2;
       "
     >
-      <span v-show="autoplaynew">{{ autoplaynew }}</span>
+      <span v-show="playMode">{{ playMode }}</span>
       <font-awesome-icon
-        @click="autoplaynew = autoplaynew > 2 ? 0 : autoplaynew + 1"
-        icon="arrow-circle-down"
+        @click="togglePlayAndMode()"
+        icon="volume-low"
         fixed-width
         v-show="showCurWords"
+        size="lg"
       ></font-awesome-icon>
 
       <font-awesome-icon
@@ -22,32 +25,37 @@
         icon="arrow-circle-left"
         fixed-width
         v-show="!showCurWords"
+        size="lg"
       />
       <font-awesome-icon
         @click="setShowCurWords(!showCurWords)"
         icon="arrow-circle-right"
         fixed-width
         v-show="showCurWords"
+        size="lg"
       />
 
-      <font-awesome-icon @click="showApp()" icon="eye" fixed-width />
+      <font-awesome-icon @click="showApp()" icon="eye" fixed-width size="lg" />
     </div>
-    <div
-      v-show="showCurWords"
-      v-for="w in curWords"
-      :key="w.q"
-      :class="{ cur: w.q == curPlay }"
-      style="padding: 5px 0"
-    >
-      <div :class="{ detach: !w.i & w.n, remove: !w.n }">
-        <div @click="playSound(w)" style="cursor: pointer">
-          {{ w.q }}
-          <b v-if="w.am"> [{{ w.am }}]</b>
-        </div>
-        <div style="font-weight: bold">
-          <span style="cursor: pointer" @click="toggleItemIsNew(w, $event)">{{
-            w.to
-          }}</span>
+
+    <div class="curWs" ref="curWs">
+      <div
+        v-show="showCurWords"
+        v-for="w in curWords"
+        :key="w.q"
+        :class="{ cur: w.q == curPlay }"
+        style="padding: 5px 0"
+      >
+        <div :class="{ detach: !w.i & w.n, remove: !w.n }">
+          <div @click="playSound(w)" style="cursor: pointer">
+            {{ w.q }}
+            <b v-if="w.am"> [{{ w.am }}]</b>
+          </div>
+          <div style="font-weight: bold">
+            <span style="cursor: pointer" @click="toggleItemIsNew(w, $event)">{{
+              w.to
+            }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +69,8 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      autoplaynew: 0,
+      playMode: 0,
+      playing: 0,
       curPlay: "",
       isSpell: false,
       playNum: 0,
@@ -72,6 +81,15 @@ export default {
     ...mapState(["curWords", "showCurWords"]),
   },
   methods: {
+    togglePlayAndMode() {
+      if (this.playMode >= 3) {
+        this.playMode = 1;
+        this.playing = 0;
+      } else {
+        this.playMode = this.playMode + 1;
+        this.playing += 1;
+      }
+    },
     setShowCurWords(b) {
       this.$store.commit("setShowCurWords", b);
     },
@@ -110,7 +128,7 @@ export default {
       let st = 0;
 
       for (let i = 0; i < Math.min(end, list.length); i++) {
-        if (!b && !this.autoplaynew) {
+        if (!b && !this.playing) {
           this.curPlay = "";
 
           return;
@@ -128,7 +146,7 @@ export default {
         console.error(this.curPlay);
         await this.playSound(list[i], true);
 
-        if (this.autoplaynew == 2) await this.playSound(list[i], true);
+        if (this.playMode == 2) await this.playSound(list[i], true);
 
         if (this.isSpell) {
           await this.sleep(1000);
@@ -137,7 +155,7 @@ export default {
           for (let d = 0; d < chars.length; d++)
             await this.tts("en", chars[d], true, 6);
         }
-        if (this.autoplaynew == 3) await this.playSound(list[i], true, "zh");
+        if (this.playMode == 3) await this.playSound(list[i], true, "zh");
         await this.sleep(1000);
       }
     },
@@ -159,7 +177,7 @@ export default {
   },
 
   watch: {
-    autoplaynew(n) {
+    playing(n) {
       if (n) {
         this.autoPlayNew();
       }
@@ -225,7 +243,7 @@ table tr:nth-child(even) {
 
 .curWs {
   position: fixed;
-  z-index: 100000;
+  z-index: 10000;
   background: #f5f5f5;
   bottom: 50px;
   right: 0;

@@ -25,8 +25,8 @@ let ifr = mya[0];
 window.pako = pako;
 window.storejs = storejs;
 let currentDoc = ifr.contentDocument || ifr.contentWindow.document;
-currentDoc.body.innerHTML = `<audio id="sound" controls "></audio>
-<audio id="bg" controls  ></audio>`;
+currentDoc.body.innerHTML = `<audio id="sound" controls" ></audio>
+<audio id="bg" controls src="3s.mp3" ></audio>`;
 
 let audio = currentDoc.querySelector("audio#sound");
 let bgAudio = currentDoc.querySelector("audio#bg");
@@ -467,7 +467,12 @@ let serviceMap = {
         } catch (eee) {
           console.error(eee);
         }
-        audio.play();
+        try {
+          audio.play();
+        } catch (e1) {
+          console.log("error on");
+          onEnded();
+        }
         return;
       }
       console.log("error on");
@@ -492,11 +497,21 @@ let serviceMap = {
     audio.onended = onEnded;
     console.error(request.wait);
     if (request.wait) {
-      audio.play();
+      try {
+        audio.play();
+      } catch (e1) {
+        console.log("error on");
+        onEnded();
+      }
 
       return true;
     } else {
-      audio.play();
+      try {
+        audio.play();
+      } catch (e1) {
+        console.log("error on");
+        onEnded();
+      }
 
       return false;
     }

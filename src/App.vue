@@ -69,7 +69,7 @@
         </keep-alive>
       </div>
 
-      <Setting />
+      <Setting style="background-color: gray" />
       <div v-if="error" class="error">
         <div>{{ error }}</div>
         <div>
