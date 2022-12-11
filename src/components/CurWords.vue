@@ -201,7 +201,11 @@ export default {
     });
     bus.$on("playCurWords", () => {
       (async () => {
-        await this.autoPlayNew(1);
+        try {
+          await this.autoPlayNew(1);
+        } catch (ee) {
+          console.log(ee);
+        }
         bus.$emit("finishPlayCurWords");
       })();
     });

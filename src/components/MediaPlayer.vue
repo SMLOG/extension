@@ -106,11 +106,11 @@
             </select>
           </a>
 
-          <a @click="prev()">
+          <a @click="prev(1)">
             <font-awesome-icon icon="fa-solid fa-angle-left"
           /></a>
 
-          <a @click="next()">
+          <a @click="next(1)">
             <font-awesome-icon icon="fa-solid fa-angle-right"
           /></a>
         </div>
@@ -401,9 +401,9 @@ export default {
       topDom.style.top =
         $(this.$refs.videoCon).height() + $(this.$refs.bts).height() + "px";
     },
-    next() {
+    next(b) {
       console.log("next");
-      if (this.isLoop == "" && this.showCurWords) {
+      if (!b && this.isLoop == "" && this.showCurWords) {
         (async () => {
           await new Promise((resolve) => {
             bus.$once("finishPlayCurWords", () => {
