@@ -50,7 +50,7 @@
 <script>
 import { mapState } from "vuex";
 import { GetSelectedText } from "@/service";
-import { htmlTrans } from "@/HtmlTrans";
+import { htmlTrans2 } from "@/HtmlTrans";
 import $ from "jquery";
 import bus from "@/bus";
 import { crossOrigs } from "@/config";
@@ -143,7 +143,11 @@ export default {
           delete item.description;
         }
 
-        let content = htmlTrans(this.words, item.desc2);
+        // let content = htmlTrans(this.words, item.desc2);
+        let ret = htmlTrans2(this.words, item.desc2);
+        let content = ret[0];
+        this.$store.commit("add2CurWords", [ret[1], 1]);
+
         setTimeout(() => {
           let ifrs = document.querySelectorAll("#a" + i + " iframe.img");
           for (let j = 0; j < ifrs.length; j++) {

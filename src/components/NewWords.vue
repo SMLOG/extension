@@ -224,8 +224,8 @@ export default {
     },
   },
   mounted() {
-    bus.$on("change", (item) => {
-      this.changeItemNew(item);
+    bus.$on("toggleAutoPlay", () => {
+      this.autoplaynew = !this.autoplaynew;
     });
     bus.$on("toggleAutoPlay", () => {
       this.autoplaynew = !this.autoplaynew;

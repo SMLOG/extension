@@ -53,7 +53,9 @@ export default {
 
       service(null, { cmd: "newWord", content: this.curItem }, (resp) => {
         // this.$store.commit("setCurItem", resp.contents);
-        if (resp) this.$store.commit("newWord", resp.contents);
+        if (resp) {
+          this.$store.commit("newWord", resp.contents);
+        }
       });
     },
     updateItem() {

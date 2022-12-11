@@ -29,6 +29,8 @@
         fixed-width
         v-show="show"
       />
+
+      <font-awesome-icon @click="showApp()" icon="eye" fixed-width />
     </div>
     <div
       v-show="show"
@@ -74,6 +76,12 @@ export default {
     ...mapState(["curWords"]),
   },
   methods: {
+    showApp() {
+      console.log("error");
+      setTimeout(() => {
+        this.$store.commit("setShowApp", true);
+      }, 500);
+    },
     changePlayNum(event) {
       console.log(event);
     },
@@ -125,6 +133,7 @@ export default {
 
       return this.tts(lan, content, wait);
     },
+
     onEnterPlay(event, item) {
       (async () => {
         var self = this;
@@ -151,6 +160,8 @@ export default {
       let list = this.curWords;
       let end = list.length;
 
+      let st = 0;
+
       for (let i = 0; i < Math.min(end, list.length); i++) {
         if (!this.autoplaynew) {
           this.curPlay = "";
@@ -158,6 +169,14 @@ export default {
           return;
         }
 
+        $(this.$refs.curWs).animate({
+          scrollTop: st + "px",
+        });
+        st += $(this.$refs.curWs)
+          .find("> div")
+          .eq(i + 1)
+          .outerHeight();
+        console.error(i, st);
         this.curPlay = list[i].q;
         console.error(this.curPlay);
         await this.playSound(list[i], true);
@@ -177,11 +196,8 @@ export default {
     },
   },
   mounted() {
-    bus.$on("change", (item) => {
-      this.changeItemNew(item);
-    });
-    bus.$on("toggleAutoPlay", () => {
-      this.autoplaynew = !this.autoplaynew;
+    bus.$on("newWord", (item) => {
+      this.$store.commit("add2CurWords", [[item]]);
     });
   },
 
@@ -265,5 +281,8 @@ table tr:nth-child(even) {
 }
 .curWs > div:not(:last-child) {
   border-bottom: 1px solid #ccc;
+}
+.curWs > div > * {
+  margin-top: 10px;
 }
 </style>

@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import bus from "@/bus";
 
 Vue.use(Vuex);
 
@@ -66,6 +67,7 @@ export default new Vuex.Store({
       state.newword = newword;
     },
     setShowApp(state, bool) {
+      console.log("showapp");
       state.showApp = bool;
     },
 
@@ -87,7 +89,10 @@ export default new Vuex.Store({
       state.words = words;
     },
     add2CurWords(state, [words, reset]) {
-      if (reset) state.curWords.length = 0;
+      if (reset) {
+        state.curWords.length = 0;
+        curWordsMap = {};
+      }
       for (let word of words) {
         if (!curWordsMap[word.q]) {
           curWordsMap[word.q] = 1;
@@ -133,6 +138,7 @@ export default new Vuex.Store({
         state.words.splice(k, 1);
       }
       state.words.unshift(word);
+      bus.$emit("newWord", word);
     },
   },
   actions: {},
