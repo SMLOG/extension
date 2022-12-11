@@ -39,13 +39,13 @@
       :class="{ cur: w.q == curPlay }"
       style="padding: 5px 0"
     >
-      <div :class="{ detach: !w.i, remove: w.i && !w.n }">
+      <div :class="{ detach: !w.i & w.n, remove: !w.n }">
         <div @click="playSound(w)" style="cursor: pointer">
           {{ w.q }}
           <b v-if="w.am"> [{{ w.am }}]</b>
         </div>
         <div style="font-weight: bold">
-          <span style="cursor: pointer" @click="toggleItemIsNew(w)">{{
+          <span style="cursor: pointer" @click="toggleItemIsNew(w, $event)">{{
             w.to
           }}</span>
         </div>
@@ -56,7 +56,6 @@
 
 <script>
 import { mapState } from "vuex";
-import { service } from "@/service";
 import bus from "@/bus";
 import $ from "jquery";
 export default {
@@ -86,54 +85,6 @@ export default {
       console.log(event);
     },
 
-    toggleItemIsNew(item) {
-      item.n = item.n > 0 ? 0 : 1;
-      item.i = item.n ? 0 : item.i;
-
-      this.changeItemNew(item);
-    },
-    changeItemNew(item) {
-      console.log(item);
-      if (item.q.trim())
-        service(null, { cmd: "newWord", content: item }, (resp) => {
-          // this.$store.commit("setCurItem", resp.contents);
-          this.$store.commit("newWord", resp.contents);
-        });
-    },
-    cn(item) {
-      let str = item.to
-        .split(";")
-        .map((e) => {
-          let t = e.indexOf(".");
-          return t > 0 && t < 5 ? e.substring(t + 1) : e;
-        })
-        .join(" ");
-      return str;
-    },
-    async tts(lan, content, wait, speed) {
-      return new Promise((resolve) => {
-        service(
-          null,
-          {
-            cmd: "audio",
-            content: content,
-            wait: wait,
-            lang: lan,
-            speed: speed,
-          },
-          function (response) {
-            if (response) resolve();
-          }
-        );
-      });
-    },
-    async playSound(item, wait, lan = "en") {
-      let self = this;
-      let content = lan == "en" ? item.q : self.cn(item);
-
-      return this.tts(lan, content, wait);
-    },
-
     onEnterPlay(event, item) {
       (async () => {
         var self = this;
@@ -151,11 +102,7 @@ export default {
         }
       })();
     },
-    async sleep(t) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, t);
-      });
-    },
+
     async autoPlayNew(b) {
       let list = this.curWords;
       let end = list.length;

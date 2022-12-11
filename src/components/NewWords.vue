@@ -14,15 +14,17 @@
             </div>
           </td>
           <td width="40px">
-            <input
-              type="checkbox"
-              :v-model="item.n"
-              :checked="item.n"
-              value="true"
-              @change="toggleItemIsNew(item)"
-              @mouseup="clickNewWord($event)"
-            />
-            <a class="ctrl" style="font-size: 6px"> 新</a>
+            <a
+              class="ctrl"
+              style="font-size: 6px"
+              @click="toggleItemIsNew(item, $event)"
+              :style="{
+                color: item.n ? 'green' : 'red',
+                textDecoration: item.n ? 'none' : 'line-through',
+              }"
+            >
+              New</a
+            >
             <br />
             <a
               class="ctrl"
@@ -69,7 +71,6 @@
 
 <script>
 import { mapState } from "vuex";
-import { service } from "@/service";
 import bus from "@/bus";
 
 export default {
@@ -104,65 +105,14 @@ export default {
     changePlayNum(event) {
       console.log(event);
     },
-    clickNewWord(event) {
-      // event.preventDefault();
-      event.stopPropagation();
-      return false;
-    },
+
     toPage(i) {
       if (i < 1 || i > this.pages) return;
       this.page = i;
     },
-    toggleItemIsNew(item) {
-      item.n = item.n > 0 ? 0 : 1;
-      item.i = item.n ? 0 : item.i;
 
-      this.changeItemNew(item);
-    },
-    changeItemNew(item) {
-      console.log(item);
-      if (item.q.trim())
-        service(null, { cmd: "newWord", content: item }, (resp) => {
-          // this.$store.commit("setCurItem", resp.contents);
-          this.$store.commit("newWord", resp.contents);
-        });
-    },
-    cn(item) {
-      let str = item.to
-        .split(";")
-        .map((e) => {
-          let t = e.indexOf(".");
-          return t > 0 && t < 5 ? e.substring(t + 1) : e;
-        })
-        .join(" ");
-      return str;
-    },
-    async tts(lan, content, wait, speed) {
-      return new Promise((resolve) => {
-        service(
-          null,
-          {
-            cmd: "audio",
-            content: content,
-            wait: wait,
-            lang: lan,
-            speed: speed,
-          },
-          function (response) {
-            if (response) resolve();
-          }
-        );
-      });
-    },
-    async playSound(item, wait, lan = "en") {
-      let self = this;
-      let content = lan == "en" ? item.q : self.cn(item);
-
-      return this.tts(lan, content, wait);
-    },
     onEnterPlay(event, item) {
       (async () => {
-        var self = this;
         var stop = false;
 
         let handle = function () {
@@ -173,15 +123,11 @@ export default {
         event.target.addEventListener("mouseout", handle);
         for (let i = 0; i < 100; i++) {
           if (stop) return;
-          await self.playSound(item, true);
+          await this.playSound(item, true);
         }
       })();
     },
-    async sleep(t) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, t);
-      });
-    },
+
     async autoPlayNew() {
       let list = this.words;
       let start = (this.page - 1) * this.pageSize;

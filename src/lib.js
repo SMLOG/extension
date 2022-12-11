@@ -1,4 +1,5 @@
 import { Parser } from "m3u8-parser";
+import { service } from "@/service";
 
 export async function getAAduio(item, type) {
   let manifest = await fetch(item.url).then((r) => r.text());
@@ -29,4 +30,37 @@ export async function getAAduio(item, type) {
   }
 
   return [videoUrl, av];
+}
+
+export async function playSound(item, wait, lan = "en") {
+  let content = lan == "en" ? item.q : cn(item);
+
+  return tts(lan, content, wait);
+}
+function cn(item) {
+  let str = item.to
+    .split(";")
+    .map((e) => {
+      let t = e.indexOf(".");
+      return t > 0 && t < 5 ? e.substring(t + 1) : e;
+    })
+    .join(" ");
+  return str;
+}
+async function tts(lan, content, wait, speed) {
+  return new Promise((resolve) => {
+    service(
+      null,
+      {
+        cmd: "audio",
+        content: content,
+        wait: wait,
+        lang: lan,
+        speed: speed,
+      },
+      function (response) {
+        if (response) resolve();
+      }
+    );
+  });
 }
