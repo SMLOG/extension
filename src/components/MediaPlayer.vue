@@ -771,6 +771,17 @@ export default {
     $(window).on("resize", function () {
       self.ajustTextHeight();
     });
+
+    let lastTime = 0;
+    setInterval(() => {
+      let video = document.querySelector("video");
+      if (!video.paused) {
+        if (lastTime == video.currentTime) {
+          console.error("timeout next");
+          this.next();
+        } else lastTime = video.currentTime;
+      }
+    }, 10 * 1000);
   },
 
   watch: {
