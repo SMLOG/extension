@@ -68,3 +68,27 @@ async function tts(lan, content, wait, speed) {
 export async function bgsound() {
   return tts("en", "", 0, 0);
 }
+export async function fetchRequest(url, params = {}, timeout = 10000) {
+  let isTimeout = false;
+
+  return new Promise(function (resolve, reject) {
+    const TO = setTimeout(function () {
+      isTimeout = true;
+      reject(new Error("Fetch timeout"));
+    }, timeout);
+
+    fetch(url, params)
+      .then((res) => {
+        clearTimeout(TO);
+        if (!isTimeout) {
+          resolve(res);
+        }
+      })
+      .catch((e) => {
+        if (isTimeout) {
+          return;
+        }
+        reject(e);
+      });
+  });
+}

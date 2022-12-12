@@ -99,6 +99,7 @@
 import bus from "@/bus";
 import { mapState } from "vuex";
 import { service } from "@/service";
+import { fetchRequest } from "@/lib";
 
 //import radios from "@/../public/radios.json";
 
@@ -271,7 +272,7 @@ export default {
               } else
                 for (let k = 10; k > 0; k--) {
                   try {
-                    var con = await fetch(
+                    var con = await fetchRequest(
                       "https://iptv-org.github.io/iptv/index.m3u?cache=1296000000"
                     ).then((r) => r.text());
                     let lines = con.split(/\n+/);
@@ -374,7 +375,7 @@ export default {
           if (this.mediaTypes[this.mediaType].data.length == 0) {
             if (this.loading) return;
             this.loading = 1;
-            fetch("https://smlog.github.io/data/radios.json")
+            fetchRequest("https://smlog.github.io/data/radios.json")
               .then((r) => r.json())
               .then((resp) => {
                 this.loading = 0;

@@ -3,6 +3,7 @@ import { htmlTrans } from "./HtmlTrans";
 import $ from "jquery";
 import storejs from "storejs";
 import bus from "@/bus";
+import { fetchRequest } from "@/lib";
 //import fetchJSONP from "fetch-jsonp";
 
 //const audio = new Audio();
@@ -550,30 +551,6 @@ export function callService(tab, request, sendResp) {
 
   return true;
 }
-const fetchRequest = (url, params = {}, timeout = 10000) => {
-  let isTimeout = false;
-
-  return new Promise(function (resolve, reject) {
-    const TO = setTimeout(function () {
-      isTimeout = true;
-      reject(new Error("Fetch timeout"));
-    }, timeout);
-
-    fetch(url, params)
-      .then((res) => {
-        clearTimeout(TO);
-        if (!isTimeout) {
-          resolve(res);
-        }
-      })
-      .catch((e) => {
-        if (isTimeout) {
-          return;
-        }
-        reject(e);
-      });
-  });
-};
 
 async function canRefresh(type, force, fn) {
   let ct = new Date().getTime();
