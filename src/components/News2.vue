@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="new2">
     <div style="position: sticky; top: 0; display: flex">
       <input
         style="

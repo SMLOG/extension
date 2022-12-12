@@ -1,16 +1,6 @@
 <template>
   <div>
-    <div
-      style="
-        position: fixed;
-        right: 10px;
-        bottom: 100px;
-        cursor: pointer;
-        width: 1em;
-        z-index: 10001;
-        opacity: 0.2;
-      "
-    >
+    <div class="op_tool">
       <span v-show="playMode">{{ playMode }}</span>
       <font-awesome-icon
         @click="togglePlayAndMode()"
@@ -82,12 +72,15 @@ export default {
   },
   methods: {
     togglePlayAndMode() {
-      if (this.playMode >= 3) {
+      if (this.playing == 0 && this.playMode == 0) {
         this.playMode = 1;
-        this.playing = 0;
+      } else if (this.playing == 0 && this.playMode == 1) {
+        this.playing = 1;
+      } else if (this.playing && this.playMode < 3) {
+        this.playMode += 1;
       } else {
-        this.playMode = this.playMode + 1;
-        this.playing += 1;
+        this.playMode = 0;
+        this.playing = 0;
       }
     },
     setShowCurWords(b) {
@@ -158,6 +151,7 @@ export default {
         if (this.playMode == 3) await this.playSound(list[i], true, "zh");
         await this.sleep(1000);
       }
+      this.playing = 0;
     },
   },
   mounted() {
@@ -184,29 +178,42 @@ export default {
     },
     showCurWords(n) {
       let ww = $(window).width();
-      let vw = $(".videoCon").width();
-      let dockside = vw > 0 && ww - vw < ww * 0.25;
+      if ($(".videoCon").is(":visible")) {
+        let vw = $(".videoCon").width();
+        let dockside = vw > 0 && ww - vw < ww * 0.25;
 
-      $(this.$refs.curWs).css(
-        "top",
-        dockside ? $(".text").offset().top + "px" : "auto"
-      );
-      if (n) {
-        if (dockside) {
-          $(".text").css({
-            width: ww != vw ? Math.min(ww * 0.75, vw) + "px" : "75%",
-          });
+        $(this.$refs.curWs).css(
+          "top",
+          dockside ? $(".text").offset().top + "px" : "auto"
+        );
+        if (n) {
+          if (dockside) {
+            $(".text").css({
+              width: ww != vw ? Math.min(ww * 0.75, vw) + "px" : "75%",
+            });
+            $(this.$refs.curWs).css({
+              left: "auto",
+              right: "0",
+            });
+          } else
+            $(this.$refs.curWs).css({
+              left: $(".text").outerWidth() + "px",
+              right: "auto",
+            });
+        } else {
+          $(".text").css("width", "100%");
+        }
+      } else {
+        if (n) {
           $(this.$refs.curWs).css({
             left: "auto",
             right: "0",
+            top: 0,
           });
-        } else
-          $(this.$refs.curWs).css({
-            left: $(".text").outerWidth() + "px",
-            right: "auto",
-          });
-      } else {
-        $(".text").css("width", "100%");
+          $(".new2").css("width", "75%");
+        } else {
+          $(".new2").css("width", "100%");
+        }
       }
     },
   },
@@ -259,5 +266,15 @@ table tr:nth-child(even) {
 }
 .curWs > div > * {
   margin-top: 10px;
+}
+.op_tool {
+  position: fixed;
+  right: 10px;
+  bottom: 100px;
+  cursor: pointer;
+  width: 1em;
+  z-index: 10001;
+  opacity: 0.2;
+  user-select: none;
 }
 </style>
