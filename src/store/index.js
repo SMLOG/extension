@@ -97,7 +97,11 @@ export default new Vuex.Store({
       if (reset) {
         state.curWords.length = 0;
         curWordsMap = {};
+        if (state.showCurWords) {
+          state.showCurWords += 1;
+        }
       }
+
       for (let word of words) {
         if (!curWordsMap[word.q]) {
           curWordsMap[word.q] = 1;

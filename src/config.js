@@ -267,6 +267,39 @@ export async function getVideos() {
   return ret;
 }
 
+export async function getVideoPromiseList() {
+  let t = parseInt(new Date().getTime() / 7200000);
+  let srcs = Object.keys(config.mods.videos.m);
+  let pList = [];
+  for (let i = 0; i < srcs.length; i++) {
+    let src = srcs[i];
+    console.error(src);
+    if (!config.mods.videos.m[src].enable) continue;
+    let item = config.mods.videos.m[src];
+    let res = item.res;
+    for (let j = 0; j < res.length; j++) {
+      let item = res[j];
+      for (let k = 0; k < item.urls.length; k++) {
+        try {
+          pList.push(async () => {
+            let url = item.urls[k];
+            let resp = await config.crossOrigs(
+              item.crossOrig,
+              url + "?t=" + t,
+              item.type
+            );
+            return await item.conv(resp, src);
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }
+
+  return pList;
+}
+
 export async function getAndPrepareNextExtra(item, mediaType, nextItem) {
   console.error(nextItem);
   if (nextItem) {

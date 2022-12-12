@@ -277,4 +277,7 @@ table tr:nth-child(even) {
   opacity: 0.2;
   user-select: none;
 }
+.op_tool > * {
+  margin-bottom: 10px;
+}
 </style>

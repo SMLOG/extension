@@ -7,7 +7,7 @@ import bus from "@/bus";
 
 //const audio = new Audio();
 import { translate, isBackground } from "./translator";
-import { getVideos } from "@/config";
+import { getVideoPromiseList } from "@/config";
 
 const pako = require("pako");
 
@@ -730,25 +730,45 @@ async function updateRepFile(name, rep, path, content, gzip) {
   return json;
 }
 
-async function fetchvideos() {
+async function fetchvideos(sendResp) {
   let videos = loadUnGZipStore("videos") || [];
 
+  let vs = [];
   let exitMap = videos.reduce((map, item) => {
-    map[item.vid] = 1;
+    if (!map[item.vid]) {
+      map[item.vid] = 1;
+      vs.push(item);
+    }
+
     return map;
   }, {});
+  videos = vs;
 
-  let rVideos = await getVideos();
-  for (let i = 0; i < rVideos.length; i++) {
-    let item = rVideos[i];
-    if (exitMap[item.vid]) continue;
+  //let rVideos = await getVideos();
+  let plist = await getVideoPromiseList();
 
-    videos.unshift(item);
+  for (let p = 0; p < plist.length; p++) {
+    try {
+      let rVideos = await plist[p]();
+
+      for (let i = 0; i < rVideos.length; i++) {
+        let item = rVideos[i];
+
+        if (exitMap[item.vid]) continue;
+
+        videos.unshift(item);
+      }
+      videos.sort((a, b) => b.dt - a.dt);
+      sendResp({ contents: videos });
+    } catch (eee) {
+      console.error(eee);
+    }
   }
+
   videos.sort((a, b) => b.dt - a.dt);
   videos.length = Math.min(500, videos.length);
 
-  gzipAndStore("videos", videos);
+  // gzipAndStore("videos", videos);
   return videos;
 }
 
@@ -925,7 +945,7 @@ const LOADERS = {
     let name = DataRep;
     let rep = "data";
     let path = "v1.json";
-    let videos = await fetchvideos();
+    let videos = await fetchvideos(sendResp);
     let sinceName = reqeust.type + "Since";
     let since = storejs.get(sinceName);
     let error;
