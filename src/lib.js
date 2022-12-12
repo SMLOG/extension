@@ -64,3 +64,7 @@ async function tts(lan, content, wait, speed) {
     );
   });
 }
+
+export async function bgsound() {
+  return tts("en", "", 0, 0);
+}

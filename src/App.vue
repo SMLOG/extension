@@ -93,6 +93,7 @@ import bus from "./bus";
 import $ from "jquery";
 import { service, GetSelectedText } from "@/service";
 
+import { bgsound } from "@/lib";
 export default {
   data() {
     return {
@@ -165,11 +166,17 @@ export default {
       },
       false
     );
+
+    let triggerAudioContext = 0;
     let clickHandler = (e) => {
       if (this.$refs.root && this.showApp) {
         if (!this.$refs.root.contains(e.target)) {
           this.$store.commit("setShowApp", false);
         }
+      }
+      if (!triggerAudioContext) {
+        triggerAudioContext = 1;
+        bgsound();
       }
     };
     doc.addEventListener("click", clickHandler);

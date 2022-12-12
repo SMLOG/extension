@@ -25,11 +25,9 @@ let ifr = mya[0];
 window.pako = pako;
 window.storejs = storejs;
 let currentDoc = ifr.contentDocument || ifr.contentWindow.document;
-currentDoc.body.innerHTML = `<audio id="sound" controls" ></audio>
-<audio id="bg" controls src="3s.mp3" ></audio>`;
+currentDoc.body.innerHTML = `<audio id="sound" controls" ></audio>`;
 
 let audio = currentDoc.querySelector("audio#sound");
-let bgAudio = currentDoc.querySelector("audio#bg");
 
 Axios.defaults.timeout = 5000;
 
@@ -388,29 +386,18 @@ let serviceMap = {
       })
     );
   },
-  bg: (request, sendResponse) => {
-    if (request.pause) {
-      bgAudio.pause();
-      sendResponse({});
-      return false;
-    } else {
-      if (request.title) {
-        bgAudio.title = request.title;
-        currentDoc.title = bgAudio.title;
-      }
 
-      bgAudio.play();
-    }
-    bgAudio.onerror = bgAudio.onended = function () {
-      //bgAudio.play();
-      sendResponse({});
-    };
-    return true;
-  },
   audio: (request, sendResponse) => {
     if (request.pause || !request.content) {
-      audio.pause();
-      //bgAudio.pause();
+      if (request.pause) {
+        audio.pause();
+      } else {
+        if (!audio.inited) {
+          audio.inited = 1;
+          audio.src = "3s.mp3";
+          audio.play();
+        }
+      }
       sendResponse({});
       return false;
     }

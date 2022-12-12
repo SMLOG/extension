@@ -1,6 +1,6 @@
 <template>
   <div class="new2">
-    <div style="position: sticky; top: 0; display: flex">
+    <div style="position: sticky; top: 0; display: flex; padding: 10px">
       <input
         style="
           width: 100%;
