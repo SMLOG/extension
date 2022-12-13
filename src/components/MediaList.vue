@@ -546,7 +546,11 @@ export default {
             index++;
             if (index >= list.length) index = 0;
 
-            if (this.preload && sessionStorage.isAudio == "A") {
+            if (
+              this.preload &&
+              sessionStorage.isAudio == "A" &&
+              this.mediaType != 0
+            ) {
               for (let k = index; k < list.length; k++) {
                 if (list[k].a) {
                   index = k;
