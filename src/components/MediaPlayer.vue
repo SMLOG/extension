@@ -653,7 +653,7 @@ export default {
         }
       }
 
-      if (this.isAudio && this.mediaType != 0) {
+      if (this.isAudio && this.mediaType != 0 && this.mediaType != 3) {
         console.log(this.isAudio, this.mediaType);
         try {
           let ret = await getAAduio(item, this.isAudio);
@@ -668,7 +668,10 @@ export default {
       } else {
         this.av = 1;
         if (!skip) {
-          this.videoUrl = item.url;
+          console.log(item, this.mediaType);
+          this.videoUrl =
+            item.url + (this.mediaType == 3 ? "#type" + this.mediaType : "");
+          console.log(this.videoUrl);
         }
       }
       setTimeout(() => {

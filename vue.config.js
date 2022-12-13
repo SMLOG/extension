@@ -225,12 +225,25 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?m3u8(?!.*#type0)/i,
+          urlPattern: /.*?manifest.format=m3u8.aapl.*?/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "m3u8",
+            cacheName: "m3u8-aapl",
+            expiration: {
+              maxAgeSeconds: 86400 * 5,
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*?cnn.clip*m3u8?/i,
+          handler: "cacheFirst",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "cnn-clip",
             expiration: {
               maxAgeSeconds: 86400 * 5,
             },
@@ -239,12 +252,15 @@ module.exports = {
         },
 
         {
-          urlPattern: /.*?\.mp[34]/,
+          urlPattern: /.*?cbsnews*?.m3u8/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "vcache",
+            cacheName: "cbsnews",
+            expiration: {
+              maxAgeSeconds: 86400 * 5,
+            },
             cacheableResponse: { statuses: [0, 200] },
           },
         },
@@ -259,7 +275,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?aac(?!.*#type0)/i,
+          urlPattern: /.*?Fragments.aac_.*?/i,
           handler: "cacheFirst",
           method: "GET",
 
@@ -268,46 +284,22 @@ module.exports = {
             expiration: {
               maxAgeSeconds: 86400 * 10,
             },
-            cacheName: "aac",
+            cacheName: "aac-msn",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
-          urlPattern: /.*?baidu.*/,
+          urlPattern: /.*?cbsnews.*?aac/i,
           handler: "cacheFirst",
           method: "GET",
+
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "baidu",
-            cacheableResponse: { statuses: [0, 200] },
-          },
-        },
-        {
-          urlPattern: /.*?\?cache=\d+$/,
-          handler: "cacheFirst",
-          method: "GET",
-          options: {
-            //networkTimeoutSeconds: 20,
-            cacheName: "cache",
-            cacheableResponse: { statuses: [0, 200] },
             expiration: {
-              maxAgeSeconds: 60 * 60 * 24 * 5, // 2 Week
-              //  maxEntries: 100,
+              maxAgeSeconds: 86400 * 10,
             },
-          },
-        },
-        {
-          urlPattern: /.*?(\?t=|%3Ft%3D)\d+$/,
-          handler: "cacheFirst",
-          method: "GET",
-          options: {
-            //networkTimeoutSeconds: 20,
-            cacheName: "tcache",
-            cacheableResponse: { statuses: [0, 200, 502] },
-            expiration: {
-              maxAgeSeconds: 60 * 60 * 1000, // 2 Week
-              // maxEntries: 100,
-            },
+            cacheName: "aac-cbsnews",
+            cacheableResponse: { statuses: [0, 200] },
           },
         },
       ],

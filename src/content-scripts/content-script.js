@@ -12,21 +12,13 @@ let activeApp = () => {
 
 let lastTime = 0;
 
-if (
-  !document.querySelector(".mytranslate-extension") &&
-  document.documentElement.lang == "en" /*||
-    document.title.match(/^[\x00-\x7F]+$/)*/ // eslint-disable-line
-) {
-  activeApp();
-} else {
-  document.addEventListener("keydown", (event) => {
-    console.log(event);
+document.addEventListener("keydown", (event) => {
+  console.log(event);
 
-    if (event.key == "Control" && !document.querySelector("#mytranslate_app")) {
-      if (new Date().getTime() - lastTime < 1000) {
-        activeApp();
-      }
-      lastTime = new Date().getTime();
+  if (event.key == "Control" && !document.querySelector("#mytranslate_app")) {
+    if (new Date().getTime() - lastTime < 1000) {
+      activeApp();
     }
-  });
-}
+    lastTime = new Date().getTime();
+  }
+});

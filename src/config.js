@@ -302,19 +302,6 @@ export async function getVideoPromiseList() {
 
 export async function getAndPrepareNextExtra(item, mediaType, nextItem) {
   console.error(nextItem);
-  if (nextItem) {
-    setTimeout(() => {
-      (async () => {
-        await getExtra(nextItem, mediaType);
-        if (nextItem.cc) {
-          await fetch(nextItem.cc);
-        }
-        console.error("next item");
-        console.error(nextItem);
-        nextItem.loaded = 1;
-      })();
-    }, 1000);
-  }
   if (item.loaded) return item;
   return await getExtra(item, mediaType);
 }
