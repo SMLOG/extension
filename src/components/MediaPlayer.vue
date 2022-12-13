@@ -7,12 +7,7 @@
       class="top"
       :class="'fs-' + fs"
     >
-      <div
-        ref="videoCon"
-        class="videoCon"
-        style="position: relative"
-        v-show="0 != mediaType"
-      >
+      <div ref="videoCon" class="videoCon" style="position: relative">
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -35,13 +30,7 @@
         </div>
         <ResizeMask v-if="isMask" />
       </div>
-      <audio
-        controls
-        style="width: 100%"
-        :title="title"
-        ref="audio"
-        v-show="mediaType == 0"
-      />
+
       <div
         style="position: relative; z-index: 10000"
         v-show="isMask < 2 || isTouch"
@@ -668,7 +657,7 @@ export default {
         }
       }
 
-      if (this.isAudio) {
+      if (this.isAudio && this.mediaType != 0) {
         try {
           let ret = await getAAduio(item, this.isAudio);
           this.videoUrl = ret[0];
@@ -725,16 +714,7 @@ export default {
       this.mediaType =
         mediaType == 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
       if (this.mediaType == 0) {
-        if (this.player) {
-          this.player.pause();
-          try {
-            this.player.src([{ src: "a.mp3" }]);
-          } catch (ee) {
-            console.error(ee);
-          }
-        }
-        this.url = this.$refs.audio.src = this.videoId;
-        this.$refs.audio.play();
+        this.videoUrl = this.url = item.url;
       } else {
         (async () => {
           try {
@@ -755,13 +735,9 @@ export default {
     });
     bus.$on("togglePlay", () => {
       console.error("togglePlayer");
-      if (this.mediaType == 2) {
-        if (this.playing) this.$refs.audio.pause();
-        else this.$refs.audio.play();
-      } else {
-        if (this.playing) this.player.pause();
-        else this.player.play();
-      }
+
+      if (this.playing) this.player.pause();
+      else this.player.play();
     });
 
     bus.$on("showPlayer", () => {

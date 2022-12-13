@@ -96,7 +96,7 @@ export default {
       this.type = type;
 
       console.log("preload");
-      if (this.isAudio == "A") {
+      if (1 || this.isAudio == "A") {
         for (let i = index; i < list.length; i++) {
           try {
             let res = await getAAduio(list[i], this.isAudio);
@@ -111,18 +111,27 @@ export default {
       }
 
       this.nextUrl = videoUrl;
-      this.player.src([
-        {
-          src: videoUrl,
-          type:
-            videoUrl.indexOf(".mp3") > -1
-              ? "audio/mp3"
-              : videoUrl.indexOf(".mp4") > -1
-              ? "video/mp4"
-              : "application/x-mpegURL",
-        },
-      ]);
-      this.player.play();
+
+      let url = videoUrl;
+      if (url) {
+        let filetype = "audio/mpeg";
+        if (url.indexOf(".m3p") > -1) {
+          filetype = "audio/mp3";
+        } else if (url.indexOf(".mp4") > -1) {
+          filetype = "video/mp4";
+        } else if (url.indexOf("m3u8") > -1) {
+          filetype = "application/x-mpegURL";
+        } else if (url.indexOf(".mpd") > -1) {
+          filetype = "application/dash+xml";
+        }
+        this.player.src([
+          {
+            src: videoUrl,
+            type: filetype,
+          },
+        ]);
+        this.player.play();
+      }
     },
   },
   mounted() {

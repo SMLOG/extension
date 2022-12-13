@@ -375,6 +375,7 @@ export default {
           if (this.mediaTypes[this.mediaType].data.length == 0) {
             if (this.loading) return;
             this.loading = 1;
+
             fetchRequest("https://smlog.github.io/data/radios.json")
               .then((r) => r.json())
               .then((resp) => {
@@ -388,6 +389,10 @@ export default {
                     })
                   );
                 }
+              })
+              .catch((ee) => {
+                console.error(ee);
+                this.loading = 0;
               });
           }
 

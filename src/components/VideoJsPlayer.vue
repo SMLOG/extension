@@ -204,19 +204,28 @@ export default {
         });
       }
       //let rate = (sessionStorage.playbackrate = player.playbackRate());
+      let url = this.source;
+      if (this.source) {
+        let filetype = "audio/mpeg";
+        if (url.indexOf(".m3p") > -1) {
+          filetype = "audio/mp3";
+        } else if (url.indexOf(".mp4") > -1) {
+          filetype = "video/mp4";
+        } else if (url.indexOf("m3u8") > -1) {
+          filetype = "application/x-mpegURL";
+        } else if (url.indexOf(".mpd") > -1) {
+          filetype = "application/dash+xml";
+        }
 
-      if (this.source)
+        console.error(url, filetype);
         this.player.src([
           {
             src: this.source,
-            type:
-              this.source.indexOf(".mp3") > -1
-                ? "audio/mp3"
-                : this.source.indexOf(".mp4") > -1
-                ? "video/mp4"
-                : "application/x-mpegURL",
+            type: filetype,
           },
         ]);
+      }
+
       if (player.paused()) this.player.play();
 
       /* if (rate) {
