@@ -238,7 +238,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?cnn.clip*m3u8?/i,
+          urlPattern: /.*?cnn.clip.*?m3u8?/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
@@ -252,7 +252,7 @@ module.exports = {
         },
 
         {
-          urlPattern: /.*?cbsnews*?.m3u8/i,
+          urlPattern: /.*?cbsnews.*?.m3u8/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
