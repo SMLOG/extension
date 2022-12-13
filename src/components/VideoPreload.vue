@@ -73,7 +73,7 @@ export default {
       }
     },
     error() {
-      if (this.type == 1) {
+      if (this.preload && this.list && this.type == 1) {
         if (this.list[this.curIndex]) {
           this.list[this.curIndex].error = 1;
         }
@@ -86,6 +86,8 @@ export default {
       }
     },
     async loadItem(type, list, index) {
+      console.log(list);
+      if (!list || !this.preload) return;
       let item = list[index];
       if (type == 0) return;
       if (!item) return;
@@ -138,6 +140,7 @@ export default {
   mounted() {
     bus.$on("nVideoId", (type, list, index) => {
       this.type = type;
+      this.list = list;
       if (this.type == 1)
         setTimeout(() => {
           if (this.preload) {

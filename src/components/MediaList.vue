@@ -337,6 +337,7 @@ export default {
                     types.length = allChannels.length = 0;
                     this.loading = 0;
                   }
+                  await this.sleep(1000);
                 }
               this.loading = 0;
             })();

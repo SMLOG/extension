@@ -714,6 +714,7 @@ export default {
       this.text = "";
       if (this.mediaType == 0) {
         this.videoUrl = this.url = item.url;
+        this.av = 0;
       } else {
         (async () => {
           try {

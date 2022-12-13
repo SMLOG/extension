@@ -733,6 +733,7 @@ async function fetchvideos(sendResp) {
 
         if (exitMap[item.vid]) continue;
 
+        exitMap[item.vid] = 1;
         videos.unshift(item);
       }
       videos.sort((a, b) => b.dt - a.dt);
