@@ -225,12 +225,12 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?m3u8.*?/,
+          urlPattern: /.*?m3u8(?!.*#type0)/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "vcache2",
+            cacheName: "m3u8",
             expiration: {
               maxAgeSeconds: 86400 * 5,
             },
@@ -259,7 +259,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?(aac).*?/,
+          urlPattern: /.*?aac(?!.*#type0)/i,
           handler: "cacheFirst",
           method: "GET",
 
@@ -268,21 +268,7 @@ module.exports = {
             expiration: {
               maxAgeSeconds: 86400 * 10,
             },
-            cacheName: "vcache",
-            cacheableResponse: { statuses: [0, 200] },
-          },
-        },
-        {
-          urlPattern: /.*?(ts).*?/,
-          handler: "cacheFirst",
-          method: "GET",
-
-          options: {
-            //networkTimeoutSeconds: 20,
-            expiration: {
-              maxAgeSeconds: 86400 * 2,
-            },
-            cacheName: "v3",
+            cacheName: "aac",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
@@ -292,7 +278,7 @@ module.exports = {
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "cache",
+            cacheName: "baidu",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
@@ -316,7 +302,7 @@ module.exports = {
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
-            cacheName: "cache",
+            cacheName: "tcache",
             cacheableResponse: { statuses: [0, 200, 502] },
             expiration: {
               maxAgeSeconds: 60 * 60 * 1000, // 2 Week

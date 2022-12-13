@@ -713,7 +713,7 @@ export default {
       this.onCuesChangeSync2 = 0;
       this.text = "";
       if (this.mediaType == 0) {
-        this.videoUrl = this.url = item.url;
+        this.videoUrl = this.url = item.url + "#type" + this.mediaType;
         this.av = 0;
       } else {
         (async () => {
