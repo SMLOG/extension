@@ -10,6 +10,8 @@ let activeApp = () => {
   require("@/main");
 };
 
+let lastTime = 0;
+
 if (
   !document.querySelector(".mytranslate-extension") &&
   document.documentElement.lang == "en" /*||
@@ -21,7 +23,10 @@ if (
     console.log(event);
 
     if (event.key == "Control" && !document.querySelector("#mytranslate_app")) {
-      activeApp();
+      if (new Date().getTime() - lastTime < 1000) {
+        activeApp();
+      }
+      lastTime = new Date().getTime();
     }
   });
 }
