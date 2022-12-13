@@ -15,7 +15,7 @@ export default new Vuex.Store({
     curTab: "HelloWorld",
     newword: "",
     showApp: 1,
-    showCurWords: 0,
+    showCurWords: localStorage.showCurWords,
     hkdcny: { now: "", p: "" },
     config: {
       shownews: 0,
@@ -74,6 +74,8 @@ export default new Vuex.Store({
     setShowCurWords(state, bool) {
       console.log("showCurWords");
       state.showCurWords = bool;
+
+      localStorage.showCurWords = bool ? "1" : "";
     },
 
     setLoading(state, bool) {

@@ -59,7 +59,7 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      playMode: 0,
+      playMode: localStorage.playMode || 1,
       playing: 0,
       curPlay: "",
       isSpell: false,
@@ -82,6 +82,7 @@ export default {
         this.playMode = 0;
         this.playing = 0;
       }
+      localStorage.playMode = this.playMode;
     },
     setShowCurWords(b) {
       this.$store.commit("setShowCurWords", b);

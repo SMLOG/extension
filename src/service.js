@@ -12,7 +12,7 @@ import { getVideoPromiseList } from "@/config";
 
 const pako = require("pako");
 
-window.pako = pako;
+//window.pako = pako;
 const RWORD = "words";
 const NWORD = "nwords";
 let lastAutoSound = "";
@@ -31,6 +31,15 @@ currentDoc.body.innerHTML = `<audio id="sound" controls" ></audio>`;
 let audio = currentDoc.querySelector("audio#sound");
 
 Axios.defaults.timeout = 5000;
+
+let audioListeners = [];
+
+function responseAll() {
+  while (audioListeners.length > 0) {
+    let onRes = audioListeners.pop();
+    onRes({});
+  }
+}
 
 let json2jsonpProxy = async function (enable, url) {
   if (enable) {
@@ -389,6 +398,7 @@ let serviceMap = {
   },
 
   audio: (request, sendResponse) => {
+    audioListeners.push(sendResponse);
     if (request.pause || !request.content) {
       if (request.pause) {
         audio.pause();
@@ -399,7 +409,8 @@ let serviceMap = {
           audio.play();
         }
       }
-      sendResponse({});
+      responseAll();
+
       return false;
     }
     audio.title = request.content.trim();
@@ -430,7 +441,7 @@ let serviceMap = {
       (config.autoSound == "auto" && lastAutoSound == "YD")
     ) {
       if (lan != "en") {
-        sendResponse({});
+        responseAll();
         return;
       } else audio.src = YDTTS;
     }
@@ -440,7 +451,7 @@ let serviceMap = {
     let onEnded = function () {
       tryTimes = 0;
 
-      sendResponse({});
+      responseAll();
     };
     let onError = function (ee) {
       console.error(audio.src);
