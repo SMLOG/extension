@@ -401,23 +401,37 @@ export default {
             });
             bus.$emit("playCurWords");
           });
-          this.end(0);
+          this.end(0, b);
         })();
-      } else this.end(0);
+      } else this.end(0, b);
     },
     prev() {
       this.end(1);
     },
-    end(reverse) {
+    end(reverse, error) {
       /*let video = document.querySelector("video");
       if (this.isLoop && video) {
         video.currentTime = 0;
         video.play();
         return;
       }*/
-      this.cueIndex = 0;
-      this.scroll(true);
-      bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
+      if (error != 1) {
+        setTimeout(() => {
+          this.cueIndex = 0;
+          this.scroll(true);
+          bus.$emit(
+            "end",
+            this.videoId,
+            reverse,
+            this.videoIndex,
+            this.subIndex
+          );
+        }, 10000);
+      } else {
+        this.cueIndex = 0;
+        this.scroll(true);
+        bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
+      }
     },
 
     cuechange(cue, track) {
@@ -433,20 +447,6 @@ export default {
       $(this.$refs.top).scroll(function () {
         self.ajustTextHeight();
       });
-
-      let audio = $(this.$refs.audio);
-      audio.onended = function () {
-        self.end();
-      };
-      audio.onerror = function () {
-        self.end();
-      };
-      audio.onpause = function () {
-        self.playing = 0;
-      };
-      audio.onplay = function () {
-        self.playing = 1;
-      };
     },
     trimDup(r) {
       var ret = [];

@@ -180,7 +180,7 @@ export default {
           /* setTimeout(() => {
             if (!player.paused()) this.$emit("ended");
           }, 2000);*/
-          this.$emit("ended");
+          this.$emit("ended", 1);
         });
 
         player.on("pause", () => {
