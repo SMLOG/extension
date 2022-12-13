@@ -376,24 +376,32 @@ export default {
             if (this.loading) return;
             this.loading = 1;
 
-            fetchRequest("https://smlog.github.io/data/radios.json")
-              .then((r) => r.json())
-              .then((resp) => {
-                this.loading = 0;
+            (async () => {
+              for (var i = 0; i < 10; i++) {
+                try {
+                  await fetchRequest("https://smlog.github.io/data/radios.json")
+                    .then((r) => r.json())
+                    .then((resp) => {
+                      this.loading = 0;
 
-                if (resp.content && resp.content.length) {
-                  this.mediaTypes[this.mediaType].data.push(
-                    ...resp.content.map((e) => {
-                      e.vid = e.url;
-                      return e;
-                    })
-                  );
+                      if (resp.content && resp.content.length) {
+                        this.mediaTypes[this.mediaType].data.push(
+                          ...resp.content.map((e) => {
+                            e.vid = e.url;
+                            return e;
+                          })
+                        );
+                      }
+                    });
+                  break;
+                } catch (eee) {
+                  console.error(eee);
                 }
-              })
-              .catch((ee) => {
-                console.error(ee);
-                this.loading = 0;
-              });
+                console.log("sleep " + i);
+                await this.sleep(1000);
+              }
+              this.loading = 0;
+            })();
           }
 
           break;

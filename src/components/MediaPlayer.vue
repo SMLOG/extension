@@ -636,11 +636,7 @@ export default {
     },
     async loadVideo(item, mediaType, nextItem) {
       let skip = 0;
-      this.$store.commit("add2CurWords", [[], 1]);
       await getAndPrepareNextExtra(item, mediaType, nextItem);
-
-      this.onCuesChangeSync2 = 0;
-      this.text = "";
 
       if (this.show) {
         try {
@@ -713,6 +709,9 @@ export default {
       this.videoIndex = index;
       this.subIndex = index2;
       this.mediaType = mediaType; //== 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
+      this.$store.commit("add2CurWords", [[], 1]);
+      this.onCuesChangeSync2 = 0;
+      this.text = "";
       if (this.mediaType == 0) {
         this.videoUrl = this.url = item.url;
       } else {
