@@ -205,7 +205,7 @@ export default {
       }
       //let rate = (sessionStorage.playbackrate = player.playbackRate());
       let url = this.source;
-      if (this.source) {
+      if (url) {
         let filetype = "audio/mpeg";
         if (url.indexOf(".m3p") > -1) {
           filetype = "audio/mp3";

@@ -658,6 +658,7 @@ export default {
       }
 
       if (this.isAudio && this.mediaType != 0) {
+        console.log(this.isAudio, this.mediaType);
         try {
           let ret = await getAAduio(item, this.isAudio);
           this.videoUrl = ret[0];
@@ -711,15 +712,13 @@ export default {
       this.item = item;
       this.videoIndex = index;
       this.subIndex = index2;
-      this.mediaType =
-        mediaType == 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
+      this.mediaType = mediaType; //== 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
       if (this.mediaType == 0) {
         this.videoUrl = this.url = item.url;
       } else {
         (async () => {
           try {
             await this.loadVideo(item, mediaType, nextItem);
-            this.$refs.audio && this.$refs.audio.pause();
           } catch (e) {
             console.error(e);
             this.end();

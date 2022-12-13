@@ -87,12 +87,13 @@ export default {
     },
     async loadItem(type, list, index) {
       let item = list[index];
+      if (type == 0) return;
       if (!item) return;
       await getExtra(item);
       item.cc && fetch(item.cc);
       let videoUrl = item.url;
       this.curIndex = index;
-      this.list = item;
+      this.list = list;
       this.type = type;
 
       console.log("preload");
