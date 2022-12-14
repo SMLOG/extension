@@ -180,7 +180,7 @@ module.exports = {
             //networkTimeoutSeconds: 20,
             cacheName: "index",
             cacheableResponse: { statuses: [200] },
-            networkTimeoutSeconds: 10,
+            // networkTimeoutSeconds: 10,
           },
         },
         {
