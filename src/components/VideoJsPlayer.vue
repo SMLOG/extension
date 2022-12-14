@@ -181,7 +181,7 @@ export default {
             if (!player.paused()) this.$emit("ended");
           }, 2000);*/
           setTimeout(() => {
-            this.$emit("ended", 1);
+            this.$emit("error", 1);
           }, 10000);
         });
 

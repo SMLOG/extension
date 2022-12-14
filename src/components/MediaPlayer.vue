@@ -18,6 +18,7 @@
             :title="title"
             :mediaItem="item"
             @timeupdate="LseqNext"
+            @error="error"
           ></VideoJsPlayer>
           <VideoPreload :isAudio="isAudio" :preload="preload" />
         </div>
@@ -390,9 +391,9 @@ export default {
       topDom.style.top =
         $(this.$refs.videoCon).height() + $(this.$refs.bts).height() + "px";
     },
-    next(b) {
+    next(skipPlayCurWord) {
       console.log("next");
-      if (!b && this.isLoop == "" && this.showCurWords) {
+      if (!skipPlayCurWord && this.isLoop == "" && this.showCurWords) {
         (async () => {
           await new Promise((resolve) => {
             bus.$once("finishPlayCurWords", () => {
@@ -401,37 +402,30 @@ export default {
             });
             bus.$emit("playCurWords");
           });
-          this.end(0, b);
+          this.end(0);
         })();
-      } else this.end(0, b);
+      } else this.end(0);
     },
     prev() {
       this.end(1);
     },
-    end(reverse, error) {
-      /*let video = document.querySelector("video");
-      if (this.isLoop && video) {
-        video.currentTime = 0;
-        video.play();
-        return;
-      }*/
-      if (error != 1) {
-        setTimeout(() => {
-          this.cueIndex = 0;
-          this.scroll(true);
-          bus.$emit(
-            "end",
-            this.videoId,
-            reverse,
-            this.videoIndex,
-            this.subIndex
-          );
-        }, 10000);
-      } else {
-        this.cueIndex = 0;
-        this.scroll(true);
-        bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
-      }
+    error() {
+      setTimeout(() => {
+        this.end(0);
+      }, 10000);
+    },
+    end(reverse) {
+      console.error(
+        "emit end",
+        this.videoId,
+        reverse,
+        this.videoIndex,
+        this.subIndex
+      );
+
+      this.cueIndex = 0;
+      this.scroll(true);
+      bus.$emit("end", this.videoId, reverse, this.videoIndex, this.subIndex);
     },
 
     cuechange(cue, track) {
