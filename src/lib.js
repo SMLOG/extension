@@ -15,7 +15,7 @@ export async function getAAduio(item, type) {
   let av = audio ? 0 : 1;
   let videoUrl;
 
-  if (type == "A") {
+  if (type == 2) {
     av = 0;
     videoUrl = item.url + "/../" + audio.match(/uri":\s*"(.*?)"/)[1];
   } else {

@@ -87,7 +87,7 @@ export default {
     },
     async loadItem(type, list, index) {
       console.log(list);
-      if (!list || !this.preload) return;
+      if (!list || !this.preload || this.isAudio != 2) return;
       let item = list[index];
       if (type == 0) return;
       if (!item) return;
@@ -99,17 +99,15 @@ export default {
       this.type = type;
 
       console.log("preload");
-      if (1 || this.isAudio == "A") {
-        for (let i = index; i < list.length; i++) {
-          try {
-            let res = await getAAduio(list[i], this.isAudio);
+      for (let i = index; i < list.length; i++) {
+        try {
+          let res = await getAAduio(list[i], this.isAudio);
 
-            videoUrl = res[0];
-            list[i].a = res[0];
-            break;
-          } catch (e) {
-            console.error(e);
-          }
+          videoUrl = res[0];
+          list[i].a = res[0];
+          break;
+        } catch (e) {
+          console.error(e);
         }
       }
 

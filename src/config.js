@@ -125,7 +125,7 @@ export const config = {
           ],
         },
         cbs: {
-          enable: 0,
+          enable: 1,
           res: [
             {
               type: "json",

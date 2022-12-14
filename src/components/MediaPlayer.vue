@@ -50,10 +50,14 @@
             />
             {{ top }}</a
           >
+
           <a class="up" :class="{ selected: isCc }" @click="isCc = !isCc">
             cc</a
           >
-          <a class="up" @click="fs >= 5 ? (fs = 1) : fs++"> {{ fs }}</a>
+          <a class="up" @click="fs >= 5 ? (fs = 1) : fs++">
+            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+            <span>{{ fs }}</span>
+          </a>
           <a
             class="up"
             :class="{ selected: isAliPlayer }"
@@ -71,20 +75,11 @@
             :class="{ selected: isMask }"
             @click="isMask >= 2 ? (isMask = 0) : isMask++"
           >
-            <font-awesome-icon
-              v-show="isMask"
-              size="xs"
-              icon="fa-solid fa-check"
-            />
-
+            <font-awesome-icon icon="fa-solid fa-mask-face" size="xs" />
             M{{ isMask }}</a
           >
-          <a class="loop">
-            <select v-model="isAudio">
-              <option value="">AT</option>
-              <option value="A+">A+</option>
-              <option value="A">A</option>
-            </select>
+          <a class="loop" @click="isAudio = isAudio >= 2 ? 0 : 1 + isAudio">
+            {{ modeText() }}
           </a>
 
           <a class="loop">
@@ -168,7 +163,7 @@ export default {
       playing: 0,
       sps: [],
       isMask: 0,
-      isAudio: !sessionStorage.isAudio ? "" : sessionStorage.isAudio,
+      isAudio: !sessionStorage.isAudio ? 0 : parseInt(sessionStorage.isAudio),
       av: 1,
       isTouch: 0,
     };
@@ -191,6 +186,16 @@ export default {
     ResizeMask,
   },
   methods: {
+    modeText() {
+      switch (this.isAudio) {
+        case 2:
+          return "Audio";
+        case 1:
+          return "Audio+";
+        default:
+          return "Video";
+      }
+    },
     onTouch() {
       clearTimeout(this.isTouch);
 
@@ -775,14 +780,17 @@ export default {
     isAudio(b) {
       sessionStorage.isAudio = b;
 
-      (async () => {
-        try {
-          await this.loadVideo(this.item, this.mediaType, this.nextItem);
-        } catch (e) {
-          console.error(e);
-          this.end();
-        }
-      })();
+      setTimeout(() => {
+        (async () => {
+          if (this.isAudio != b) return;
+          try {
+            await this.loadVideo(this.item, this.mediaType, this.nextItem);
+          } catch (e) {
+            console.error(e);
+            this.end();
+          }
+        })();
+      }, 800);
     },
   },
 };
