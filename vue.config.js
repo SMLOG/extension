@@ -174,17 +174,17 @@ module.exports = {
       runtimeCaching: [
         {
           urlPattern: /.*?.html/,
-          handler: "networkFirst",
+          handler: "staleWhileRevalidate",
           method: "GET",
           options: {
             //networkTimeoutSeconds: 20,
             cacheName: "index",
             cacheableResponse: { statuses: [200] },
-            networkTimeoutSeconds: 5,
+            networkTimeoutSeconds: 10,
           },
         },
         {
-          urlPattern: /.*?.json/,
+          urlPattern: /.*?.json.*?/,
           handler: "networkFirst",
           method: "GET",
           options: {
@@ -204,16 +204,7 @@ module.exports = {
             cacheableResponse: { statuses: [200] },
           },
         },*/
-        {
-          urlPattern: /.*?(\/video|\/media).*/,
-          handler: "cacheFirst",
-          method: "GET",
-          options: {
-            //networkTimeoutSeconds: 20,
-            cacheName: "vcache",
-            cacheableResponse: { statuses: [0, 200] },
-          },
-        },
+
         {
           urlPattern: /.*?\.(png|gif|jpg)/i,
           handler: "cacheFirst",
@@ -233,12 +224,13 @@ module.exports = {
             cacheName: "m3u8-aapl",
             expiration: {
               maxAgeSeconds: 86400 * 5,
+              maxEntries: 200,
             },
             cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
-          urlPattern: /.*?cnn.clip.*?m3u8?/i,
+          urlPattern: /.*?cnn.clip.*?m3u8.*?/i,
           handler: "cacheFirst",
           method: "GET",
           options: {
@@ -250,7 +242,32 @@ module.exports = {
             cacheableResponse: { statuses: [0, 200] },
           },
         },
-
+        {
+          urlPattern: /.*?fave.api.cnn.io.*?/i,
+          handler: "cacheFirst",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "cnn.io",
+            expiration: {
+              maxAgeSeconds: 86400 * 5,
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*?medium.ngtv.io.*?/i,
+          handler: "cacheFirst",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "ngtv.io",
+            expiration: {
+              maxAgeSeconds: 86400 * 5,
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
         {
           urlPattern: /.*?cbsnews.*?.m3u8/i,
           handler: "cacheFirst",
