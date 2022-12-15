@@ -668,8 +668,7 @@ export default {
         this.av = 1;
         if (!skip) {
           console.log(item, this.mediaType);
-          this.videoUrl =
-            item.url + (this.mediaType == 3 ? "#type" + this.mediaType : "");
+          this.videoUrl = item.url;
           console.log(this.videoUrl);
         }
       }

@@ -117,11 +117,11 @@ export default {
 
     async autoPlayNew(b) {
       let list = this.curWords;
-      let end = list.length;
 
       let st = 0;
 
-      for (let i = 0; i < Math.min(end, list.length); i++) {
+      for (let i = 0; ; i++) {
+        if (i >= list.length) break;
         if (!b && !this.playing) {
           this.curPlay = "";
 
@@ -131,10 +131,7 @@ export default {
         $(this.$refs.curWs).animate({
           scrollTop: st + "px",
         });
-        st += $(this.$refs.curWs)
-          .find("> div")
-          .eq(i + 1)
-          .outerHeight();
+        st += $(this.$refs.curWs).children().eq(i).outerHeight();
         console.error(i, st);
         this.curPlay = list[i].q;
         console.error(this.curPlay);
