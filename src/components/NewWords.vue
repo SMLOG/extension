@@ -38,8 +38,8 @@
     </div>
 
     <div class="bottom">
-      <a @click="autoplaynew = autoplaynew > 2 ? 0 : autoplaynew + 1"
-        >Play{{ autoplaynew }}</a
+      <a @click="changePlayMode()" :class="{ playing: playing }"
+        >Play{{ playMode }}</a
       >
 
       <select v-model="playNum" @change="changePlayNum($event)">
@@ -78,10 +78,11 @@ export default {
     return {
       pageSize: 5,
       page: 1,
-      autoplaynew: 0,
+      playMode: 0,
       curPlay: "",
       isSpell: false,
       playNum: 0,
+      playing: 0,
     };
   },
   created() {},
@@ -102,6 +103,15 @@ export default {
     ...mapState(["curItem", "words"]),
   },
   methods: {
+    changePlayMode() {
+      if (this.playing && this.playMode) {
+        this.playMode = this.playMode > 2 ? 0 : this.playMode + 1;
+        if (this.playMode == 0) this.playing = 0;
+      } else {
+        this.playing = !this.playing;
+        if (!this.playMode) this.playMode = 1;
+      }
+    },
     changePlayNum(event) {
       console.log(event);
     },
@@ -128,7 +138,7 @@ export default {
       })();
     },
 
-    async autoPlayNew() {
+    async playList() {
       let list = this.words;
       let start = (this.page - 1) * this.pageSize;
       let from = (this.page - 1) * this.pageSize;
@@ -139,7 +149,7 @@ export default {
           end = start + parseInt(this.playNum);
         }
         for (let i = start; i < Math.min(end, list.length); i++) {
-          if (!this.autoplaynew) {
+          if (!this.playing) {
             this.curPlay = "";
             this.$store.commit("curPlay", null);
 
@@ -152,7 +162,7 @@ export default {
           console.error(this.curPlay);
           await this.playSound(list[i], true);
 
-          if (this.autoplaynew == 2) await this.playSound(list[i], true);
+          if (this.playMode >= 2) await this.playSound(list[i], true);
 
           if (this.isSpell) {
             await this.sleep(1000);
@@ -161,7 +171,7 @@ export default {
             for (let d = 0; d < chars.length; d++)
               await this.tts("en", chars[d], true, 6);
           }
-          if (this.autoplaynew == 3) await this.playSound(list[i], true, "zh");
+          if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
           await this.sleep(1000);
         }
 
@@ -171,17 +181,14 @@ export default {
   },
   mounted() {
     bus.$on("toggleAutoPlay", () => {
-      this.autoplaynew = !this.autoplaynew;
-    });
-    bus.$on("toggleAutoPlay", () => {
-      this.autoplaynew = !this.autoplaynew;
+      this.playing = !this.playing;
     });
   },
 
   watch: {
-    autoplaynew(n) {
+    playing(n) {
       if (n) {
-        this.autoPlayNew();
+        this.playList();
       }
     },
   },
@@ -227,5 +234,9 @@ table tr:nth-child(even) {
 input,
 select {
   color: black !important;
+}
+.playing {
+  color: green;
+  font-weight: bold;
 }
 </style>

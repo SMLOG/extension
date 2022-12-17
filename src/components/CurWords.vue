@@ -1,15 +1,23 @@
 <template>
   <div>
     <div class="op_tool">
-      <span v-show="playMode">{{ playMode }}</span>
+      <span v-show="playMode" :class="{ playing: playing }">{{
+        playMode
+      }}</span>
       <font-awesome-icon
         @click="togglePlayAndMode()"
-        icon="volume-low"
+        icon="volume-high"
         fixed-width
-        v-show="showCurWords"
+        v-show="showCurWords && playing"
         size="lg"
       ></font-awesome-icon>
-
+      <font-awesome-icon
+        @click="togglePlayAndMode()"
+        icon="volume-xmark"
+        fixed-width
+        v-show="showCurWords && !playing"
+        size="lg"
+      ></font-awesome-icon>
       <font-awesome-icon
         @click="setShowCurWords(!showCurWords)"
         icon="arrow-circle-left"
@@ -59,7 +67,7 @@ import $ from "jquery";
 export default {
   data() {
     return {
-      playMode: localStorage.playMode || 1,
+      playMode: (localStorage.playMode && parseInt(localStorage.playMode)) || 0,
       playing: 0,
       curPlay: "",
       isSpell: false,
@@ -115,7 +123,7 @@ export default {
       })();
     },
 
-    async autoPlayNew(b) {
+    async playList(b) {
       let list = this.curWords;
 
       let st = 0;
@@ -137,7 +145,7 @@ export default {
         console.error(this.curPlay);
         await this.playSound(list[i], true);
 
-        if (this.playMode == 2) await this.playSound(list[i], true);
+        if (this.playMode >= 2) await this.playSound(list[i], true);
 
         if (this.isSpell) {
           await this.sleep(1000);
@@ -146,7 +154,7 @@ export default {
           for (let d = 0; d < chars.length; d++)
             await this.tts("en", chars[d], true, 6);
         }
-        if (this.playMode == 3) await this.playSound(list[i], true, "zh");
+        if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
         await this.sleep(1000);
       }
       this.playing = 0;
@@ -159,7 +167,7 @@ export default {
     bus.$on("playCurWords", () => {
       (async () => {
         try {
-          await this.autoPlayNew(1);
+          await this.playList(1);
         } catch (ee) {
           console.log(ee);
         }
@@ -171,7 +179,7 @@ export default {
   watch: {
     playing(n) {
       if (n) {
-        this.autoPlayNew();
+        this.playList();
       }
     },
     showCurWords(n) {
@@ -277,5 +285,9 @@ table tr:nth-child(even) {
 }
 .op_tool > * {
   margin-bottom: 10px;
+}
+.playing {
+  color: green;
+  font-weight: bold;
 }
 </style>
