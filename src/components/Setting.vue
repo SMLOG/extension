@@ -123,9 +123,8 @@
             Sound:
             <select v-model="config.autoSound" @change="updateConfig()">
               <option value="">No sound</option>
-              <option value="BD">BD</option>
-              <option value="YD">YD</option>
               <option value="auto">auto</option>
+              <option v-for="v in voices" :key="v" :value="v">{{ v }}</option>
             </select>
           </div>
           <div>
@@ -160,6 +159,7 @@ export default {
       transHtml: storejs.get("transHtml"),
       uploadDate: "",
       version: version,
+      voices: ["YD", "BD", "BK", "SG"],
 
       config: {
         fzWords: 0,

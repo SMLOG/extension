@@ -162,7 +162,10 @@ export default {
           console.error(this.curPlay);
           await this.playSound(list[i], true);
 
-          if (this.playMode >= 2) await this.playSound(list[i], true);
+          if (this.playMode >= 2) {
+            await this.sleep(500);
+            await this.playSound(list[i], true);
+          }
 
           if (this.isSpell) {
             await this.sleep(1000);

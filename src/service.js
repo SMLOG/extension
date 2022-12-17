@@ -4,6 +4,8 @@ import $ from "jquery";
 import storejs from "storejs";
 import bus from "@/bus";
 import { fetchRequest } from "@/lib";
+import { playAudio } from "@/tts";
+
 //import fetchJSONP from "fetch-jsonp";
 
 //const audio = new Audio();
@@ -396,8 +398,28 @@ let serviceMap = {
       })
     );
   },
-
   audio: (request, sendResponse) => {
+    audioListeners.push(sendResponse);
+    if (request.pause || !request.content) {
+      if (request.pause) {
+        audio.pause();
+      } else {
+        if (!audio.inited) {
+          audio.inited = 1;
+          audio.src = "3s.mp3";
+          audio.play();
+        }
+      }
+      responseAll();
+
+      return false;
+    }
+    audio.title = request.content.trim();
+    currentDoc.title = audio.title;
+    let config = getConf();
+    playAudio(config.autoSound, responseAll, request, audio);
+  },
+  audio2: (request, sendResponse) => {
     audioListeners.push(sendResponse);
     if (request.pause || !request.content) {
       if (request.pause) {
