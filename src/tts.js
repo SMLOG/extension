@@ -31,7 +31,7 @@ const TTS_Providers = {
     let content = request.content;
     // if (lan != "zh") return;
 
-    return `http://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0&tex=${encodeURI(
+    return `https://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0&tex=${encodeURI(
       content
     )}`;
   },
