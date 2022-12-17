@@ -12,10 +12,10 @@ const TTS_Providers = {
         content
       )}&le=cn&keyfrom=speaker-target`;
 
-    if (lan == "en") return;
-    `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(
-      content
-    )}&type=2`;
+    if (lan == "en")
+      return `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(
+        content
+      )}&type=2`;
   },
   BD: function (request) {
     let lan = request.lang || "en";
@@ -26,22 +26,21 @@ const TTS_Providers = {
       content
     )}&spd=${speed}&source=web`;
   },
+  BK: function (request) {
+    // let lan = request.lang || "en";
+    let content = request.content;
+    // if (lan != "zh") return;
+
+    return `http://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0&tex=${encodeURI(
+      content
+    )}`;
+  },
   SG: function (request) {
     let content = request.content;
 
     return `https://fanyi.sogou.com/reventondc/synthesis?text=${encodeURIComponent(
       content
     )}&speed=1&lang=zh-CHS&from=translateweb&speaker=1`;
-  },
-  BK: function (request) {
-    // let lan = request.lang || "en";
-    let content = request.content;
-    // if (lan != "zh") return;
-
-    return (
-      "http://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=1&pdt=301&vol=9&rate=32&per=0&tex=" +
-      encodeURI(content)
-    );
   },
 };
 
