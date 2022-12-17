@@ -320,7 +320,7 @@ module.exports = {
           },
         },
         {
-          urlPattern: /.*?dictvoice.*?/i,
+          urlPattern: /.*?youdao.*?/i,
           handler: "cacheFirst",
           method: "GET",
 
@@ -329,12 +329,12 @@ module.exports = {
             expiration: {
               maxAgeSeconds: 86400 * 100,
             },
-            cacheName: "dictvoice",
+            cacheName: "youdao",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
-          urlPattern: /.*?gettts.*?/i,
+          urlPattern: /.*?baidu.*?/i,
           handler: "cacheFirst",
           method: "GET",
 
@@ -343,7 +343,21 @@ module.exports = {
             expiration: {
               maxAgeSeconds: 86400 * 100,
             },
-            cacheName: "gettts",
+            cacheName: "baidu",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*?sogou.*?/i,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 100,
+            },
+            cacheName: "sogou",
             cacheableResponse: { statuses: [0, 200] },
           },
         },
