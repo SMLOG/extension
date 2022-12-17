@@ -319,6 +319,34 @@ module.exports = {
             cacheableResponse: { statuses: [0, 200] },
           },
         },
+        {
+          urlPattern: /.*?dictvoice.*?/i,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 100,
+            },
+            cacheName: "dictvoice",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*?gettts.*?/i,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 100,
+            },
+            cacheName: "gettts",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
       ],
     },
   },
