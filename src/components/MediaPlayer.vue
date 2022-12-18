@@ -385,8 +385,10 @@ export default {
     },
     textAddNewMarks(dict, orgContent, b) {
       let ret = htmlTrans2(dict, orgContent, b);
+      setTimeout(() => {
+        this.$store.commit("add2CurWords", [ret[1]]);
+      }, 1000);
       console.log("add2CurWords");
-      this.$store.commit("add2CurWords", [ret[1]]);
 
       return ret[0];
     },

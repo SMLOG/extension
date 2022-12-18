@@ -81,7 +81,7 @@ export default {
   methods: {
     togglePlayAndMode() {
       this.playMode++;
-      if (this.playMode > 3) this.playMode = 1;
+      if (this.playMode > 3) this.playMode = 0;
       localStorage.playMode = this.playMode;
     },
     setShowCurWords(b) {
@@ -272,7 +272,7 @@ table tr:nth-child(even) {
   cursor: pointer;
   width: 1em;
   z-index: 10001;
-  opacity: 0.2;
+  opacity: 0.7;
   user-select: none;
 }
 .op_tool > * {

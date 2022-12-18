@@ -47,62 +47,69 @@ const TTS_Providers = {
 let ALL_TTS = Object.keys(TTS_Providers);
 let lastOKTTS = {};
 export async function playAudio(autoSound, sendResp, request, audio) {
-  if (!autoSound) sendResp();
-  let tts;
-  let lan = request.lang || "en";
+  try {
+    if (!autoSound) sendResp();
+    let tts;
+    let lan = request.lang || "en";
 
-  if (autoSound == "auto") {
-    tts = ALL_TTS.slice();
-    if (lastOKTTS[lan]) {
-      let index = tts.indexOf(lastOKTTS[lan]);
-      if (index != 0) {
-        tts.splice(index, 1);
-        tts.unshift(lastOKTTS[lan]);
+    if (autoSound == "auto") {
+      tts = ALL_TTS.slice();
+      if (lastOKTTS[lan]) {
+        let index = tts.indexOf(lastOKTTS[lan]);
+        if (index != 0) {
+          tts.splice(index, 1);
+          tts.unshift(lastOKTTS[lan]);
+        }
       }
-    }
-  } else tts = [autoSound];
+    } else tts = [autoSound];
 
-  for (let i = 0; i < tts.length; i++) {
-    let curProvide = tts[i];
-    let src = TTS_Providers[curProvide](request);
-    if (!src) continue;
+    for (let i = 0; i < tts.length; i++) {
+      let curProvide = tts[i];
+      let src = TTS_Providers[curProvide](request);
+      if (!src) continue;
 
-    console.error(src);
-    audio.pause();
-    let ret = await Promise.race(
-      [
-        new Promise((resolve) => {
-          audio.onerror = () => {
-            resolve(3000);
-          };
-          let endPromise = new Promise((r) => {
-            audio.onended = () => {
-              lastOKTTS[lan] = curProvide;
-              r(0);
-            };
-          });
-
-          audio.onloadeddata = function () {
-            if (isNaN(audio.duration)) {
+      console.error(src);
+      audio.pause();
+      let ret = await Promise.race(
+        [
+          new Promise((resolve) => {
+            audio.onerror = () => {
               resolve(3000);
-            } else resolve(endPromise);
-          };
-          audio.src = src;
-          console.error("asrc", src);
-          audio.play();
-        }),
-      ],
-      sleep(3000)
-    );
-    if (ret != 3000) {
-      console.error(audio.duration);
-      let wret = await Promise.race([ret, sleep((audio.duration + 1) * 1000)]);
-      audio.onloadeddata = audio.onerror = audio.onended = undefined;
-      if (!wret) {
-        break;
+            };
+            let endPromise = new Promise((r) => {
+              audio.onended = () => {
+                lastOKTTS[lan] = curProvide;
+                r(0);
+              };
+            });
+
+            audio.onloadeddata = function () {
+              if (isNaN(audio.duration)) {
+                resolve(3000);
+              } else resolve(endPromise);
+            };
+            audio.src = src;
+            console.error("asrc", src);
+            audio.play();
+          }),
+        ],
+        sleep(3000)
+      );
+      if (ret != 3000) {
+        console.error(audio.duration);
+        let wret = await Promise.race([
+          ret,
+          sleep((audio.duration + 1) * 1000),
+        ]);
+        audio.onloadeddata = audio.onerror = audio.onended = undefined;
+        if (!wret) {
+          break;
+        }
       }
     }
+    audio.onloadeddata = audio.onerror = audio.onended = undefined;
+  } catch (eee) {
+    console.error(eee);
   }
-  audio.onloadeddata = audio.onerror = audio.onended = undefined;
   sendResp({});
 }
