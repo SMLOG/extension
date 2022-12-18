@@ -1,18 +1,18 @@
 <template>
   <div>
     <div class="op_tool">
-      <span v-show="playMode" :class="{ playing: playing }">{{
+      <span @click="togglePlayAndMode()" :class="{ playing: playing }">{{
         playMode
       }}</span>
       <font-awesome-icon
-        @click="togglePlayAndMode()"
         icon="volume-high"
         fixed-width
         v-show="showCurWords && playing"
+        @click="playing = !playing"
         size="lg"
       ></font-awesome-icon>
       <font-awesome-icon
-        @click="togglePlayAndMode()"
+        @click="playing = !playing"
         icon="volume-xmark"
         fixed-width
         v-show="showCurWords && !playing"
@@ -80,16 +80,8 @@ export default {
   },
   methods: {
     togglePlayAndMode() {
-      if (this.playing == 0 && this.playMode == 0) {
-        this.playMode = 1;
-      } else if (this.playing == 0 && this.playMode == 1) {
-        this.playing = 1;
-      } else if (this.playing && this.playMode < 3) {
-        this.playMode += 1;
-      } else {
-        this.playMode = 0;
-        this.playing = 0;
-      }
+      this.playMode++;
+      if (this.playMode > 3) this.playMode = 1;
       localStorage.playMode = this.playMode;
     },
     setShowCurWords(b) {

@@ -62,43 +62,47 @@ export async function playAudio(autoSound, sendResp, request, audio) {
     }
   } else tts = [autoSound];
 
-  if (autoSound)
-    for (let i = 0; i < tts.length; i++) {
-      let curProvide = tts[i];
-      let src = TTS_Providers[curProvide](request);
-      if (!src) continue;
+  for (let i = 0; i < tts.length; i++) {
+    let curProvide = tts[i];
+    let src = TTS_Providers[curProvide](request);
+    if (!src) continue;
 
-      console.error(src);
-      let ret = await Promise.race(
-        [
-          new Promise((resolve) => {
-            audio.onerror = () => {
+    console.error(src);
+    audio.pause();
+    let ret = await Promise.race(
+      [
+        new Promise((resolve) => {
+          audio.onerror = () => {
+            resolve(3000);
+          };
+          let endPromise = new Promise((r) => {
+            audio.onended = () => {
+              lastOKTTS[lan] = curProvide;
+              r(0);
+            };
+          });
+
+          audio.onloadeddata = function () {
+            if (isNaN(audio.duration)) {
               resolve(3000);
-            };
-            let endPromise = new Promise((r) => {
-              audio.onended = () => {
-                lastOKTTS[lan] = curProvide;
-                r(0);
-              };
-            });
-
-            audio.onloadeddata = function () {
-              if (isNaN(audio.duration)) {
-                resolve(3000);
-              } else resolve(endPromise);
-            };
-            audio.src = src;
-            console.error("asrc", src);
-            audio.play();
-          }),
-        ],
-        sleep(3000)
-      );
-      if (ret != 3000) {
-        console.error(audio.duration);
-        await Promise.race([ret, sleep(audio.duration * 1000)]);
+            } else resolve(endPromise);
+          };
+          audio.src = src;
+          console.error("asrc", src);
+          audio.play();
+        }),
+      ],
+      sleep(3000)
+    );
+    if (ret != 3000) {
+      console.error(audio.duration);
+      let wret = await Promise.race([ret, sleep((audio.duration + 1) * 1000)]);
+      audio.onloadeddata = audio.onerror = audio.onended = undefined;
+      if (!wret) {
         break;
       }
     }
+  }
+  audio.onloadeddata = audio.onerror = audio.onended = undefined;
   sendResp({});
 }
