@@ -300,7 +300,7 @@ export default {
           this.onCuesChangeSync = () => {
             let sp = this.cues;
             //  console.log("scroll " + new Date().getSeconds());
-            let s = parseInt(this.player.currentTime());
+            let currentTime = parseInt(this.player.currentTime());
             //let s = parseInt(this.player.currentTime() - 500);
             if (this.cueIndex >= sp.length) {
               this.cueIndex = 0;
@@ -321,7 +321,11 @@ export default {
             } else
               for (let j = 0; j < sp.length; j++) {
                 let t = sp.eq(j);
-                if (t && t.attr("begin") <= s && t.attr("end") > s) {
+                if (
+                  t &&
+                  t.attr("begin") <= currentTime &&
+                  t.attr("end") > currentTime
+                ) {
                   //if (j == this.cueIndex) break;
                   $text.find("span.cur").removeClass("cur");
                   t.addClass("cur");
@@ -341,7 +345,11 @@ export default {
         let $text = $(this.$refs.text);
         let $lynx = $(this.$refs.lynx);
         let lastPos = 0;
-        $text.animate({ scrollTop: -$text.height() }, 100);
+        window.cancelAnimationFrame(window.requestAnimationFrame2);
+        window.requestAnimationFrame2 = window.requestAnimationFrame(() => {
+          $text.animate({ scrollTop: -$text.height() }, 100);
+        });
+
         this.scrollTimer = setInterval(() => {
           let st = 0;
           let h = $text.height();
@@ -356,7 +364,10 @@ export default {
             this.player.currentTime() != lastPos
           ) {
             st = $text.scrollTop() + pace;
-            $text.animate({ scrollTop: st }, 100);
+            window.cancelAnimationFrame(window.requestAnimationFrame3);
+            window.requestAnimationFrame3 = window.requestAnimationFrame(() => {
+              $text.animate({ scrollTop: st }, 100);
+            });
             lastPos = this.player.currentTime();
           }
 
@@ -680,6 +691,7 @@ export default {
     },
 
     scrollMid(span, $parent) {
+      console.log(span);
       if (!span || !span.offset) return;
       if (!span.offset()) return;
       let y =
@@ -695,7 +707,11 @@ export default {
           y
         );
         */
-      $($parent).animate({ scrollTop: y }, 1000);
+      window.cancelAnimationFrame(window.requestAnimationFrame1);
+      window.requestAnimationFrame1 = window.requestAnimationFrame(() => {
+        $($parent).animate({ scrollTop: y }, 1000);
+      });
+      //  $($parent).animate({ scrollTop: y }, 1000);
     },
   },
   mounted() {

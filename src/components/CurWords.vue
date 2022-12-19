@@ -37,25 +37,14 @@
     </div>
 
     <div class="curWs" ref="curWs">
-      <div
+      <WordItem
         v-show="showCurWords"
         v-for="w in curWords"
         :key="w.q"
-        :class="{ cur: w.q == curPlay }"
+        :curPlay="curPlay"
         style="padding: 5px 0"
-      >
-        <div :class="{ detach: !w.i & w.n, remove: !w.n }">
-          <div @click="playSound(w)" style="cursor: pointer">
-            {{ w.q }}
-            <b v-if="w.am"> [{{ w.am }}]</b>
-          </div>
-          <div style="font-weight: bold">
-            <span style="cursor: pointer" @click="toggleItemIsNew(w, $event)">{{
-              w.to
-            }}</span>
-          </div>
-        </div>
-      </div>
+        :word="w"
+      />
     </div>
   </div>
 </template>
@@ -64,6 +53,8 @@
 import { mapState } from "vuex";
 import bus from "@/bus";
 import $ from "jquery";
+import WordItem from "./WordItem.vue";
+
 export default {
   data() {
     return {
@@ -78,7 +69,35 @@ export default {
   computed: {
     ...mapState(["curWords", "showCurWords"]),
   },
+  components: {
+    WordItem,
+  },
   methods: {
+    async playRwords(item, scrollTop, $parent) {
+      let st = scrollTop;
+      let childs = $parent.children();
+
+      if (window.rwords && window.rwords[item.q]) {
+        let rwords = window.rwords[item.q];
+        for (let i = 0; i < rwords.length; i++) {
+          console.log(st);
+          st += childs.eq(i).outerHeight();
+          console.error(st);
+          let sst = st;
+          window.requestAnimationFrame4 = window.requestAnimationFrame(() => {
+            $(this.$refs.curWs).animate({
+              scrollTop: sst + "px",
+            });
+          });
+
+          this.curPlay = rwords[i].q;
+          await this.playSound(rwords[i], true);
+          if (this.playMode >= 2) await this.playSound(rwords[i], true);
+          if (this.playMode >= 3) await this.playSound(rwords[i], true, "zh");
+          await this.sleep(1000);
+        }
+      }
+    },
     togglePlayAndMode() {
       this.playMode++;
       if (this.playMode > 3) this.playMode = 0;
@@ -124,14 +143,18 @@ export default {
         if (i >= list.length) break;
         if (!b && !this.playing) {
           this.curPlay = "";
-
+          this.playing = 0;
           return;
         }
 
-        $(this.$refs.curWs).animate({
-          scrollTop: st + "px",
+        window.cancelAnimationFrame(window.requestAnimationFrame4);
+        let sst = st;
+        window.requestAnimationFrame4 = window.requestAnimationFrame(() => {
+          $(this.$refs.curWs).animate({
+            scrollTop: sst + "px",
+          });
         });
-        st += $(this.$refs.curWs).children().eq(i).outerHeight();
+
         console.error(i, st);
         this.curPlay = list[i].q;
         console.error(this.curPlay);
@@ -148,6 +171,14 @@ export default {
         }
         if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
         await this.sleep(1000);
+
+        await this.playRwords(
+          list[i],
+          st,
+          $(this.$refs.curWs).children().eq(i)
+        );
+        let height = $(this.$refs.curWs).children().eq(i).outerHeight();
+        st += height;
       }
       this.playing = 0;
     },
@@ -231,19 +262,6 @@ table tr:nth-child(even) {
 .ctrl {
   user-select: none;
   cursor: pointer;
-}
-.cur {
-}
-.cur div {
-  color: green !important;
-  font-weight: bold;
-}
-.detach {
-  color: red;
-}
-.remove {
-  color: orange;
-  text-decoration: line-through;
 }
 
 .curWs {

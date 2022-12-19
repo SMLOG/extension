@@ -33,6 +33,7 @@ export async function getAAduio(item, type) {
 }
 
 export async function playSound(item, wait, lan = "en") {
+  if (!item) return;
   let content = lan == "en" ? item.q : cn(item);
 
   return tts(lan, content, wait);
