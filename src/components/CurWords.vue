@@ -1,6 +1,25 @@
 <template>
   <div>
-    <div class="op_tool">
+    <div
+      class="op_tool"
+      @touchstart="onTouch()"
+      :style="{ opacity: opacity, fontSize: opacity == 1 ? '150%' : '50%' }"
+      @mouseenter="onTouch"
+      @mouseleave="onLeave()"
+      @touchend="onLeave"
+      ref="op_tool"
+    >
+      <div
+        ref="mask"
+        style="
+          width: 150%;
+          height: 100%;
+          position: absolute;
+          z-index: 1;
+          user-select: none;
+        "
+        v-show="opacity < 1"
+      ></div>
       <span @click="togglePlayAndMode()" :class="{ playing: playing }">{{
         playMode
       }}</span>
@@ -67,6 +86,8 @@ export default {
       curPlay: "",
       isSpell: false,
       playNum: 0,
+      toucherTimer: 0,
+      opacity: 0.1,
     };
   },
   created() {},
@@ -77,6 +98,15 @@ export default {
     WordItem,
   },
   methods: {
+    onLeave() {
+      this.toucherTimer = setTimeout(() => {
+        this.opacity = 0.1;
+      }, 3000);
+    },
+    onTouch() {
+      clearTimeout(this.toucherTimer);
+      this.opacity = 1;
+    },
     togglePlayAndMode() {
       this.playMode++;
       if (this.playMode > 3) this.playMode = 0;
@@ -95,23 +125,33 @@ export default {
     async playList(b) {
       let pageList = this.curWords;
 
-      for (let d = 0; d < this.$refs.word.length; d++) {
-        if (!b && !this.playing) {
-          this.curPlay = "";
-          this.playing = 0;
-          return;
+      if (pageList.length)
+        for (let d = 0; d < this.$refs.word.length; d++) {
+          if (!b && !this.playing) {
+            this.curPlay = "";
+            this.playing = 0;
+            return;
+          }
+
+          console.log(pageList[d].q, pageList[d], this.$refs.word[d]);
+
+          //await this.playSound(pageList[d], true);
+          await this.$refs.word[d].playWords(this.$refs.curWs, b);
         }
-
-        console.log(pageList[d].q, pageList[d], this.$refs.word[d]);
-
-        //await this.playSound(pageList[d], true);
-        await this.$refs.word[d].playWords(this.$refs.curWs, b);
-      }
 
       this.playing = 0;
     },
   },
   mounted() {
+    let clickHandler = (e) => {
+      if (this.$refs.op_tool) {
+        if (!this.$refs.op_tool.contains(e.target)) {
+          this.opacity = 0.1;
+        }
+      }
+    };
+    document.addEventListener("click", clickHandler);
+
     bus.$on("newWord", (item) => {
       this.$store.commit("add2CurWords", [[item]]);
     });
@@ -218,14 +258,20 @@ table tr:nth-child(even) {
   cursor: pointer;
   width: 1em;
   z-index: 10001;
-  opacity: 0.7;
   user-select: none;
 }
 .op_tool > * {
   margin-bottom: 10px;
+  user-select: none;
 }
 .playing {
   color: green;
   font-weight: bold;
+}
+.curWs > div:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+.curWs > div:nth-child(even) {
+  background-color: #fff;
 }
 </style>

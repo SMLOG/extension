@@ -184,6 +184,21 @@ module.exports = {
           },
         },
         {
+          urlPattern: /.*?word.r..js.*?/,
+          handler: "cacheFirst",
+          method: "GET",
+
+          options: {
+            //networkTimeoutSeconds: 20,
+            expiration: {
+              maxAgeSeconds: 86400 * 100,
+            },
+            cacheName: "baidu",
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+
+        {
           urlPattern: /.*?.js.*?/,
           handler: "staleWhileRevalidate",
           method: "GET",

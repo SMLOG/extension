@@ -4,7 +4,7 @@
       style="
         padding: 5px;
         background: white;
-        max-height: calc(100vh - 280px);
+        max-height: calc(100vh - 180px);
         overflow: auto;
       "
       ref="words"
@@ -38,8 +38,8 @@
       </label>
       <div style="text-align: right; float: right">
         (<input style="width: 25px" v-model="page" />/{{ pages }})
-        <a class="ctrl" @click="toPage(page - 1)"> Prev </a>
-        <a class="ctrl" @click="toPage(page + 1)"> Next </a>
+        <a class="ctrl" @click="toPage(parseInt(page) - 1)"> Prev </a>
+        <a class="ctrl" @click="toPage(parseInt(page) + 1)"> Next </a>
       </div>
     </div>
   </div>

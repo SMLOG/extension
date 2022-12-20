@@ -34,40 +34,34 @@ const mixin = {
     },
     loadRords(word) {
       if (!word) return;
-      if (!window.rwords || !window.rwords[word.q]) {
-        let self = this;
-        $.ajax({
-          url:
-            "http://localhost/word/r/" +
-            word.q.substring(0, 2) +
-            "/" +
-            word.q +
-            ".js",
-          type: "get",
-          dataType: "jsonp",
-          jsonpCallback: "cb",
-          timeout: 5000,
-          cache: 1,
+      console.log(word.q);
+      let self = this;
+      $.ajax({
+        url:
+          "http://localhost/word/r/" +
+          word.q.substring(0, 2) +
+          "/" +
+          word.q +
+          ".js",
+        type: "get",
+        dataType: "jsonp",
+        jsonpCallback: word.q,
+        timeout: 5000,
+        cache: 1,
+        success: function (data) {
+          console.log(data);
+          self.rwords.length = 0;
+          let list = data[1].slice(Math.min(5, data[1].length)).map((e) => {
+            return { q: e[0], to: e[1], am: e[2] };
+          });
 
-          success: function (data) {
-            self.rwords.length = 0;
-            if (!window.rwords) window.rwords = [];
-            window.rwords[word.q] = data[1].map((e) => {
-              return { q: e[0], to: e[1], am: e[2] };
-            });
-            window.rwords[word.q].length = Math.min(
-              window.rwords[word.q].length,
-              25
-            );
-
-            self.rwords.push(...window.rwords[word.q]);
-          },
-          error: function (err) {
-            console.error(err);
-            self.rwords.length = 0;
-          },
-        });
-      }
+          self.rwords.push(...list);
+        },
+        error: function (err) {
+          console.error(err);
+          self.rwords.length = 0;
+        },
+      });
     },
     scroll2el($el, $parent) {
       console.log($el);

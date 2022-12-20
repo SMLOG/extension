@@ -113,7 +113,7 @@ export default {
   },
   mounted() {
     console.log("load");
-    this.loadRords(this.word);
+    //this.loadRords(this.word);
   },
 
   watch: {},
