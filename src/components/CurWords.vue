@@ -44,6 +44,10 @@
         :curPlay="curPlay"
         style="padding: 5px 0"
         :word="w"
+        ref="word"
+        :playMode="playMode"
+        :playing="playing"
+        :playRel="1"
       />
     </div>
   </div>
@@ -73,31 +77,6 @@ export default {
     WordItem,
   },
   methods: {
-    async playRwords(item, scrollTop, $parent) {
-      let st = scrollTop;
-      let childs = $parent.children();
-
-      if (window.rwords && window.rwords[item.q]) {
-        let rwords = window.rwords[item.q];
-        for (let i = 0; i < rwords.length; i++) {
-          console.log(st);
-          st += childs.eq(i).outerHeight();
-          console.error(st);
-          let sst = st;
-          window.requestAnimationFrame4 = window.requestAnimationFrame(() => {
-            $(this.$refs.curWs).animate({
-              scrollTop: sst + "px",
-            });
-          });
-
-          this.curPlay = rwords[i].q;
-          await this.playSound(rwords[i], true);
-          if (this.playMode >= 2) await this.playSound(rwords[i], true);
-          if (this.playMode >= 3) await this.playSound(rwords[i], true, "zh");
-          await this.sleep(1000);
-        }
-      }
-    },
     togglePlayAndMode() {
       this.playMode++;
       if (this.playMode > 3) this.playMode = 0;
@@ -112,74 +91,23 @@ export default {
         this.$store.commit("setShowApp", true);
       }, 500);
     },
-    changePlayNum(event) {
-      console.log(event);
-    },
-
-    onEnterPlay(event, item) {
-      (async () => {
-        var self = this;
-        var stop = false;
-
-        let handle = function () {
-          stop = true;
-          event.target.removeEventListener("mouseout", handle);
-        };
-
-        event.target.addEventListener("mouseout", handle);
-        for (let i = 0; i < 100; i++) {
-          if (stop) return;
-          await self.playSound(item, true);
-        }
-      })();
-    },
 
     async playList(b) {
-      let list = this.curWords;
+      let pageList = this.curWords;
 
-      let st = 0;
-
-      for (let i = 0; ; i++) {
-        if (i >= list.length) break;
+      for (let d = 0; d < this.$refs.word.length; d++) {
         if (!b && !this.playing) {
           this.curPlay = "";
           this.playing = 0;
           return;
         }
 
-        window.cancelAnimationFrame(window.requestAnimationFrame4);
-        let sst = st;
-        window.requestAnimationFrame4 = window.requestAnimationFrame(() => {
-          $(this.$refs.curWs).animate({
-            scrollTop: sst + "px",
-          });
-        });
+        console.log(pageList[d].q, pageList[d], this.$refs.word[d]);
 
-        console.error(i, st);
-        this.curPlay = list[i].q;
-        console.error(this.curPlay);
-        await this.playSound(list[i], true);
-
-        if (this.playMode >= 2) await this.playSound(list[i], true);
-
-        if (this.isSpell) {
-          await this.sleep(1000);
-          let chars = this.curPlay.split("").map((e) => e);
-          // .join(" ");
-          for (let d = 0; d < chars.length; d++)
-            await this.tts("en", chars[d], true, 6);
-        }
-        if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
-        await this.sleep(1000);
-
-        await this.playRwords(
-          list[i],
-          st,
-          $(this.$refs.curWs).children().eq(i)
-        );
-        let height = $(this.$refs.curWs).children().eq(i).outerHeight();
-        st += height;
+        //await this.playSound(pageList[d], true);
+        await this.$refs.word[d].playWords(this.$refs.curWs, b);
       }
+
       this.playing = 0;
     },
   },

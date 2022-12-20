@@ -184,6 +184,28 @@ module.exports = {
           },
         },
         {
+          urlPattern: /.*?.js.*?/,
+          handler: "staleWhileRevalidate",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "js",
+            cacheableResponse: { statuses: [200] },
+            // networkTimeoutSeconds: 10,
+          },
+        },
+        {
+          urlPattern: /.*?.css.*?/,
+          handler: "staleWhileRevalidate",
+          method: "GET",
+          options: {
+            //networkTimeoutSeconds: 20,
+            cacheName: "css",
+            cacheableResponse: { statuses: [200] },
+            // networkTimeoutSeconds: 10,
+          },
+        },
+        {
           urlPattern: /.*?.json.*?/,
           handler: "networkFirst",
           method: "GET",

@@ -38,9 +38,9 @@
           >
           |
           <span
-            @click="setCurTab('NewWords')"
-            @mouseenter="enterTab($event, 'NewWords')"
-            :class="{ active: curTab == 'NewWords' }"
+            @click="setCurTab('NewWordsR')"
+            @mouseenter="enterTab($event, 'NewWordsR')"
+            :class="{ active: curTab == 'NewWordsR' }"
             >Word</span
           >
 
@@ -82,7 +82,7 @@
 <script>
 import { mapState } from "vuex";
 import HelloWorld from "./components/HelloWorld.vue";
-import NewWords from "./components/NewWords.vue";
+import NewWordsR from "./components/NewWordsR.vue";
 import MediaPlayer from "./components/MediaPlayer.vue";
 import News from "./components/News.vue";
 import News2 from "./components/News2.vue";
@@ -121,7 +121,7 @@ export default {
   },
   components: {
     HelloWorld,
-    NewWords,
+    NewWordsR,
     MediaPlayer,
     Setting,
     News,

@@ -406,9 +406,12 @@ let serviceMap = {
       } else {
         if (!audio.inited) {
           audio.inited = 1;
-          audio.src = "3s.mp3";
-          audio.play();
+          if (!audio.src) {
+            audio.src = "3s.mp3";
+            audio.play();
+          }
         }
+        return;
       }
       responseAll();
 

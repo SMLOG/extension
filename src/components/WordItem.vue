@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 5px 0" class="word">
+  <div style="padding: 5px 0" class="word" ref="word">
     <div :class="{ detach: !word.i & word.n, remove: !word.n }">
       <div
         @click="playSound(word)"
@@ -7,7 +7,9 @@
         :class="{ cur: curPlay == word.q }"
       >
         {{ word.q }}
-        <b v-if="word.am"> [{{ word.am }}]</b>
+        <b v-if="word.am" @mouseenter="onEnterPlay($event, word)">
+          [{{ word.am }}]</b
+        >
       </div>
       <div style="font-weight: bold">
         <span style="cursor: pointer" @click="toggleItemIsNew(word, $event)">{{
@@ -15,14 +17,16 @@
         }}</span>
       </div>
     </div>
-    <div v-for="word in rwords" :key="word.q" class="rword">
+    <div v-for="word in rwords" :key="word.q" class="rword" ref="rword">
       <div
         @click="playSound(word)"
         style="cursor: pointer"
         :class="{ cur: curPlay == word.q }"
       >
         {{ word.q }}
-        <b v-if="word.am"> [{{ word.am }}]</b>
+        <b v-if="word.am" @mouseenter="onEnterPlay($event, word)">
+          [{{ word.am }}]</b
+        >
       </div>
       <div>
         <span style="cursor: pointer" @click="toggleItemIsNew(word, $event)">{{
@@ -36,55 +40,80 @@
 <script>
 import $ from "jquery";
 export default {
-  props: ["word", "curPlay"],
+  props: ["word", "playing", "playMode", "playRel"],
   data() {
     return {
-      rwords: [],
+      curPlay: "",
     };
   },
   created() {},
   computed: {},
   methods: {
-    loadRords() {
-      if (!window.rwords || !window.rwords[this.word.q]) {
-        let self = this;
-        $.ajax({
-          url:
-            "http://localhost/word/r/" +
-            this.word.q.substring(0, 2) +
-            "/" +
-            this.word.q +
-            ".js",
-          type: "get",
-          dataType: "jsonp",
-          jsonpCallback: "cb",
-          timeout: 5000,
-          cache: 1,
+    async playWords(pel, force) {
+      let $pel = $(pel);
+      this.curPlay = this.word.q;
+      console.error(this.word);
+      this.scroll2el($(this.$refs.word), $pel);
+      if (!force && !this.playing) return;
 
-          success: function (data) {
-            self.rwords.length = 0;
-            if (!window.rwords) window.rwords = [];
-            window.rwords[self.word.q] = data[1].map((e) => {
-              return { q: e[0], to: e[1], am: e[2] };
-            });
-            window.rwords[self.word.q].length = Math.min(
-              window.rwords[self.word.q].length,
-              5
-            );
+      await this.playSound(this.word, true);
 
-            self.rwords.push(...window.rwords[self.word.q]);
-          },
-          error: function (err) {
-            console.error(err);
-            self.rwords.length = 0;
-          },
-        });
+      if (this.playMode >= 2) {
+        await this.sleep(500);
+        await this.playSound(this.word, true);
       }
+
+      if (this.isSpell) {
+        await this.sleep(1000);
+        let chars = this.curPlay.split("").map((e) => e);
+        // .join(" ");
+        for (let d = 0; d < chars.length; d++)
+          await this.tts("en", chars[d], true, 6);
+      }
+      if (this.playMode >= 3) await this.playSound(this.word, true, "zh");
+      await this.sleep(1000);
+
+      if (this.playRel) {
+        await this.playRwords($pel, force);
+      }
+      this.curPlay = "";
+    },
+    async playRwords($pel, force) {
+      let item = this.word;
+      if (window.rwords && window.rwords[item.q]) {
+        let rwords = window.rwords[item.q];
+        for (let i = 0; i < rwords.length; i++) {
+          if (!force && !this.playing) return;
+          this.curPlay = rwords[i].q;
+          console.log(this.$refs.rword[i].el, this.$refs.rword[i]);
+          this.scroll2el($(this.$refs.rword[i]), $pel);
+          await this.playSound(rwords[i], true);
+          if (this.playMode >= 2) await this.playSound(rwords[i], true);
+          if (this.playMode >= 3) await this.playSound(rwords[i], true, "zh");
+          await this.sleep(1000);
+        }
+      }
+    },
+    onEnterPlay(event, item) {
+      (async () => {
+        var stop = false;
+
+        let handle = function () {
+          stop = true;
+          event.target.removeEventListener("mouseout", handle);
+        };
+
+        event.target.addEventListener("mouseout", handle);
+        for (let i = 0; i < 100; i++) {
+          if (stop) return;
+          await this.playSound(item, true);
+        }
+      })();
     },
   },
   mounted() {
     console.log("load");
-    //this.loadRords();
+    this.loadRords(this.word);
   },
 
   watch: {},
@@ -108,6 +137,10 @@ export default {
   padding-top: 5px;
 }
 
+.word {
+  text-align: left;
+  max-width: 400px;
+}
 .word .rword:not(:last-child) {
   border-bottom: 1px solid;
 }
