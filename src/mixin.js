@@ -4,7 +4,7 @@ import $ from "jquery";
 
 const mixin = {
   data() {
-    return { rwords: [] };
+    return {};
   },
   methods: {
     playSound(item, wait, lan = "en") {
@@ -32,37 +32,7 @@ const mixin = {
           this.$store.commit("newWord", resp.contents);
         });
     },
-    loadRords(word) {
-      if (!word) return;
-      console.log(word.q);
-      let self = this;
-      $.ajax({
-        url:
-          "http://localhost/word/r/" +
-          word.q.substring(0, 2) +
-          "/" +
-          word.q +
-          ".js",
-        type: "get",
-        dataType: "jsonp",
-        jsonpCallback: word.q,
-        timeout: 5000,
-        cache: 1,
-        success: function (data) {
-          console.log(data);
-          self.rwords.length = 0;
-          let list = data[1].slice(Math.min(5, data[1].length)).map((e) => {
-            return { q: e[0], to: e[1], am: e[2] };
-          });
 
-          self.rwords.push(...list);
-        },
-        error: function (err) {
-          console.error(err);
-          self.rwords.length = 0;
-        },
-      });
-    },
     scroll2el($el, $parent) {
       console.log($el);
 

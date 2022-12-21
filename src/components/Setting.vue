@@ -109,6 +109,14 @@
               v-model="config.news"
               @change="updateConfig()"
           /></label>
+
+          <label>
+            Rel Words
+            <input
+              type="checkbox"
+              v-model="config.relwords"
+              @change="updateConfig()"
+          /></label>
         </div>
 
         <div
@@ -171,6 +179,7 @@ export default {
         preload: 0,
         dict: 0,
         news: 0,
+        relwords: 0,
       },
     };
   },
@@ -347,7 +356,8 @@ export default {
 label {
   display: inline-block;
   border-bottom: 1px solid white;
-  margin-right: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 .version {
   font-size: 40%;

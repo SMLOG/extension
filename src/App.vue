@@ -305,7 +305,7 @@ export default {
   max-width: 500px;
   padding: 2px;
   background: gray;
-  max-width: 100%;
+  max-width: 400px;
   max-height: calc(100vh - 70px);
 }
 

@@ -67,7 +67,7 @@
         ref="word"
         :playMode="playMode"
         :playing="playing"
-        :playRel="1"
+        :playRel="3"
       />
     </div>
   </div>

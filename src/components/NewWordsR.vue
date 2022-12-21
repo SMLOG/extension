@@ -27,15 +27,9 @@
         >Play{{ playMode }}</a
       >
 
-      <label>
-        <input
-          type="checkbox"
-          @mouseup.stop=""
-          v-model="playRel"
-          :checked="playRel"
-        />
-        PR
-      </label>
+      <a v-if="relwords" @click="playRel = playRel >= 20 ? 0 : playRel + 5">
+        PR{{ playRel }}
+      </a>
       <div style="text-align: right; float: right">
         (<input style="width: 25px" v-model="page" />/{{ pages }})
         <a class="ctrl" @click="toPage(parseInt(page) - 1)"> Prev </a>
@@ -56,7 +50,7 @@ export default {
       pageSize: 5,
       page: 1,
       playMode: 0,
-      playRel: false,
+      playRel: 0,
       playing: 0,
     };
   },
@@ -65,6 +59,9 @@ export default {
     WordItem,
   },
   computed: {
+    relwords() {
+      return this.$store.state.config.relwords;
+    },
     pageList() {
       let list = this.words;
       if (list.length == 0) return list;
