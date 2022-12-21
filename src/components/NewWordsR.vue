@@ -124,6 +124,7 @@ export default {
         this.page++;
         await this.sleep(1);
       }
+      this.playing = 0;
     },
   },
   mounted() {

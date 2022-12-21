@@ -4,8 +4,9 @@
       class="op_tool"
       @touchstart="onTouch()"
       :style="{ opacity: opacity, fontSize: opacity == 1 ? '150%' : '50%' }"
-      @mouseenter="onTouch"
+      @mouseenter="onTouch()"
       @mouseleave="onLeave()"
+      @touchmove="onTouch()"
       @touchend="onLeave"
       ref="op_tool"
     >
@@ -114,6 +115,7 @@ export default {
     },
     setShowCurWords(b) {
       this.$store.commit("setShowCurWords", b);
+      if (!b) this.playing = 0;
     },
     showApp() {
       console.log("error");
@@ -122,58 +124,26 @@ export default {
       }, 500);
     },
 
-    async playList(b) {
+    async playList() {
       let pageList = this.curWords;
 
       if (pageList.length)
         for (let d = 0; d < this.$refs.word.length; d++) {
-          if (!b && !this.playing) {
+          if (!this.playing) {
             this.curPlay = "";
-            this.playing = 0;
             return;
           }
 
           console.log(pageList[d].q, pageList[d], this.$refs.word[d]);
 
           //await this.playSound(pageList[d], true);
-          await this.$refs.word[d].playWords(this.$refs.curWs, b);
+          await this.sleep(10);
+          await this.$refs.word[d].playWords(this.$refs.curWs);
         }
 
       this.playing = 0;
     },
-  },
-  mounted() {
-    let clickHandler = (e) => {
-      if (this.$refs.op_tool) {
-        if (!this.$refs.op_tool.contains(e.target)) {
-          this.opacity = 0.1;
-        }
-      }
-    };
-    document.addEventListener("click", clickHandler);
-
-    bus.$on("newWord", (item) => {
-      this.$store.commit("add2CurWords", [[item]]);
-    });
-    bus.$on("playCurWords", () => {
-      (async () => {
-        try {
-          await this.playList(1);
-        } catch (ee) {
-          console.log(ee);
-        }
-        bus.$emit("finishPlayCurWords");
-      })();
-    });
-  },
-
-  watch: {
-    playing(n) {
-      if (n) {
-        this.playList();
-      }
-    },
-    showCurWords(n) {
+    showHideCurWords(show) {
       let ww = $(window).width();
       if ($(".videoCon").is(":visible")) {
         let vw = $(".videoCon").width();
@@ -183,7 +153,7 @@ export default {
           "top",
           dockside ? $(".text").offset().top + "px" : "auto"
         );
-        if (n) {
+        if (show) {
           if (dockside) {
             $(".text").css({
               width: ww != vw ? Math.min(ww * 0.75, vw) + "px" : "75%",
@@ -201,7 +171,7 @@ export default {
           $(".text").css("width", "100%");
         }
       } else {
-        if (n) {
+        if (show) {
           $(this.$refs.curWs).css({
             left: "auto",
             right: "0",
@@ -212,6 +182,48 @@ export default {
           $(".new2").css("width", "100%");
         }
       }
+    },
+  },
+  mounted() {
+    $(window).resize(() => {
+      this.showHideCurWords(this.showCurWords);
+    });
+    let clickHandler = (e) => {
+      if (this.$refs.op_tool) {
+        if (!this.$refs.op_tool.contains(e.target)) {
+          this.opacity = 0.1;
+        }
+      }
+    };
+    document.addEventListener("click", clickHandler);
+
+    bus.$on("newWord", (item) => {
+      this.$store.commit("add2CurWords", [[item]]);
+    });
+    bus.$on("playCurWords", () => {
+      (async () => {
+        try {
+          this.skipTrigAutoPlay = 1;
+          this.playing = 1;
+
+          await this.playList();
+        } catch (ee) {
+          console.log(ee);
+        }
+        this.skipTrigAutoPlay = 0;
+        bus.$emit("finishPlayCurWords");
+      })();
+    });
+  },
+
+  watch: {
+    playing(n) {
+      if (n && !this.skipTrigAutoPlay) {
+        this.playList();
+      }
+    },
+    showCurWords(show) {
+      this.showHideCurWords(show);
     },
   },
 };

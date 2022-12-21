@@ -49,12 +49,12 @@ export default {
   created() {},
   computed: {},
   methods: {
-    async playWords(pel, force) {
+    async playWords(pel) {
       let $pel = $(pel);
       this.curPlay = this.word.q;
-      console.error(this.word);
+      console.error(this.word, this.playing);
       this.scroll2el($(this.$refs.word), $pel);
-      if (!force && !this.playing) return;
+      if (!this.playing) return;
 
       await this.playSound(this.word, true);
 
@@ -74,16 +74,16 @@ export default {
       await this.sleep(1000);
 
       if (this.playRel) {
-        await this.playRwords($pel, force);
+        await this.playRwords($pel);
       }
       this.curPlay = "";
     },
-    async playRwords($pel, force) {
+    async playRwords($pel) {
       let item = this.word;
       if (window.rwords && window.rwords[item.q]) {
         let rwords = window.rwords[item.q];
         for (let i = 0; i < rwords.length; i++) {
-          if (!force && !this.playing) return;
+          if (!this.playing) return;
           this.curPlay = rwords[i].q;
           console.log(this.$refs.rword[i].el, this.$refs.rword[i]);
           this.scroll2el($(this.$refs.rword[i]), $pel);
