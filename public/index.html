@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+  <meta http-equiv="Cache-Control" content="public" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta content="no-referrer" name="referrer" />
+  <script type="text/javascript">window.chrome = {};</script>
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <script>
+    /* 判断当前浏览器是否支持serviceWorker */
+    //'<%= process.env.NODE_ENV %>' != 'production' &&
+    if (false && 'serviceWorker' in navigator) {
+      /* 当页面加载完成就创建一个serviceWorker */
+      window.addEventListener('load', function () {
+        /* 创建并指定对应的执行内容 */
+        /* scope 参数是可选的，可以用来指定你想让 service worker 控制的内容的子目录。 在这个例子里，我们指定了 '/'，表示 根网域下的所有内容。这也是默认值。 */
+        //navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('./service-worker.debug.js', { scope: './' })
+          .then(function (registration) {
+
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            document.title = 'ready'
+          })
+          .catch(function (err) {
+
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+
+</head>
+
+<body>
+
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
+        properly without JavaScript enabled. Please enable it to
+        continue.</strong>
+  </noscript>
+  <div id="mytranslate_app"></div>
+  <!-- built files will be 
+       injected -->
+
+  </div>
+</body>
+
+
+</html>
