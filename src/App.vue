@@ -14,6 +14,7 @@
         cueTop:config.custCue==2,
         cueBotton:config.custCue==1,
         wlargeh: wlargeh,
+        pause:!config2.playingM
       }"
     >
       <div
@@ -132,6 +133,9 @@
           </keep-alive>
         </div>
       </div>
+      <font-awesome-icon v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
+      <font-awesome-icon v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
+
     </div>
     <top-tool />
   </div>
@@ -537,5 +541,23 @@ export default {
 
  .viewMode >>> pbtn {
   visibility: hidden;
+}
+.viewMode.pause  .playbtn{
+  display: block;
+}
+.viewMode.touchstart  .playbtn{
+  display: block;
+}
+.playbtn{
+  display: none;
+  position: fixed;
+  font-size: 3em;
+    line-height: 3em;
+    left: 50%;
+    top: 50%;
+    margin-top: -0.5em;
+    margin-left: -0.5em;
+    z-index: 11110;
+    color: white;
 }
 </style>

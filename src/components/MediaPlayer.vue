@@ -162,7 +162,7 @@
         <div v-html="text" ref="lynx"></div>
       </div>
     </div>
-    <PlayerControllers :playing="playing" />
+    <PlayerControllers  />
   </div>
 </template>
 
@@ -901,15 +901,11 @@ export default {
     bus.$on("videos", (videos) => {
       this.videos = videos;
     });
-    bus.$on("playing", (status) => {
-      this.playing = status;
-      console.log("toogleBg");
-      // if (this.playing) toogleBg(status);
-    });
+   
     bus.$on("togglePlay", () => {
       console.error("togglePlayer");
 
-      if (this.playing) this.player.pause();
+      if (this.config2.playingM) this.player.pause();
       else this.player.play();
     });
 

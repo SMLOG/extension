@@ -27,7 +27,7 @@
         <span
           class="button"
           style="margin-right: 10px; margin-left: 10px"
-          :class="{ play: !playing, pause: playing }"
+          :class="{ play: !config2.playingM, pause: config2.playingM }"
           @click="togglePlay()"
         ></span>
         <span
@@ -60,7 +60,6 @@ export default {
       isHover: 0,
     };
   },
-  props: ["playing"],
 
   created() {
     console.log(this.autoHide);
@@ -132,7 +131,7 @@ export default {
   right: calc(15px - 100%);
 
   width: 100%;
-  z-index: 10002 !important;
+  z-index: 11112 !important;
   padding: 0;
   margin: 0;
 }

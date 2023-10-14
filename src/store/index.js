@@ -25,7 +25,8 @@ export default new Vuex.Store({
       showList: 0,
       touchstart: 0,
       playing: 0,//play words
-      touchCustCue: 0
+      touchCustCue: 0,
+      playingM:0
     },
     config: {
       custCue: 0,

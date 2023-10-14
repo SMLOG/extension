@@ -213,13 +213,13 @@ export default {
         player.on("pause", () => {
           this.$emit("pause");
           bus.$emit("pause");
-          bus.$emit("playing", 0);
+         this.updateConfig2({playingM:0})
         });
 
         player.on("play", () => {
           this.$emit("play");
           bus.$emit("play");
-          bus.$emit("playing", 1);
+          this.updateConfig2({playingM:1})
         });
 
         player.on("ratechange", () => {
