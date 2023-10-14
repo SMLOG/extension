@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%">
-    <div class="custCue" v-show="config.custCue && custCue">
+    <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
       <div style="display: flex; justify-content: center">
         <div
           style="background: rgba(0, 0, 0, 0.5)"
@@ -1180,7 +1180,7 @@ a.selected {
 }
 .custCue {
   position: absolute;
-  z-index: 2000000 !important;
+  z-index: 11110 !important;
   color: white;
   text-align: center;
   word-break: break-word;
@@ -1198,4 +1198,5 @@ a.selected {
 .wlargeh .custCue {
   max-width: calc(100vw - 20px);
 }
+.cueBotton .custCue{bottom: 0;top:auto;}
 </style>

@@ -29,7 +29,7 @@
             :class="{ _d: item._d, _c: item._c }"
           >
             <td>
-              <div @click="play(item, 1, i)">
+              <div @click.stop="play(item, 1, i);updateConfig2({showList:0})" >
                 <template>
                   <div
                     :class="{
@@ -51,7 +51,7 @@
                         item.title
                       }}</span
                     >
-                    <span class="src" v-if="item.duration">{{ ("0"+parseInt(item.duration/60)).substring(-2) }}:{{ ("0"+item.duration%60).substring(-2) }}</span>
+                    <span class="src" v-if="item.duration">{{ ("0"+parseInt(item.duration/60)).substr(-2) }}:{{ ("0"+item.duration%60).substr(-2) }}</span>
 
                     <span class="src" v-if="item.src">{{ item.src }}</span>
 

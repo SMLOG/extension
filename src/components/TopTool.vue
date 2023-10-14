@@ -82,10 +82,10 @@
       />
      <font-awesome-icon
         :icon="['fas', 'closed-captioning']"
-        @click="updateConfig({custCue:!config.custCue})"
+        @click="updateConfig({custCue:++config.custCue>2?0:config.custCue})"
         fixed-width
         size="lg"
-        :class="{active:config.custCue}"
+        :class="{active:config.custCue,borderTop:config.custCue==2,borderBottom:config.custCue==1}"
       />
       <font-awesome-icon
         @click="toggleSetting()"
@@ -179,7 +179,7 @@ table tr:nth-child(even) {
   bottom: 50px;
   cursor: pointer;
   width: 1em;
-  z-index: 10000005;
+  z-index: 11112;
   user-select: none;
   background-color: white;
   transition: opacity 1s linear, right 1s linear, font-size 1s linear;
@@ -217,5 +217,11 @@ table tr:nth-child(even) {
 .active{
   color:red;
   font-weight: bold;
+}
+.borderTop{
+  border-top:2px solid green;
+}
+.borderBottom{
+  border-bottom:2px solid green;
 }
 </style>

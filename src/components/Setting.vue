@@ -325,11 +325,10 @@
           />
         </div>
         <div>
-          custCue:<input
-            v-model="config.custCue"
-            type="checkbox"
-            @change="updateConfig()"
-          />
+          custCue:<a
+            @click="config.custCue=++config.custCue>2?0:config.custCue;updateConfig()"
+        >{{ config.custCue==0?"NO":config.custCue==1?"Bottom":"Top" }} {{ config.custCue }}
+      </a>
         </div>
       </div>
     </div>

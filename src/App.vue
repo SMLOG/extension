@@ -11,6 +11,8 @@
         touchstart: config2.touchstart,
         showList: config2.showList,
         showCustCue: config.custCue,
+        cueTop:config.custCue==2,
+        cueBotton:config.custCue==1,
         wlargeh: wlargeh,
       }"
     >
