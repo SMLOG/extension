@@ -491,7 +491,7 @@ export default {
   object-fit: cover;
   z-index: 4;
   visibility: visible;
-  z-index: 100000;
+  z-index: 11110;
   top: 0;
   right: 0;
   bottom: 0;
