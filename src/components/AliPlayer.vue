@@ -98,7 +98,7 @@ video::cue(i),
 }
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started >>> .vjs-big-play-button {
-  display: block !important;
+  display: none !important;
 }
 .myVideo-dimensions {
   width: 100% !important;

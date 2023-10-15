@@ -1,15 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%">
-    <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
-      <div style="display: flex; justify-content: center">
-        <div
-          style="background: rgba(0, 0, 0, 0.5)"
-          @touchstart="touchstartCustCue()"
-          @click.prevent.stop="touchstartCustCue()"
-          v-html="custCue"
-        ></div>
-      </div>
-    </div>
+
     <div
       @click="onTouch()"
       v-show="show"
@@ -34,9 +25,24 @@
       <div
         ref="videoCon"
         class="videoCon"
-        style="position: relative"
         v-show="!config.hi"
       >
+
+      <font-awesome-icon v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
+      <font-awesome-icon v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
+
+      <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
+
+      <div style="display: flex; justify-content: center">
+        <div
+          style="background: rgba(0, 0, 0, 0.5);padding: 10px;;"
+          @touchstart="touchstartCustCue()"
+          @click.prevent.stop="touchstartCustCue()"
+          v-html="custCue"
+        ></div>
+      </div>
+    </div>
+      <div>
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -58,6 +64,7 @@
           />
         </div>
         <ResizeMask v-if="isMask" />
+      </div>
       </div>
 
       <div
@@ -1033,10 +1040,11 @@ video::cue(i),
   border-radius: 50% !important;
   -webkit-transition: all 0.4s;
   transition: all 0.4s;
+  display: none;
 }
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started >>> .vjs-big-play-button {
-  display: block !important;
+  display: none !important;
 }
 .myVideo-dimensions {
   width: 100% !important;
@@ -1048,11 +1056,13 @@ video::cue(i),
 }
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {
-  display: block;
+  display: none !important;
 }
 
 .top {
-  position: fixed;
+  position: absolute;
+  display: flex;
+    flex-direction: column;
   background-color: white;
   overflow: scroll;
   width: 100%;
@@ -1071,10 +1081,13 @@ video::cue(i),
 .videoCon {
   width: 100%;
   background: black;
+  position: relative;
+
 }
 .viewMode .videoCon {
   z-index: 1;
   height: 100vw;
+  position: initial;
 }
 .viewMoe.wlargeh .videoCon {
   height: var(--doc-height);
@@ -1084,7 +1097,6 @@ video::cue(i),
 }
 .text {
   word-break: break-all;
-  position: absolute;
   bottom: 0px;
   display: block;
   font-size: 24px;
@@ -1100,6 +1112,9 @@ video::cue(i),
   overflow: overlay;
   box-sizing: border-box;
   text-align: left;
+}
+.viewMode .text,.viewMode #bts{
+  display: none;
 }
 .text >>> .cur {
   color: green;
@@ -1180,7 +1195,6 @@ a.selected {
   color: white;
   text-align: center;
   word-break: break-word;
-  padding: 10px;
   overflow: hidden;
   width: 100%;
   font-weight: bold;
@@ -1189,7 +1203,6 @@ a.selected {
   top: 0;
   right: 0;
   font-weight: bold;
-  max-width: calc(var(--doc-height) - 20px);
 }
 .wlargeh .custCue {
   max-width: calc(100vw - 20px);

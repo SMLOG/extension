@@ -133,8 +133,6 @@
           </keep-alive>
         </div>
       </div>
-      <font-awesome-icon v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
-      <font-awesome-icon v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
 
     </div>
     <top-tool />
@@ -481,6 +479,8 @@ export default {
   height: var(--doc-height);
   width: 100vw;
   margin-top: 0;
+  width:min(calc(16 / 9 * 100vh), 100vw);
+  margin: 0 auto;
 }
 .viewMode {
   position: absolute;
@@ -542,15 +542,18 @@ export default {
  .viewMode >>> pbtn {
   visibility: hidden;
 }
-.viewMode.pause  .playbtn{
+.pause >>> .playbtn{
   display: block;
 }
-.viewMode.touchstart  .playbtn{
+.touchstart >>> .playbtn{
   display: block;
 }
-.playbtn{
+.viewMode #root_1{
+  top: 0 !important;
+}
+>>> .playbtn{
   display: none;
-  position: fixed;
+  position: absolute;
   font-size: 3em;
     line-height: 3em;
     left: 50%;
