@@ -337,12 +337,10 @@ video::cue(i),
   border-radius: 50% !important;
   -webkit-transition: all 0.4s;
   transition: all 0.4s;
-  display: none;
-
 }
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started >>> .vjs-big-play-button {
-  display: none !important;
+  display: block !important;
 }
 .myVideo-dimensions {
   width: 100% !important;
@@ -354,7 +352,7 @@ video::cue(i),
 }
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {
-  display: none !important;
+  display: block;
 }
 
 .top {
