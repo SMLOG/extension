@@ -253,20 +253,7 @@ export default {
           return "Audio";
       }
     },
-    loopText() {
-      switch (this.config.isLoop) {
-        case 0:
-          return "Seq";
-        case 1:
-          return "LL";
-        case 2:
-          return "LSeq";
-        case 3:
-          return "LSeq" + this.loopCount;
-        case 4:
-          return "Loop";
-      }
-    },
+ 
     onTouch() {
       clearTimeout(this.isTouch);
 

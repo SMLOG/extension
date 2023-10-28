@@ -28,6 +28,16 @@
         :class="{ playing: config2.playing }"
         >{{ playMode }}</span
       >
+      <a
+            class="loop"
+            @click="
+              updateConfig({
+                isLoop: ++config.isLoop > 4 ? 0 : config.isLoop,
+              })
+            "
+          >
+            {{ loopText() }}
+          </a>
       <font-awesome-icon
         icon="volume-high"
         fixed-width

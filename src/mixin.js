@@ -12,17 +12,34 @@ const mixin = {
     return {};
   },
   methods: {
+    loopText() {
+      switch (this.config.isLoop) {
+        case 0:
+          return "Seq";
+        case 1:
+          return "LL";
+        case 2:
+          return "LSeq";
+        case 3:
+          return "LSeq" + this.loopCount;
+        case 4:
+          return "Loop";
+      }
+    },
     emit(event) {
-      bus.$emit(event)
+      bus.$emit(event);
     },
     updateConfig(config) {
-      service(null, { cmd: "setConfig", content: Object.assign(this.config, config) }, () => {
-        this.$store.commit("config", this.config);
-      });
+      service(
+        null,
+        { cmd: "setConfig", content: Object.assign(this.config, config) },
+        () => {
+          this.$store.commit("config", this.config);
+        }
+      );
     },
     updateConfig2(config) {
       this.$store.commit("config2", Object.assign(this.config2, config));
-
     },
     toggleSetting() {
       console.log("error");
@@ -79,10 +96,8 @@ const mixin = {
 
       content = encode(content);
 
-      if (modname == 'videos')
-        localStorage[modname] = content;
+      if (modname == "videos") localStorage[modname] = content;
       else sessionStorage[name] = content;
-
     },
     async delCache(modname) {
       let name = cacheBase + modname;
