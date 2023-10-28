@@ -7,13 +7,12 @@
   >
     <div
       :class="{
-        viewMode: config.viewMode || wlargeh,
+        viewMode: config.viewMode ,
         touchstart: config2.touchstart,
         showList: config2.showList,
         showCustCue: config.custCue,
         cueTop:config.custCue==2,
         cueBotton:config.custCue==1,
-        wlargeh: wlargeh,
         pause:!config2.playingM
       }"
     >
@@ -133,8 +132,8 @@
           </keep-alive>
         </div>
       </div>
-      <font-awesome-icon v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
-      <font-awesome-icon v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
+      <font-awesome-icon v-if="config.showVideo" v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
+      <font-awesome-icon v-if="config.showVideo" v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
 
     </div>
     <top-tool />
@@ -197,10 +196,15 @@ export default {
     TopTool,
   },
   mounted() {
+    let self=this;
     const documentHeight = () => {
       const doc = document.documentElement;
       doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
-      this.wlargeh = window.innerWidth > window.innerHeight;
+      setTimeout(()=>{
+        doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
+        self.wlargeh = window.innerWidth > window.innerHeight;
+
+      },200)
     };
     window.addEventListener("resize", documentHeight);
     documentHeight();

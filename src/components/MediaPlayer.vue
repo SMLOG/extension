@@ -131,7 +131,7 @@
 
           <a
             class="loop"
-            @change="
+            @click="
               updateConfig({
                 isLoop: ++config.isLoop > 4 ? 0 : config.isLoop,
               })
