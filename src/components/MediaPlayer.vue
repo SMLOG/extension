@@ -1176,8 +1176,9 @@ a.selected {
   top: 0;
   right: 0;
   font-weight: bold;
-  max-width: calc(var(--doc-height) - 20px);
+  box-sizing: border-box;
 }
+
 .wlargeh .custCue {
   max-width: calc(100vw - 20px);
 }

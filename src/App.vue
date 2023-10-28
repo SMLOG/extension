@@ -552,6 +552,10 @@ export default {
 .viewMode.touchstart  .playbtn{
   display: block;
 }
+.viewMode >>> .custCue{
+  max-width: calc(var(--doc-height) - 20px);
+
+}
 .playbtn{
   display: none;
   position: fixed;
