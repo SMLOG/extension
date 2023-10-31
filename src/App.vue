@@ -8,6 +8,7 @@
     <div
       :class="{
         viewMode: config.viewMode ,
+        viewMode2: config.viewMode==2 ,
         touchstart: config2.touchstart,
         showList: config2.showList,
         showCustCue: config.custCue,
@@ -16,6 +17,7 @@
         pause:!config2.playingM
       }"
     >
+
       <div
         v-if="showApp || showSidebar || config2.mask"
         class="vt-backdrop backdrop"
@@ -137,6 +139,7 @@
 
     </div>
     <top-tool />
+
   </div>
 </template>
 <script>
@@ -454,6 +457,29 @@ export default {
 #root_1 >>> select {
   color: black !important;
 }
+.viewMode2 ~ .op_tool{
+  left: -1.5em;
+    top: 50px;
+    bottom: auto;
+    
+}
+.viewMode2 ~ .op_tool.show{
+  left: 0;
+    
+}
+.viewMode2 ~ .op_tool::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1em;
+    bottom: 0;
+    width: 1em;
+    border-right: 1px solid green;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 .curPlay,
 #root_1 {
   font-size: 1.4em;
@@ -489,12 +515,11 @@ export default {
 .viewMode {
   position: absolute;
   transform: rotate(90deg);
-  transform-origin: bottom left;
+  transform-origin: top left;
   width: 100vh;
   width: var(--doc-height);
   /* width: min(calc(16 / 9 * 100vw), 100vh); */
   height: 100vw;
-  margin-top: -100vw;
   -o-object-fit: cover;
   object-fit: cover;
   z-index: 4;
@@ -504,6 +529,15 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
+  margin-left: 100vw;
+  margin-top:0;
+  overflow: hidden;
+}
+.viewMode2{
+  transform: rotate(270deg);
+  margin-left: 0;
+  margin-top: 100vh;
+  overflow: hidden;
 }
 .viewMode .text {
   display: none;
