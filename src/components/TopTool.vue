@@ -183,7 +183,7 @@ table tr:nth-child(even) {
   user-select: none;
   background-color: white;
   transition: opacity 1s linear, right 1s linear, font-size 1s linear;
-  opacity: 0.1;
+  opacity: 0.4;
   min-width: 1.5em;
   text-align: center;
 }

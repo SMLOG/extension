@@ -44,8 +44,8 @@
             <div>{{ curPlay.to }}</div>
           </div>
         </div>
-
-        <MediaPlayer />
+      <div class="videoview"> <MediaPlayer /></div>
+       
         <news2 v-if="shownews" />
         <cur-words />
       </div>
@@ -485,12 +485,12 @@ export default {
 .viewMode {
   position: absolute;
   transform: rotate(90deg);
-  transform-origin: bottom left;
+  transform-origin: top left;
   width: 100vh;
   width: var(--doc-height);
   /* width: min(calc(16 / 9 * 100vw), 100vh); */
   height: 100vw;
-  margin-top: -100vw;
+  margin-left: 100vw;
   -o-object-fit: cover;
   object-fit: cover;
   z-index: 4;
@@ -500,6 +500,20 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
+  background: black;
+}
+.videoview{
+  position: relative;
+  margin: auto;
+  width: 100%;
+height: var(--doc-height);
+}
+.viewMode .videoview{
+  max-width:min(calc(16 / 9 * 100vw), var(--doc-height));
+    width: min(calc(16 / 9 * 100vw), 100vh);
+    width:min(calc(16 / 9 * 100vw), var(--doc-height));
+    height: 100vw;
+
 }
 .viewMode .text {
   display: none;
