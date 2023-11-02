@@ -514,6 +514,7 @@ export default {
   margin: auto;
   width: 100%;
 height: var(--doc-height);
+max-width:calc(min(100vw,16 / 9 * var(--doc-height)));
 }
 .viewMode .videoview{
   max-width:min(calc(16 / 9 * 100vw), var(--doc-height));

@@ -23,7 +23,7 @@
           @click.prevent.stop="touchstartCustCue()"
           v-html="custCue"
         ></div>
-      </div>
+      </div> 
     </div>
     <font-awesome-icon
         class="pbtn"
@@ -1059,7 +1059,7 @@ video::cue(i),
   top: 0;
   right: 0;
   left: 0;
-  bottom: 40px;
+  bottom: 0;
   overflow: hidden;
   z-index: 10000;
 }
