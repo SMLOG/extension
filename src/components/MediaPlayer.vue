@@ -1,15 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%">
-    <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
-      <div style="display: flex; justify-content: center">
-        <div
-          style="background: rgba(0, 0, 0, 0.5)"
-          @touchstart="touchstartCustCue()"
-          @click.prevent.stop="touchstartCustCue()"
-          v-html="custCue"
-        ></div>
-      </div>
-    </div>
+   
     <div
       @click="onTouch()"
       v-show="show"
@@ -37,6 +28,16 @@
         style="position: relative"
         v-show="!config.hi"
       >
+      <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
+      <div style="display: flex; justify-content: center">
+        <div
+          style="background: rgba(0, 0, 0, 0.5)"
+          @touchstart="touchstartCustCue()"
+          @click.prevent.stop="touchstartCustCue()"
+          v-html="custCue"
+        ></div>
+      </div>
+    </div>
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -131,7 +132,7 @@
 
           <a
             class="loop"
-            @change="
+            @click="
               updateConfig({
                 isLoop: ++config.isLoop > 4 ? 0 : config.isLoop,
               })

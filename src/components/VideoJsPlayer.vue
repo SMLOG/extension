@@ -61,7 +61,7 @@ export default {
         controls: "progress,current,durration,volume",
         crossOrigin: false, //设置视频的 CORS 设置。
         textTrackDisplay: true,
-        playbackRates: [0.7, 0.8, 0.9, 1, 2, 3, 4, 5],
+        playbackRates: [0.7, 0.8, 0.9, 1],
         fill: true,
         fluid: true,
         plugins: {
