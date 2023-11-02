@@ -409,6 +409,7 @@ export default {
   max-width: 400px;
   max-height: calc(100vh - 70px);
   overflow: auto;
+  transform: translateZ(1px);
 }
 
 @media (max-width: 420px) {
@@ -507,6 +508,7 @@ export default {
   left: 0;
   background: black;
 }
+.viewMode >>> .vjs-big-play-button,.playbtn {transform: translateZ(1px)}
 .videoview{
   position: relative;
   margin: auto;

@@ -1190,6 +1190,7 @@ a.selected {
   right: 0;
   font-weight: bold;
   box-sizing: border-box;
+  transform: translateZ(1px);
 }
 .wlargeh .custCue {
   max-width: calc(100vw - 20px);
