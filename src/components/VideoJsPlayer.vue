@@ -140,7 +140,7 @@ export default {
           }
         );
         player.on("loadeddata", function () {
-          player.playbackRate(this.config.playbackrate);
+          player.playbackRate(self.config.playbackrate);
           setTimeout(() => {
             let tracks = player.textTracks();
             for (var d = 0; d < tracks.length; d++) {

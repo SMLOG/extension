@@ -7,20 +7,7 @@
       ref="top"
       class="top"
     >
-      <font-awesome-icon
-        class="pbtn"
-        :icon="['fas', 'arrow-left']"
-        @click="emit('PRE')"
-        style="left: 0"
-        v-if="config.viewMode"
-      />
-      <font-awesome-icon
-        :icon="['fas', 'arrow-right']"
-        @click="emit('NEXT')"
-        class="pbtn"
-        style="right: 0"
-        v-if="config.viewMode"
-      />
+
 
       <div
         ref="videoCon"
@@ -38,6 +25,18 @@
         ></div>
       </div>
     </div>
+    <font-awesome-icon
+        class="pbtn"
+        :icon="['fas', 'arrow-left']"
+        @click="emit('PRE')"
+        style="left: 0"
+      />
+      <font-awesome-icon
+        :icon="['fas', 'arrow-right']"
+        @click="emit('NEXT')"
+        class="pbtn"
+        style="right: 0"
+      />
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
