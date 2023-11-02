@@ -140,7 +140,7 @@ export default {
           }
         );
         player.on("loadeddata", function () {
-          player.playbackRate(sessionStorage.playbackrate);
+          player.playbackRate(this.config.playbackrate);
           setTimeout(() => {
             let tracks = player.textTracks();
             for (var d = 0; d < tracks.length; d++) {
@@ -225,10 +225,10 @@ export default {
         player.on("ratechange", () => {
           console.log("change rate");
           if (player.currentTime() > 1) {
-            sessionStorage.playbackrate = player.playbackRate();
-            console.log(sessionStorage.playbackrate);
+            this.updateConfig({playbackrate:player.playbackRate()})
           }
         });
+
       }
       //let rate = (sessionStorage.playbackrate = player.playbackRate());
       let url = this.source;
@@ -287,6 +287,13 @@ export default {
   },
 
   watch: {
+    "$store.state.config.playbackrate": {
+      handler(n) {
+        this.player&&this.player.playbackRate(n)
+          
+        }
+      },
+    
     source() {
       this.init();
     },

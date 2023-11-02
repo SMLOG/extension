@@ -21,14 +21,15 @@ export default new Vuex.Store({
     hkdcny: { now: "", p: "" },
     nextUrl: "",
     config2: {
-      mask:0,
+      mask: 0,
       showList: 0,
       touchstart: 0,
-      playing: 0,//play words
+      playing: 0, //play words
       touchCustCue: 0,
-      playingM:0
+      playingM: 0,
     },
     config: {
+      playbackrate: 1,
       custCue: 0,
       seeCurWords: 0,
       maxTranLen: 300,
@@ -40,7 +41,7 @@ export default new Vuex.Store({
       hi: 0,
       keepNewsCount: 50,
       autoRefresh: 0,
-      tranUrl: '',
+      tranUrl: "",
       cacheMode: 0,
 
       lastclean: 0,
@@ -58,9 +59,7 @@ export default new Vuex.Store({
       audioCacheNum: 1,
       autoHide: 0,
       rsss: [],
-      urls: {}
-
-
+      urls: {},
     },
     curItem: {
       q: "",
@@ -105,8 +104,6 @@ export default new Vuex.Store({
     setShowSetting(state, bool) {
       state.showSidebar = bool;
     },
-
-
 
     setLoading(state, bool) {
       state.loading = bool;
@@ -157,14 +154,11 @@ export default new Vuex.Store({
         }
         session.doneVideoMap = JSON.stringify(doneVideoMap);
         if (videos) {
-
-
           for (let item of videos.filter((e) => !e._d)) {
             item._d = doneVideoMap[item.vid] || 0;
           }
 
           videos.filter((e) => !e._c && (e._c = 0));
-
         }
       }
 
@@ -198,22 +192,22 @@ export default new Vuex.Store({
 
       if (state.config.fzWords > 0) {
         let k = 0;
-        for (let i = 0; i < state.words.length && i <= state.config.fzWords + 5; i++) {
+        for (
+          let i = 0;
+          i < state.words.length && i <= state.config.fzWords + 5;
+          i++
+        ) {
           if (state.words[i].n) {
             k++;
           }
         }
         if (k >= state.config.fzWords) {
           bus.$emit("fresh", "words", 1);
-
         }
       }
-
     },
   },
-  actions: {
-
-  },
+  actions: {},
   modules: {},
   getters: {
     showNews: (state) => state.config.showNews,

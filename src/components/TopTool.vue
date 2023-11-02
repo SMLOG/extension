@@ -93,6 +93,7 @@
         fixed-width
         size="lg"
       />
+      <a @click="changeRate()">{{ config.playbackrate }}</a>
     </div>
   </div>
 </template>
@@ -121,6 +122,12 @@ export default {
     },
   },
   methods: {
+    changeRate(){
+
+      this.config.playbackrate=(0.1+parseFloat(this.config.playbackrate)).toFixed(1);
+
+      this.updateConfig({playbackrate:this.config.playbackrate>1?0.7:this.config.playbackrate})
+    },
     clickAudio() {
       this.updateConfig({
         isAudio: this.config.isAudio >= 2 ? 0 : 1 + this.config.isAudio,
