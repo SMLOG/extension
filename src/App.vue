@@ -7,13 +7,13 @@
   >
     <div
       :class="{
-        viewMode: config.viewMode || wlargeh,
+        viewMode: config.viewMode,
+        viewMode2: config.viewMode==2,
         touchstart: config2.touchstart,
         showList: config2.showList,
         showCustCue: config.custCue,
         cueTop:config.custCue==2,
         cueBotton:config.custCue==1,
-        wlargeh: wlargeh,
         pause:!config2.playingM
       }"
     >
@@ -200,7 +200,12 @@ export default {
     const documentHeight = () => {
       const doc = document.documentElement;
       doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
-      this.wlargeh = window.innerWidth > window.innerHeight;
+      //this.wlargeh = window.innerWidth > window.innerHeight;
+            setTimeout(()=>{
+        doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
+        self.wlargeh = window.innerWidth > window.innerHeight;
+
+      },200);
     };
     window.addEventListener("resize", documentHeight);
     documentHeight();
@@ -514,6 +519,35 @@ height: var(--doc-height);
     width:min(calc(16 / 9 * 100vw), var(--doc-height));
     height: 100vw;
 
+}
+.viewMode2{
+  transform: rotate(270deg);
+  margin-left: 0;
+  margin-top: var(--doc-height);
+  overflow: hidden;
+ }
+.viewMode2 ~ .op_tool{
+  left: -1.5em;
+    top: 50px;
+    bottom: auto;
+    
+}
+.viewMode2 ~ .op_tool.show{
+  left: 0;
+    
+}
+.viewMode2 ~ .op_tool::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1em;
+    bottom: 0;
+    width: 1em;
+    border-right: 1px solid green;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .viewMode .text {
   display: none;

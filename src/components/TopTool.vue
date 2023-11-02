@@ -43,11 +43,11 @@
         size="lg"
       ></font-awesome-icon>
       <font-awesome-icon
-        @click="updateConfig({ viewMode: !config.viewMode })"
+      @click="updateConfig({ viewMode: ++config.viewMode>2?0:config.viewMode })"
         icon="fa-solid fa-maximize"
         fixed-width
         size="lg"
-        :class="{active:config.viewMode}"
+        :class="{active:config.viewMode,left:config.viewMode==2}"
       />
  
       <font-awesome-icon
@@ -223,5 +223,8 @@ table tr:nth-child(even) {
 }
 .borderBottom{
   border-bottom:2px solid green;
+}
+.left{
+  border-left:2px solid green;
 }
 </style>
