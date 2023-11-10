@@ -126,7 +126,7 @@ export default {
 
       this.config.playbackrate=(0.1+parseFloat(this.config.playbackrate)).toFixed(1);
 
-      this.updateConfig({playbackrate:this.config.playbackrate>1?0.7:this.config.playbackrate})
+      this.updateConfig({playbackrate:this.config.playbackrate>1?0.5:this.config.playbackrate})
     },
     clickAudio() {
       this.updateConfig({
