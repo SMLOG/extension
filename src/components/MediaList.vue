@@ -202,6 +202,8 @@ let mediaTypes = [
     disabled: 0,
     del: 1,
   },
+  { n: "TTS", data: [], a: 1 },
+
 ];
 let myListSrcs = Array.from(
   new Set(myList.map((e) => mediaTypes[e.mediaType].n))
@@ -594,7 +596,8 @@ export default {
     },
     changeMediaType() {
       console.log(this.mediaType);
-      switch (this.mediaTypes[this.mediaType].n) {
+      let mediaAlias = this.mediaTypes[this.mediaType].n;
+      switch (mediaAlias) {
         case "TV":
           {
             let tvtime = localStorage.tvtime || 0;
@@ -738,18 +741,20 @@ export default {
           }
 
           break;
-        case "Radio":
+          case "Radio":
+          case "TTS":
           {
             if (this.loading) return;
             this.loading = 1;
-            let radiotime = localStorage.radiotime || 0;
-
+            let radiotime = localStorage[this.mediaType+"time"]|| 0;
+            let mediaType = this.mediaType;
+            console.log(this);
             (async () => {
               if (new Date().getTime() - radiotime > 72 * 3600 * 1000) {
                 for (let t = 0; t < 10; t++) {
                   try {
                     let radios = await fetchRequest(
-                      "https://smlog.github.io/data/radios.json"
+                      "https://smlog.github.io/data/"+mediaAlias.toLowerCase()+"s.json"
                     )
                       .then((r) => r.json())
                       .then((resp) => {
@@ -766,12 +771,12 @@ export default {
 
                     console.log(radios);
                     if (radios) {
-                      this.mediaTypes[this.mediaType].data.length = 0;
+                      this.mediaTypes[mediaType].data.length = 0;
 
                       console.log(radios);
                       this.mediaTypes[this.mediaType].data.push(...radios);
-                      await this.saveCache("radio", radios);
-                      localStorage.radiotime = new Date().getTime();
+                      await this.saveCache(mediaAlias, radios);
+                      localStorage[this.mediaType+"time"]= new Date().getTime();
                     }
                     break;
                   } catch (eee) {
@@ -782,12 +787,12 @@ export default {
                 }
               }
 
-              this.loadCache("radio")
+              this.loadCache(mediaAlias)
                 .catch(() => {
-                  localStorage.radiotime = 0;
+                  localStorage[mediaAlias+"time"] = 0;
                 })
                 .then((radios) => {
-                  if (!radios.length) localStorage.radiotime = 0;
+                  if (!radios.length) localStorage[mediaAlias+"time"] = 0;
                   else {
                     this.mediaTypes[this.mediaType].data.length = 0;
                     console.log(radios);
