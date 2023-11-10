@@ -750,7 +750,7 @@ export default {
             let mediaType = this.mediaType;
             console.log(this);
             (async () => {
-              if (new Date().getTime() - radiotime > 72 * 3600 * 1000) {
+              if (1 || new Date().getTime() - radiotime > 72 * 3600 * 1000) {
                 for (let t = 0; t < 10; t++) {
                   try {
                     let radios = await fetchRequest(
