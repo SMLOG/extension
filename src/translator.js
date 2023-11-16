@@ -35,7 +35,7 @@ export async function translate(q, opts) {
       ret = await translate2(q, opts);
     } else {
       await fetch(
-        "/data/BDa/" +
+        "https://smlog.github.io/data/BDa/" +
           q.toLowerCase().substr(0, 3).trim() +
           "/" +
           q.toLowerCase() +
