@@ -34,32 +34,37 @@ export async function translate(q, opts) {
     if (chrome.tabs) {
       ret = await translate2(q, opts);
     } else {
-      await fetch('/data/BDa/' + q.toLowerCase().substr(0, 3).trim() + '/' + q + '.json').then(r => r.json()).then(encode => {
+      await fetch(
+        "/data/BDa/" +
+          q.toLowerCase().substr(0, 3).trim() +
+          "/" +
+          q.toLowerCase() +
+          ".json"
+      )
+        .then((r) => r.json())
+        .then((encode) => {
+          let dictData = (dictData = encode.anc
+            ? decode(encode.anc)
+            : decode2(encode.enc));
 
-        let dictData = dictData = encode.anc ? decode(encode.anc) : decode2(encode.enc);
+          if (dictData.dict_result) {
+            console.log(dictData.dict_result.simple_means.symbols[0].ph_am);
 
+            ret.to = dictData.trans_result.data[0].dst;
+            ret.am = dictData.dict_result.simple_means.symbols[0].ph_am;
+            ret.en = dictData.dict_result.simple_means.symbols[0].ph_en;
 
-        if (dictData.dict_result) {
-          console.log(dictData.dict_result.simple_means.symbols[0].ph_am
-          );
-
-          ret.to = dictData.trans_result.data[0].dst;
-          ret.am = dictData.dict_result.simple_means.symbols[0].ph_am;
-          ret.en = dictData.dict_result.simple_means.symbols[0].ph_en;
-
-
-          if (dictData.dict_result.simple_means.symbols)
-            ret.parts = dictData.dict_result.simple_means.symbols[0].parts;
-        } else if (dictData.trans_result) {
-          ret.to = dictData.trans_result.data[0].dst;
-        }
-        ret._raw = dictData;
-        ok = 1;
-        return ret;
-      });
-      console.log(ret)
+            if (dictData.dict_result.simple_means.symbols)
+              ret.parts = dictData.dict_result.simple_means.symbols[0].parts;
+          } else if (dictData.trans_result) {
+            ret.to = dictData.trans_result.data[0].dst;
+          }
+          ret._raw = dictData;
+          ok = 1;
+          return ret;
+        });
+      console.log(ret);
       ok = 1;
-
     }
     // else ret = await proxyServerTranslate(q);
   } catch (ee) {
@@ -142,78 +147,155 @@ async function tranApi(q, index) {
   }
 }
 
-
-
-
 var getSign2 = function () {
-
   function e(t, e) {
     (null == e || e > t.length) && (e = t.length);
-    for (var n = 0, r = new Array(e); n < e; n++)
-      r[n] = t[n];
-    return r
+    for (var n = 0, r = new Array(e); n < e; n++) r[n] = t[n];
+    return r;
   }
   function n(t, e) {
     for (var n = 0; n < e.length - 2; n += 3) {
       var r = e.charAt(n + 2);
-      r = "a" <= r ? r.charCodeAt(0) - 87 : Number(r),
-        r = "+" === e.charAt(n + 1) ? t >>> r : t << r,
-        t = "+" === e.charAt(n) ? t + r & 4294967295 : t ^ r
+      (r = "a" <= r ? r.charCodeAt(0) - 87 : Number(r)),
+        (r = "+" === e.charAt(n + 1) ? t >>> r : t << r),
+        (t = "+" === e.charAt(n) ? (t + r) & 4294967295 : t ^ r);
     }
-    return t
+    return t;
   }
   var tmp = null;
   return function (t) {
     tmp = null;
-    var o, i = t.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
+    var o,
+      i = t.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
     if (null === i) {
       var a = t.length;
-      a > 30 && (t = "".concat(t.substr(0, 10)).concat(t.substr(Math.floor(a / 2) - 5, 10)).concat(t.substr(-10, 10)))
+      a > 30 &&
+        (t = ""
+          .concat(t.substr(0, 10))
+          .concat(t.substr(Math.floor(a / 2) - 5, 10))
+          .concat(t.substr(-10, 10)));
     } else {
-      for (var s = t.split(/[\uD800-\uDBFF][\uDC00-\uDFFF]/), c = 0, u = s.length, l = []; c < u; c++)
-        "" !== s[c] && l.push.apply(l, function (t) {
-          if (Array.isArray(t))
-            return e(t)
-        }(o = s[c].split("")) || function (t) {
-          if ("undefined" != typeof Symbol && null != t[Symbol.iterator] || null != t["@@iterator"])
-            return Array.from(t)
-        }(o) || function (t, n) {
-          if (t) {
-            if ("string" == typeof t)
-              return e(t, n);
-            var r = Object.prototype.toString.call(t).slice(8, -1);
-            return "Object" === r && t.constructor && (r = t.constructor.name),
-              "Map" === r || "Set" === r ? Array.from(t) : "Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r) ? e(t, n) : void 0
-          }
-        }(o) || function () {
-          throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")
-        }()),
+      for (
+        var s = t.split(/[\uD800-\uDBFF][\uDC00-\uDFFF]/),
+          c = 0,
+          u = s.length,
+          l = [];
+        c < u;
+        c++
+      )
+        "" !== s[c] &&
+          l.push.apply(
+            l,
+            (function (t) {
+              if (Array.isArray(t)) return e(t);
+            })((o = s[c].split(""))) ||
+              (function (t) {
+                if (
+                  ("undefined" != typeof Symbol &&
+                    null != t[Symbol.iterator]) ||
+                  null != t["@@iterator"]
+                )
+                  return Array.from(t);
+              })(o) ||
+              (function (t, n) {
+                if (t) {
+                  if ("string" == typeof t) return e(t, n);
+                  var r = Object.prototype.toString.call(t).slice(8, -1);
+                  return (
+                    "Object" === r && t.constructor && (r = t.constructor.name),
+                    "Map" === r || "Set" === r
+                      ? Array.from(t)
+                      : "Arguments" === r ||
+                        /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)
+                      ? e(t, n)
+                      : void 0
+                  );
+                }
+              })(o) ||
+              (function () {
+                throw new TypeError(
+                  "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
+                );
+              })()
+          ),
           c !== u - 1 && l.push(i[c]);
       var p = l.length;
-      p > 30 && (t = l.slice(0, 10).join("") + l.slice(Math.floor(p / 2) - 5, Math.floor(p / 2) + 5).join("") + l.slice(-10).join(""))
+      p > 30 &&
+        (t =
+          l.slice(0, 10).join("") +
+          l.slice(Math.floor(p / 2) - 5, Math.floor(p / 2) + 5).join("") +
+          l.slice(-10).join(""));
     }
-    for (var d = "".concat(String.fromCharCode(103)).concat(String.fromCharCode(116)).concat(String.fromCharCode(107)), h = (null !== tmp ? tmp : (tmp = window[d] || "") || "").split("."), f = Number(h[0]) || 0, m = Number(h[1]) || 0, g = [], y = 0, v = 0; v < t.length; v++) {
+    for (
+      var d = ""
+          .concat(String.fromCharCode(103))
+          .concat(String.fromCharCode(116))
+          .concat(String.fromCharCode(107)),
+        h = (null !== tmp ? tmp : (tmp = window[d] || "") || "").split("."),
+        f = Number(h[0]) || 0,
+        m = Number(h[1]) || 0,
+        g = [],
+        y = 0,
+        v = 0;
+      v < t.length;
+      v++
+    ) {
       var _ = t.charCodeAt(v);
-      _ < 128 ? g[y++] = _ : (_ < 2048 ? g[y++] = _ >> 6 | 192 : (55296 == (64512 & _) && v + 1 < t.length && 56320 == (64512 & t.charCodeAt(v + 1)) ? (_ = 65536 + ((1023 & _) << 10) + (1023 & t.charCodeAt(++v)),
-        g[y++] = _ >> 18 | 240,
-        g[y++] = _ >> 12 & 63 | 128) : g[y++] = _ >> 12 | 224,
-        g[y++] = _ >> 6 & 63 | 128),
-        g[y++] = 63 & _ | 128)
+      _ < 128
+        ? (g[y++] = _)
+        : (_ < 2048
+            ? (g[y++] = (_ >> 6) | 192)
+            : (55296 == (64512 & _) &&
+              v + 1 < t.length &&
+              56320 == (64512 & t.charCodeAt(v + 1))
+                ? ((_ =
+                    65536 + ((1023 & _) << 10) + (1023 & t.charCodeAt(++v))),
+                  (g[y++] = (_ >> 18) | 240),
+                  (g[y++] = ((_ >> 12) & 63) | 128))
+                : (g[y++] = (_ >> 12) | 224),
+              (g[y++] = ((_ >> 6) & 63) | 128)),
+          (g[y++] = (63 & _) | 128));
     }
-    for (var b = f, w = "".concat(String.fromCharCode(43)).concat(String.fromCharCode(45)).concat(String.fromCharCode(97)) + "".concat(String.fromCharCode(94)).concat(String.fromCharCode(43)).concat(String.fromCharCode(54)), k = "".concat(String.fromCharCode(43)).concat(String.fromCharCode(45)).concat(String.fromCharCode(51)) + "".concat(String.fromCharCode(94)).concat(String.fromCharCode(43)).concat(String.fromCharCode(98)) + "".concat(String.fromCharCode(43)).concat(String.fromCharCode(45)).concat(String.fromCharCode(102)), x = 0; x < g.length; x++)
-      b = n(b += g[x], w);
-    return b = n(b, k),
+    for (
+      var b = f,
+        w =
+          ""
+            .concat(String.fromCharCode(43))
+            .concat(String.fromCharCode(45))
+            .concat(String.fromCharCode(97)) +
+          ""
+            .concat(String.fromCharCode(94))
+            .concat(String.fromCharCode(43))
+            .concat(String.fromCharCode(54)),
+        k =
+          ""
+            .concat(String.fromCharCode(43))
+            .concat(String.fromCharCode(45))
+            .concat(String.fromCharCode(51)) +
+          ""
+            .concat(String.fromCharCode(94))
+            .concat(String.fromCharCode(43))
+            .concat(String.fromCharCode(98)) +
+          ""
+            .concat(String.fromCharCode(43))
+            .concat(String.fromCharCode(45))
+            .concat(String.fromCharCode(102)),
+        x = 0;
+      x < g.length;
+      x++
+    )
+      b = n((b += g[x]), w);
+    return (
+      (b = n(b, k)),
       (b ^= m) < 0 && (b = 2147483648 + (2147483647 & b)),
       "".concat((b %= 1e6).toString(), ".").concat(b ^ f)
-  }
-
-}
-
+    );
+  };
+};
 
 let token, gtk;
 console.log(token, gtk);
 export async function translate2(q, opts) {
-
   let ct = 2;
   while (ct > 0) {
     ct--;
@@ -263,17 +345,15 @@ export async function translate2(q, opts) {
       var ret = {};
 
       if (dictData.errno) {
-        token = '';
+        token = "";
       }
       if (token) {
         if (dictData.dict_result) {
-          console.log(dictData.dict_result.simple_means.symbols[0].ph_am
-          );
+          console.log(dictData.dict_result.simple_means.symbols[0].ph_am);
 
           ret.to = dictData.trans_result.data[0].dst;
           ret.am = dictData.dict_result.simple_means.symbols[0].ph_am;
           ret.en = dictData.dict_result.simple_means.symbols[0].ph_en;
-
 
           if (dictData.dict_result.simple_means.symbols)
             ret.parts = dictData.dict_result.simple_means.symbols[0].parts;
@@ -282,8 +362,6 @@ export async function translate2(q, opts) {
         }
         ret._raw = dictData;
       }
-
-
 
       return ret;
     });

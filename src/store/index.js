@@ -50,7 +50,7 @@ export default new Vuex.Store({
       shownews: 0,
       showvideos: 0,
       showwords: 0,
-      autoSound: "auto",
+      autoSound: "",
       mj: 0,
       preload: 0,
       dict: 0,

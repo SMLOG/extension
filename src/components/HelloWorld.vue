@@ -416,9 +416,7 @@ table tr:nth-child(even) {
   font-size: 0.8em;
   flex-grow: 0;
   margin-left: 5px;
-  margin-right: 5px;
   cursor: pointer;
-  position: absolute;
   right: 0;
   user-select: none;
 }
@@ -426,8 +424,9 @@ table tr:nth-child(even) {
   position: relative;
   text-align: left;
   margin: 0 !important;
-  padding-right: 30px;
   position: relative;
+  display: flex;
+  justify-content: space-between;
 }
 .wrap .row:nth-child(even) {
   background-color: #f4f4f4;
