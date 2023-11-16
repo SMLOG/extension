@@ -5,22 +5,42 @@
     class="mytranslate-extension"
     :class="'fs-' + config.fs"
   >
+    <div style="margin: 5px">
+      <div>
+        <span
+          v-for="b in bgs"
+          :key="b"
+          style="min-width: 10px; min-height: 10px; display: inline-block"
+          @click="selectbg = b"
+          :style="{
+            background: b,
+            border: selectbg == b ? '1px solid red' : '1px solid gray',
+          }"
+        >
+        </span>
+      </div>
+      <div
+        contenteditable="true"
+        style="border: 2px dashed #ccc; padding: 5px"
+        :style="{ background: selectbg }"
+      ></div>
+    </div>
     <div
       :class="{
         viewMode: config.viewMode,
-        viewMode2: config.viewMode==2,
+        viewMode2: config.viewMode == 2,
         touchstart: config2.touchstart,
         showList: config2.showList,
         showCustCue: config.custCue,
-        cueTop:config.custCue==2,
-        cueBotton:config.custCue==1,
-        pause:!config2.playingM
+        cueTop: config.custCue == 2,
+        cueBotton: config.custCue == 1,
+        pause: !config2.playingM,
       }"
     >
       <div
         v-if="showApp || showSidebar || config2.mask"
         class="vt-backdrop backdrop"
-         style="
+        style="
           position: fixed;
           top: 0;
           right: 0;
@@ -37,15 +57,15 @@
       <div class="loading" v-if="loading">
         <font-awesome-icon icon="fa-solid fa-spinner" />
       </div>
-      <div style="width:100%;height: 100%;">
+      <div style="width: 100%; height: 100%">
         <div v-if="curPlay" class="curPlay">
           <div @click="toggleAutoPlay()">
             {{ curPlay.q }} <b v-if="curPlay.am"> [{{ curPlay.am }}]</b>
             <div>{{ curPlay.to }}</div>
           </div>
         </div>
-      <div class="videoview"> <MediaPlayer /></div>
-       
+        <div class="videoview"><MediaPlayer /></div>
+
         <news2 v-if="shownews" />
         <cur-words />
       </div>
@@ -133,9 +153,20 @@
           </keep-alive>
         </div>
       </div>
-      <font-awesome-icon v-show="!config2.playingM" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-play']" class="playbtn" />
-      <font-awesome-icon v-show="config2.playingM && config2.touchstart" @click="emit('togglePlay')" fixed-width :icon="['far', 'circle-pause']" class="playbtn" />
-
+      <font-awesome-icon
+        v-show="!config2.playingM"
+        @click="emit('togglePlay')"
+        fixed-width
+        :icon="['far', 'circle-play']"
+        class="playbtn"
+      />
+      <font-awesome-icon
+        v-show="config2.playingM && config2.touchstart"
+        @click="emit('togglePlay')"
+        fixed-width
+        :icon="['far', 'circle-pause']"
+        class="playbtn"
+      />
     </div>
     <top-tool />
   </div>
@@ -151,7 +182,7 @@ import CurWords from "./components/CurWords.vue";
 import TopTool from "./components/TopTool.vue";
 import Setting from "./components/Setting.vue";
 //import Clip from "./components/Clip.vue";
-import  './base.css'
+import "./base.css";
 
 import bus from "./bus";
 import $ from "jquery";
@@ -162,6 +193,8 @@ import { bgsound } from "@/lib";
 export default {
   data() {
     return {
+      selectbg: "none",
+      bgs: ["none", "#f0f0f0"],
       ver: version,
       zIndex: new Date().getTime(),
       error: "",
@@ -201,11 +234,10 @@ export default {
       const doc = document.documentElement;
       doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
       //this.wlargeh = window.innerWidth > window.innerHeight;
-            setTimeout(()=>{
+      setTimeout(() => {
         doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
         self.wlargeh = window.innerWidth > window.innerHeight;
-
-      },200);
+      }, 200);
     };
     window.addEventListener("resize", documentHeight);
     documentHeight();
@@ -271,6 +303,11 @@ export default {
       console.log(event);
       bus.$emit("play", event);
     });
+    this.$refs.play.addEventListener("click", (event) => {
+      this.setCurTab("HelloWorld");
+      console.log(event);
+      bus.$emit("play", event);
+    });
     bus.$on("error", (resp) => {
       this.error = resp.error;
       this.errorUrl = resp.errorUrl;
@@ -280,7 +317,7 @@ export default {
     touchMask() {
       this.$store.commit("setShowSetting", 0);
       this.$store.commit("setShowApp", 0);
-      this.updateConfig2({mask:0})
+      this.updateConfig2({ mask: 0 });
 
       if (window.getSelection) {
         if (window.getSelection().empty) {
@@ -508,107 +545,117 @@ export default {
   left: 0;
   background: black;
 }
-.viewMode >>> .vjs-big-play-button,.playbtn {transform: translateZ(1px)}
-.videoview{
+.viewMode >>> .vjs-big-play-button,
+.playbtn {
+  transform: translateZ(1px);
+}
+.videoview {
   position: relative;
   margin: auto;
   width: 100%;
-height: var(--doc-height);
-max-width:calc(min(100vw,16 / 9 * var(--doc-height)));
+  height: var(--doc-height);
+  max-width: calc(min(100vw, 16 / 9 * var(--doc-height)));
 }
-.viewMode .videoview{
-  max-width:min(calc(16 / 9 * 100vw), var(--doc-height));
-    width: min(calc(16 / 9 * 100vw), 100vh);
-    width:min(calc(16 / 9 * 100vw), var(--doc-height));
-    height: 100vw;
-
+.viewMode .videoview {
+  max-width: min(calc(16 / 9 * 100vw), var(--doc-height));
+  width: min(calc(16 / 9 * 100vw), 100vh);
+  width: min(calc(16 / 9 * 100vw), var(--doc-height));
+  height: 100vw;
 }
-.viewMode2{
+.viewMode2 {
   transform: rotate(270deg);
   margin-left: 0;
   margin-top: var(--doc-height);
   overflow: hidden;
- }
-.viewMode2 ~ .op_tool{
-  left: -1.5em;
-    top: 50px;
-    bottom: auto;
-    
 }
-.viewMode2 ~ .op_tool.show{
+.viewMode2 ~ .op_tool {
+  left: -1.5em;
+  top: 50px;
+  bottom: auto;
+}
+.viewMode2 ~ .op_tool.show {
   left: 0;
-    
 }
 .viewMode2 ~ .op_tool::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: -1em;
-    bottom: 0;
-    width: 1em;
-    border-right: 1px solid green;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -1em;
+  bottom: 0;
+  width: 1em;
+  border-right: 1px solid green;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .viewMode .text {
   display: none;
 }
 
-.showCustCue >>>  .vjs-text-track-display,.showCustCue >>> video::cue {
+.showCustCue >>> .vjs-text-track-display,
+.showCustCue >>> video::cue {
   display: none;
   font-size: 0;
 }
 
-
-
-.fs-1 >>> .custCue,.fs-1 >>>.text,.fs-1 >>> .vjs-text-track-cue,.fs-1 >>> video::-webkit-media-text-track-display  {
+.fs-1 >>> .custCue,
+.fs-1 >>> .text,
+.fs-1 >>> .vjs-text-track-cue,
+.fs-1 >>> video::-webkit-media-text-track-display {
   font-size: 1em !important;
 }
 
-.fs-2 >>> .custCue
-,.fs-2 >>>.text,
-.fs-2 >>> .vjs-text-track-cue 
-,.fs-2 >>> video::-webkit-media-text-track-display {
+.fs-2 >>> .custCue,
+.fs-2 >>> .text,
+.fs-2 >>> .vjs-text-track-cue,
+.fs-2 >>> video::-webkit-media-text-track-display {
   font-size: 1.5em !important;
 }
 
-.fs-3 >>> .custCue,.fs-3 >>>.text,.fs-3 >>> .vjs-text-track-cue  ,.fs-3 >>> video::-webkit-media-text-track-display{
+.fs-3 >>> .custCue,
+.fs-3 >>> .text,
+.fs-3 >>> .vjs-text-track-cue,
+.fs-3 >>> video::-webkit-media-text-track-display {
   font-size: 2em !important;
 }
 
-.fs-4 >>> .custCue,.fs-4 >>>.text,.fs-4 >>> .vjs-text-track-cue ,.fs-4 >>> video::-webkit-media-text-track-display  {
+.fs-4 >>> .custCue,
+.fs-4 >>> .text,
+.fs-4 >>> .vjs-text-track-cue,
+.fs-4 >>> video::-webkit-media-text-track-display {
   font-size: 2.25em !important;
 }
 
-
-.fs-5 >>> .custCue,.fs-5 >>>.text,.fs-5 >>> .vjs-text-track-cue,.fs-5 >>> video::-webkit-media-text-track-display {
+.fs-5 >>> .custCue,
+.fs-5 >>> .text,
+.fs-5 >>> .vjs-text-track-cue,
+.fs-5 >>> video::-webkit-media-text-track-display {
   font-size: 2.5em !important;
 }
- .custCue >>> video::cue {
+.custCue >>> video::cue {
   visibility: hidden;
 }
 
- .viewMode >>> pbtn {
+.viewMode >>> pbtn {
   visibility: hidden;
 }
-.viewMode.pause  .playbtn{
+.viewMode.pause .playbtn {
   display: block;
 }
-.viewMode.touchstart  .playbtn{
+.viewMode.touchstart .playbtn {
   display: block;
 }
-.playbtn{
+.playbtn {
   display: none;
   position: fixed;
   font-size: 3em;
-    line-height: 3em;
-    left: 50%;
-    top: 50%;
-    margin-top: -0.5em;
-    margin-left: -0.5em;
-    z-index: 11110;
-    color: white;
+  line-height: 3em;
+  left: 50%;
+  top: 50%;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+  z-index: 11110;
+  color: white;
 }
 </style>

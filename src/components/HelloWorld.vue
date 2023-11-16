@@ -274,6 +274,7 @@ export default {
               }
             }
           );
+          console.log("play sound");
           vue.playSound(item);
         }
       }, 500);
