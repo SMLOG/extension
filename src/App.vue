@@ -5,7 +5,7 @@
     class="mytranslate-extension"
     :class="'fs-' + config.fs"
   >
-    <div style="margin: 5px">
+    <div style="margin: 5px" v-if="config.editor">
       <div>
         <span
           v-for="b in bgs"

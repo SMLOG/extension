@@ -8,6 +8,13 @@
           >Refresh<span v-if="refreshIndicator">...</span></span
         >
         <input type="checkbox" v-model="config.autoRefresh" />
+
+        <span>Show Editor</span>
+        <input
+          type="checkbox"
+          v-model="config.editor"
+          @click="updateConfig()"
+        />
       </div>
     </div>
     <div
@@ -326,9 +333,19 @@
         </div>
         <div>
           custCue:<a
-            @click="config.custCue=++config.custCue>2?0:config.custCue;updateConfig()"
-        >{{ config.custCue==0?"NO":config.custCue==1?"Bottom":"Top" }} {{ config.custCue }}
-      </a>
+            @click="
+              config.custCue = ++config.custCue > 2 ? 0 : config.custCue;
+              updateConfig();
+            "
+            >{{
+              config.custCue == 0
+                ? "NO"
+                : config.custCue == 1
+                ? "Bottom"
+                : "Top"
+            }}
+            {{ config.custCue }}
+          </a>
         </div>
       </div>
     </div>
@@ -369,20 +386,6 @@ export default {
     const that = this;
     (async () => {
       let rconfig = {};
-      try {
-        rconfig = await $.ajax({
-          url: "https://smlog.github.io/data/config.js",
-          dataType: "jsonp",
-          jsonpCallback: "applyConfig",
-        });
-      } catch (ee) {
-        console.error(ee);
-        try {
-          rconfig = await fetch("/data/config.json").then((r) => r.json());
-        } catch (error) {
-          console.error(error);
-        }
-      }
 
       that.timer = setInterval(() => {
         if (document.readyState === "complete") {

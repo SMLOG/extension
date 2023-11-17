@@ -1,7 +1,7 @@
 <template>
   <div ref="hello" style="padding: 5px; background: white">
     <div class="wrap">
-      <div class="row" style="justify-content: flex-start">
+      <div class="row" style="display: inline-block">
         {{ curItem.q }}
         <b v-if="curItem.am"> [{{ curItem.am }}]</b>
         <b v-if="curItem.en != curItem.am"> [{{ curItem.en }}]</b>

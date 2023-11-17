@@ -15,6 +15,7 @@ import { encode, decode } from "@/compress";
 
 const pako = require("pako");
 
+let updateconfig = 0;
 //window.pako = pako;
 const RWORD = "words";
 const NWORD = "nwords";
@@ -293,7 +294,6 @@ export function service(tab, request, sendResponse) {
 }
 let serviceMap = {
   post: (request, sendResponse) => {
-
     sendResponse();
   },
   get: (request, sendResponse) => {
@@ -368,7 +368,7 @@ let serviceMap = {
       console.error(ee);
       // alert(ee);
 
-      bus.$emit('error', ee)
+      bus.$emit("error", ee);
 
       ret.done = 1;
       sendResponse(ret);
@@ -420,11 +420,9 @@ let serviceMap = {
       e(request.content).then((ret) => {
         rets.push(ret);
         if (ret && ret._raw) {
-
           if (request.config && request.config.tranUrl)
             (async () => {
               delete ret._raw.logid;
-
 
               let content = encode(JSON.stringify(ret._raw));
               delete ret._raw;
@@ -434,7 +432,11 @@ let serviceMap = {
                   Accept: "application/json",
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ item: request.content, resp: ret, enc: JSON.stringify({ anc: content }) }),
+                body: JSON.stringify({
+                  item: request.content,
+                  resp: ret,
+                  enc: JSON.stringify({ anc: content }),
+                }),
               });
               // const content = await rawResponse.json();
 
@@ -595,7 +597,34 @@ let serviceMap = {
     sendResponse(getConf());
   },
   getConfig: (request, sendResponse) => {
-    sendResponse(getConf());
+    (async () => {
+      let config = getConf();
+
+      if (!updateconfig) {
+        updateconfig = 1;
+        let rconfig = {};
+
+        let rhost = "https://smlog.github.io/data/config.";
+        try {
+          rconfig = await $.ajax({
+            url: rhost + "js",
+            dataType: "jsonp",
+            jsonpCallback: "applyConfig",
+          });
+        } catch (ee) {
+          console.error(ee);
+          try {
+            rconfig = await fetch(rhost + "json").then((r) => r.json());
+          } catch (error) {
+            console.error(error);
+            updateconfig = 0;
+          }
+        }
+        config = Object.assign(config, rconfig);
+      }
+
+      sendResponse(config);
+    })();
   },
 
   urls: (request, sendResponse) => {
@@ -609,7 +638,7 @@ let serviceMap = {
   },
 };
 function getConf() {
-  let r = storejs.get("config") && decode(storejs.get("config")) || {};
+  let r = (storejs.get("config") && decode(storejs.get("config"))) || {};
   console.log(r);
   return r;
 }
@@ -700,7 +729,7 @@ async function forEachCommitsAsc(
   if (token) headers["Authorization"] = auth;
   let curPage = 1;
   let commits = [];
-  for (; ;) {
+  for (;;) {
     let req = await fetch(commitsUrl + "&page=" + curPage, {
       method: "get",
       headers: headers,
@@ -800,7 +829,7 @@ async function fetchvideos() {
   let videos = [];
 
   try {
-    videos = await loadpkoData("videos") || [];
+    videos = (await loadpkoData("videos")) || [];
     // videos = await fetch("data/videos").then((r) => r.json());
   } catch (eee) {
     console.error(eee);
@@ -842,7 +871,7 @@ async function fetchvideos() {
     } catch (eee) {
       console.error(eee);
       // alert(eee);
-      bus.$emit('error', eee)
+      bus.$emit("error", eee);
     }
   }
 
@@ -909,7 +938,7 @@ const LOADERS = {
           lastSyncDate = updateIndex.date;
         } else if (
           new Date(lastSyncDate).getTime() -
-          new Date(updateIndex.date).getTime() >
+            new Date(updateIndex.date).getTime() >
           1000 * 3600 * 24 * 10
         ) {
           await uploadCache();
@@ -974,9 +1003,9 @@ const LOADERS = {
       }
     }
 
-    if (window.debug) window.debug('gzipAndStore RWORD');
+    if (window.debug) window.debug("gzipAndStore RWORD");
     gzipAndStore(RWORD, words);
-    if (window.debug) window.debug('NWORD nwords');
+    if (window.debug) window.debug("NWORD nwords");
 
     gzipAndStore(NWORD, nwords, 1);
 
@@ -987,7 +1016,8 @@ const LOADERS = {
         sinceName,
         new Date(new Date(lastSyncDate).getTime() + 1000).toISOString()
       );
-    if (window.debug) window.debug('config.fzWords ' + config.fzWords + " " + newList.length);
+    if (window.debug)
+      window.debug("config.fzWords " + config.fzWords + " " + newList.length);
 
     if (config.fzWords > 0 && newList.length > config.fzWords) {
       console.log(newList);
@@ -1018,7 +1048,7 @@ const LOADERS = {
             gzipAndStore(RWORD, words);
 
             nwords.length = 0;
-            if (window.debug) window.debug('save NWORD nwords');
+            if (window.debug) window.debug("save NWORD nwords");
 
             gzipAndStore(NWORD, nwords, 1);
             allWords = words;
@@ -1075,19 +1105,14 @@ function gZip(content) {
 function gzipAndStore(key, obj, notzip) {
   localStorage.setItem(
     key,
-    notzip
-      ? JSON.stringify(obj)
-      : encode(JSON.stringify(obj))
+    notzip ? JSON.stringify(obj) : encode(JSON.stringify(obj))
   );
 }
 function loadUnGZipStore(key) {
   let raw = localStorage.getItem(key);
 
   if (raw) {
-    return raw[0] == "["
-      ? jsonparse(raw)
-      : decode(localStorage.getItem(key)
-      )
+    return raw[0] == "[" ? jsonparse(raw) : decode(localStorage.getItem(key));
   }
   return [];
 }
