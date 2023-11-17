@@ -13,7 +13,7 @@
         <input
           type="checkbox"
           v-model="config.editor"
-          @click="updateConfig()"
+          @change="updateConfig()"
         />
       </div>
     </div>
