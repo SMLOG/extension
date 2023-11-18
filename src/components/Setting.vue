@@ -305,6 +305,7 @@
           margin: 5px 0;
           display: flex;
           justify-content: space-between;
+          flex-wrap: wrap;
         "
       >
         <div>
@@ -317,13 +318,26 @@
         </div>
 
         <div>
-          Translate:<input v-model="config.activeTran" type="checkbox" />
+          Translate Max Len:<input
+            v-model="config.activeTran"
+            type="checkbox"
+          />
           <input
             style="width: 40px"
             v-model.number="config.maxTranLen"
             min="0"
           />
         </div>
+
+        <div>
+          Back play:
+          <input
+            style="width: 40px"
+            v-model.number="config.backplay"
+            min="0"
+          />s
+        </div>
+
         <div>
           autoHide:<input
             v-model="config.autoHide"

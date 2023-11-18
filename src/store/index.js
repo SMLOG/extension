@@ -29,6 +29,7 @@ export default new Vuex.Store({
       playingM: 0,
     },
     config: {
+      backplay: 0,
       editor: 0,
       playbackrate: 1,
       custCue: 0,

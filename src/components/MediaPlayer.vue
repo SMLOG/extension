@@ -1,42 +1,34 @@
 <template>
   <div style="width: 100%; height: 100%">
-   
-    <div
-      @click="onTouch()"
-      v-show="show"
-      ref="top"
-      class="top"
-    >
-
-
+    <div @click="onTouch()" v-show="show" ref="top" class="top">
       <div
         ref="videoCon"
         class="videoCon"
         style="position: relative"
         v-show="!config.hi"
       >
-      <div class="custCue" v-show="!config.hi&&config.custCue && custCue">
-      <div style="display: flex; justify-content: center">
-        <div
-          style="background: rgba(0, 0, 0, 0.5)"
-          @touchstart="touchstartCustCue()"
-          @click.prevent.stop="touchstartCustCue()"
-          v-html="custCue"
-        ></div>
-      </div> 
-    </div>
-    <font-awesome-icon
-        class="pbtn"
-        :icon="['fas', 'arrow-left']"
-        @click="emit('PRE')"
-        style="left: 0"
-      />
-      <font-awesome-icon
-        :icon="['fas', 'arrow-right']"
-        @click="emit('NEXT')"
-        class="pbtn"
-        style="right: 0"
-      />
+        <div class="custCue" v-show="!config.hi && config.custCue && custCue">
+          <div style="display: flex; justify-content: center">
+            <div
+              style="background: rgba(0, 0, 0, 0.5)"
+              @touchstart="touchstartCustCue()"
+              @click.prevent.stop="touchstartCustCue()"
+              v-html="custCue"
+            ></div>
+          </div>
+        </div>
+        <font-awesome-icon
+          class="pbtn"
+          :icon="['fas', 'arrow-left']"
+          @click="emit('PRE')"
+          style="left: 0"
+        />
+        <font-awesome-icon
+          :icon="['fas', 'arrow-right']"
+          @click="emit('NEXT')"
+          class="pbtn"
+          style="right: 0"
+        />
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
@@ -162,7 +154,7 @@
         <div v-html="text" ref="lynx"></div>
       </div>
     </div>
-    <PlayerControllers  />
+    <PlayerControllers />
   </div>
 </template>
 
@@ -541,8 +533,7 @@ export default {
         if (this.cueTimer) clearTimeout(this.cueTimer);
 
         this.cueTimer = setTimeout(() => {
-          if(!this.player.paused())
-          this.custCue = "";
+          if (!this.player.paused()) this.custCue = "";
           console.log(time);
           this.cueTImer = 0;
         }, (5 + time) * 1000);
@@ -901,7 +892,7 @@ export default {
     bus.$on("videos", (videos) => {
       this.videos = videos;
     });
-   
+
     bus.$on("togglePlay", () => {
       console.error("togglePlayer");
 
@@ -945,10 +936,17 @@ export default {
         this.player.play();
       }
       if (!bool && bus.touchstartCustCue) {
-        setTimeout(()=>{
+        setTimeout(() => {
+          console.log(
+            this.config.backplay,
+            this.player.currentTime(),
+            Math.max(0, this.player.currentTime() - this.config.backplay)
+          );
+          this.player.currentTime(
+            Math.max(0, this.player.currentTime() - this.config.backplay)
+          );
           this.emit("togglePlay");
-
-        },1000);
+        }, 1000);
         bus.touchstartCustCue = 0;
       }
     },
@@ -996,7 +994,6 @@ export default {
 </script>
 
 <style scoped>
-
 video::cue(u),
 .video-js >>> .vjs-text-track-cue u {
   color: lightpink;
@@ -1144,9 +1141,6 @@ a.selected {
   font-weight: bold;
 }
 
-
-
-
 #bts a.nocc {
   color: chartreuse;
 }
@@ -1195,5 +1189,8 @@ a.selected {
 .wlargeh .custCue {
   max-width: calc(100vw - 20px);
 }
-.cueBotton .custCue{bottom: 0;top:auto;}
+.cueBotton .custCue {
+  bottom: 0;
+  top: auto;
+}
 </style>

@@ -4,13 +4,13 @@ export function htmlTrans(dict, str) {
 export function htmlTrans2(dict, str) {
   //let str = q + " ";
   var dictMap = dict.reduce((map, cur) => {
-    map[cur.q] = cur;
+    if (cur.n) map[cur.q] = cur;
     return map;
   }, {});
 
   var keys = dict
     .reduce((prev, cur) => {
-      prev.push(cur.q.toLowerCase());
+      if (cur.n) prev.push(cur.q.toLowerCase());
       return prev;
     }, [])
     .sort();
