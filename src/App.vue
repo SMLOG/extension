@@ -553,7 +553,7 @@ export default {
   position: relative;
   margin: auto;
   width: 100%;
-  height: var(--doc-height);
+  max-height: var(--doc-height);
   max-width: calc(min(100vw, 16 / 9 * var(--doc-height)));
 }
 .viewMode .videoview {
