@@ -11,14 +11,24 @@
       <div class="row" v-if="false" style="font-weight: bold">
         {{ curItem.to }}
       </div>
-      <div v-for="to in _toList" :key="to.src" class="row">
+      <div
+        v-for="to in _toList"
+        :key="to.src"
+        class="row"
+        style="display: flex; justify-content: space-between"
+      >
         <span
           @click.prevent="selectItem(to)"
           :class="{ cur: to.to == curItem.to }"
           class="to"
           >{{ to.to }}</span
         >
-        <span class="src" @click="playSound(to, 1, to.src)">{{ to.src }}</span>
+        <span
+          class="src"
+          @click="playSound(to, 1, to.src)"
+          style="color: #ccc"
+          >{{ to.src }}</span
+        >
       </div>
       <div class="row" v-if="curItem.error">{{ curItem.error }}</div>
       <div class="row" v-if="curItem.errorUrl">
@@ -220,11 +230,14 @@ export default {
 
         if (!text || text.length == 0 || text.length > this.config.maxTranLen)
           return;
-        let chars = text.match(/[a-z]/gi);
-        if (!chars || /[\u4e00-\u9fa5]/.test(text) || /\//.test(text)) return;
+        let chars = text.trim();
+        if (/\//.test(text)) return;
+        /*else if( /[\u4e00-\u9fa5]/.test(text)){
 
-        if (text.length > 500) {
-          text = text.substring(0, 500);
+        }*/
+
+        if (text.length > this.config.maxTranLen) {
+          text = text.substring(0, this.config.maxTranLen);
         }
 
         this.$store.commit("setShowApp", true);

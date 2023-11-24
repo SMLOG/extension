@@ -64,8 +64,9 @@ export async function translate(q, opts) {
           return ret;
         });
       console.log(ret);
-      ok = 1;
     }
+    ok = 1;
+
     // else ret = await proxyServerTranslate(q);
   } catch (ee) {
     console.error(ee);
@@ -92,8 +93,10 @@ async function tranApi(q, index) {
   console.log(appid, userkey);
   var sign = md5(appid + q + salt + userkey);
 
-  var from = "en";
-  var to = "zh";
+  var isen = /^[\x00-\x7F]*$/.test(q);
+  var iscn = /[\u4e00-\u9fa5]/.test(q);
+  var from = isen ? "en" : iscn ? "zh" : "auto";
+  var to = isen ? "zh" : "en";
   let type = isBackground() ? "json" : "jsonp";
 
   for (var i = 0; i < 1; i++) {
@@ -310,9 +313,11 @@ export async function translate2(q, opts) {
         return [gtk, token];
       });
 
+    var isen = /^[\x00-\x7F]*$/.test(q);
+    var iscn = /[\u4e00-\u9fa5]/.test(q);
     var datas = {
-      from: "en",
-      to: "zh",
+      from: isen ? "en" : iscn ? "zh" : "auto",
+      to: isen ? "zh" : "en",
       query: q,
       transtype: "realtime",
       simple_means_flag: 3,
@@ -320,8 +325,9 @@ export async function translate2(q, opts) {
       token: token,
       domain: "common",
     };
+
     let result = await axios({
-      url: "https://fanyi.baidu.com/v2transapi?from=en&to=zh",
+      url: "https://fanyi.baidu.com/v2transapi",
       method: "post",
       data: datas,
       transformRequest: [
