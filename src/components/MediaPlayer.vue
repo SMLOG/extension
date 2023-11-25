@@ -925,6 +925,9 @@ export default {
   },
 
   watch: {
+    videoUrl(videoUrl) {
+      this.updateConfig2({ videoUrl: videoUrl });
+    },
     showApp(bool) {
       if (bool) {
         if (!this.player.paused()) {

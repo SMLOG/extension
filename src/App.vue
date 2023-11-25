@@ -35,6 +35,7 @@
         cueTop: config.custCue == 2,
         cueBotton: config.custCue == 1,
         pause: !config2.playingM,
+        videoUrl: config2.videoUrl || config.shownews,
       }"
     >
       <div
@@ -553,8 +554,11 @@ export default {
   position: relative;
   margin: auto;
   width: 100%;
-  max-height: var(--doc-height);
+
   max-width: calc(min(100vw, 16 / 9 * var(--doc-height)));
+}
+.videoUrl .videoview {
+  height: var(--doc-height);
 }
 .viewMode .videoview {
   max-width: min(calc(16 / 9 * 100vw), var(--doc-height));

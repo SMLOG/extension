@@ -93,7 +93,7 @@ async function tranApi(q, index) {
   console.log(appid, userkey);
   var sign = md5(appid + q + salt + userkey);
 
-  var isen = /^[\x00-\x7F]*$/.test(q);
+  var isen = /[a-zA-Z0-9,.+;!-]/.test(q);
   var iscn = /[\u4e00-\u9fa5]/.test(q);
   var from = isen ? "en" : iscn ? "zh" : "auto";
   var to = isen ? "zh" : "en";
@@ -313,7 +313,7 @@ export async function translate2(q, opts) {
         return [gtk, token];
       });
 
-    var isen = /^[\x00-\x7F]*$/.test(q);
+    var isen = /[a-zA-Z0-9,.+;!-]/.test(q);
     var iscn = /[\u4e00-\u9fa5]/.test(q);
     var datas = {
       from: isen ? "en" : iscn ? "zh" : "auto",

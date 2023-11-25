@@ -27,6 +27,7 @@ export default new Vuex.Store({
       playing: 0, //play words
       touchCustCue: 0,
       playingM: 0,
+      videoUrl: "",
     },
     config: {
       backplay: 0,
