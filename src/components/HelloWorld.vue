@@ -181,11 +181,15 @@ export default {
         if (!event) return;
         let target = event.target;
         let handle = function () {
+          console.log("stop");
           stop = true;
-          target && event.target.removeEventListener("mouseout", handle);
+          target && event.target.removeEventListener("mouseleave", handle);
         };
 
-        target && event.target.addEventListener("mouseout", handle);
+        if (target) {
+          event.target.addEventListener("mouseleave", handle);
+          console.log(target);
+        }
         for (let i = 0; i < 100; i++) {
           console.log(stop);
           console.log(stop);

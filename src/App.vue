@@ -111,9 +111,14 @@
               @change="changeItemNew($event)"
             />
 
-            <span ref="play" :class="{ active: curTab == 'HelloWorld' }">
-              Play
-            </span>
+            <font-awesome-icon
+              ref="play"
+              :icon="config.autoSound ? 'volume-high' : 'volume-off'"
+              fixed-width
+              @click="updateConfig2({ playing: !config2.playing })"
+              size="lg"
+              :class="{ active: curTab == 'HelloWorld' }"
+            ></font-awesome-icon>
             ↔
             <span
               @click="setCurTab('HelloWorld')"

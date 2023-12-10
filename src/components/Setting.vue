@@ -621,14 +621,16 @@ export default {
     submitToken() {
       this.tokenMessage = "";
       service(null, { cmd: "token", content: this.token }, (resp) => {
-        this.tokenMessage = resp.message || resp.name;
-        if (!resp.name) {
-          setTimeout(() => {
-            service(null, { cmd: "token" }, (resp) => {
-              this.tokenMessage = resp;
-              if (!resp) this.token = "";
-            });
-          }, 3000);
+        if (resp) {
+          this.tokenMessage = resp.message || resp.name;
+          if (!resp.name) {
+            setTimeout(() => {
+              service(null, { cmd: "token" }, (resp) => {
+                this.tokenMessage = resp;
+                if (!resp) this.token = "";
+              });
+            }, 3000);
+          }
         }
       });
     },
