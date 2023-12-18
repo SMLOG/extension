@@ -5,42 +5,7 @@
     class="mytranslate-extension"
     :class="'fs-' + config.fs"
   >
-    <div style="margin: 5px;width: 100%;" v-if="config.editor" :style="{position:editpos=='None'?'static':'fixed',top:editpos=='Top'?0:'auto',bottom:editpos=='Bottom'?0:'auto'}">
-    <div style="display: flex;justify-content: space-between;">
-      <div>
-        <span
-          v-for="b in bgs"
-          :key="b"
-          style="min-width: 10px; min-height: 10px; display: inline-block"
-          @click="selectbg = b"
-          :style="{
-            background: b,
-            border: selectbg == b ? '1px solid red' : '1px solid gray',
-          }"
-        >
-        </span>
-      </div>
-      <div style="user-select: none;">
-        <span
-          v-for="b in ['Top','Bottom','None']"
-          :key="b"
-          style="min-width: 10px; min-height: 10px; display: inline-block;margin:5px;cursor: pointer;"
-          @click="editpos = b"
-          :style="{
-            background: b,
-            color: editpos == b ? 'red' : 'gray',
-          }"
-        >{{ b }}
-        </span>
-      </div>
-    </div>
-
-      <div
-        contenteditable="true"
-        style="border: 2px dashed #ccc; padding: 5px"
-        :style="{ background: selectbg }"
-      ></div>
-    </div>
+<Editor/>
     <div
       :class="{
         viewMode: config.viewMode,
@@ -195,6 +160,7 @@
 </template>
 <script>
 import { mapState } from "vuex";
+import Editor from "./components/Editor.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import NewWordsR from "./components/NewWordsR.vue";
 import MediaPlayer from "./components/MediaPlayer.vue";
@@ -215,9 +181,7 @@ import { bgsound } from "@/lib";
 export default {
   data() {
     return {
-      editpos:'None',
-      selectbg: "none",
-      bgs: ["none", "#f0f0f0"],
+
       ver: version,
       zIndex: new Date().getTime(),
       error: "",
@@ -243,6 +207,7 @@ export default {
     },
   },
   components: {
+    Editor,
     HelloWorld,
     NewWordsR,
     MediaPlayer,
@@ -266,6 +231,10 @@ export default {
     documentHeight();
 
     bus.root = this.$refs.root;
+
+
+    
+
     $(this.$refs.rootnav).on("click", () => {
       this.clearSelect();
     });

@@ -349,6 +349,7 @@ export default {
     }
 
     document.addEventListener("mouseup", () => {
+      console.log('mouseup')
       setTimeout(() => {
         if (this.config.activeTran) this.tran();
       }, 10);
