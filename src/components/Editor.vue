@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      style="margin: 5px; width: 100%"
+      style="margin: 5px; width: 100%; background: rgba(255, 255, 255, 0.6)"
       v-if="config.editor"
       :style="{
         position: editpos == 'None' ? 'sticky' : 'fixed',

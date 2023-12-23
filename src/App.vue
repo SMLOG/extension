@@ -5,7 +5,7 @@
     class="mytranslate-extension"
     :class="'fs-' + config.fs"
   >
-<Editor/>
+    <Editor />
     <div
       :class="{
         viewMode: config.viewMode,
@@ -181,7 +181,6 @@ import { bgsound } from "@/lib";
 export default {
   data() {
     return {
-
       ver: version,
       zIndex: new Date().getTime(),
       error: "",
@@ -231,9 +230,6 @@ export default {
     documentHeight();
 
     bus.root = this.$refs.root;
-
-
-    
 
     $(this.$refs.rootnav).on("click", () => {
       this.clearSelect();
@@ -628,6 +624,14 @@ export default {
 .fs-5 >>> video::-webkit-media-text-track-display {
   font-size: 2.5em !important;
 }
+
+.fs-6 >>> .custCue,
+.fs-6 >>> .text,
+.fs-6 >>> .vjs-text-track-cue,
+.fs-6 >>> video::-webkit-media-text-track-display {
+  font-size: 3em !important;
+}
+
 .custCue >>> video::cue {
   visibility: hidden;
 }
