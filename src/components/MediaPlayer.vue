@@ -91,7 +91,7 @@
           >
           <a
             class="up"
-            @click="updateConfig({ fs: config.fs >= 6 ? 1 : config.fs + 1 })"
+            @click="updateConfig({ fs: config.fs >= 8 ? 1 : config.fs + 1 })"
           >
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
             <span>{{ config.fs }}</span>

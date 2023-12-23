@@ -631,6 +631,18 @@ export default {
 .fs-6 >>> video::-webkit-media-text-track-display {
   font-size: 3em !important;
 }
+.fs-7 >>> .custCue,
+.fs-7 >>> .text,
+.fs-7 >>> .vjs-text-track-cue,
+.fs-7 >>> video::-webkit-media-text-track-display {
+  font-size: 3.5em !important;
+}
+.fs-8 >>> .custCue,
+.fs-8 >>> .text,
+.fs-8 >>> .vjs-text-track-cue,
+.fs-8 >>> video::-webkit-media-text-track-display {
+  font-size: 4em !important;
+}
 
 .custCue >>> video::cue {
   visibility: hidden;
