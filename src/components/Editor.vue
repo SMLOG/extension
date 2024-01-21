@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{toggle:toggle}">
     <div
       style="margin: 5px; width: 100%; background: rgba(255, 255, 255, 0.6)"
       v-if="config.editor"
@@ -25,6 +25,8 @@
           </span>
           <span style="margin-left: 20px; cursor: pointer" @click="clean()"
             >Clear</span
+          >
+          <span style="margin-left: 10px; cursor: pointer" @click="toggle=!toggle" :style="{fontWeight:toggle?'bold':'normal'}" >H/S</span
           >
         </div>
 
@@ -84,6 +86,7 @@
         style="border: 2px dashed #ccc; padding: 5px"
         :style="{ background: selectbg }"
         ref="editor"
+        v-show="!toggle"
       ></div>
     </div>
   </div>
@@ -98,7 +101,8 @@ export default {
       highlightmark: "None",
       editpos: "None",
       selectbg: "none",
-      bgs: ["none", "#f0f0f0"],
+      bgs: ["none",'white', "#f0f0f0"],
+      toggle:0,
     };
   },
   methods: {

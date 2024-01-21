@@ -87,6 +87,8 @@ export default {
           ? 0
           : (s.left + s.right) / 2 + $(window).scrollLeft() - 20;
         let top = s.bottom + $(window).scrollTop() + 8;
+        left = Math.max(0,left);
+        top = Math.max(0,top);
         root.css({
           position: "absolute",
           top: 0,
