@@ -32,7 +32,7 @@
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
-            :preloadNextUrl="nextUrl"
+            :preloadNextUrl="preloadNextUrl"
             @cuechange="cuechange"
             @initPlayer="initPlayer"
             :cc="cc"
@@ -192,6 +192,7 @@ export default {
       isCc: 0,
       mediaType: 1,
       videoUrl: "",
+      preloadNextUrl:'',
       show: 0,
       url: "",
       top: "0%",
@@ -763,32 +764,32 @@ export default {
         }
       }
 
-      console.log(this.mediaType);
+      console.log('debuga',this.mediaType);
       if (this.mediaType == 1) {
         try {
           if (item.audio == undefined) {
             try {
               await getAAduio(item);
+              if(nextItem)await getAAduio(nextItem);
               bus.$emit("video", item);
             } catch (eee) {
               console.log(eee);
             }
           }
           console.log(this.config.isAudio);
-
+          console.log('debuga',item, this.mediaType);
+          this.preloadNextUrl='';
           if (this.config.isAudio) {
             if (!item.audio) throw "no audio";
             this.videoUrl = item.audio + "?_=" + this.mediaType;
+            if(nextItem)
+              this.preloadNextUrl = nextItem.audio + "?_=" + this.mediaType;
             this.av = 0;
           } else {
             this.av = 1;
             if (!skip) {
-              console.log(item, this.mediaType);
 
               setTimeout(() => {
-                if(nextItem)
-                    this.nextUrl = nextItem.url;
-                 else this.nextUrl = "";
                 this.videoUrl = item.url;
                 this.player.play();
               }, 100);

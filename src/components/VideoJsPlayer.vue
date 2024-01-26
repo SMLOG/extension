@@ -128,8 +128,9 @@ export default {
     },
     async bufferNextVideo() {
       if (this.preloadNextUrl) {
-        await this.setMediaUrl(this.preloadNextUrl);
-        this.player.load();
+        console.log('preload next url' , this.preloadNextUrl)
+        //await this.setMediaUrl(this.preloadNextUrl);
+        //this.player.load();
       }
     },
     init() {
@@ -198,9 +199,10 @@ export default {
             var lastBufferedIndex = buffered.length - 1;
             var bufferedEnd = buffered.end(lastBufferedIndex);
             var currentTime = player.currentTime();
-            if (currentTime >= bufferedEnd) {
+            if (currentTime>0&&currentTime >= bufferedEnd) {
               bufferPlayCount++;
               if (bufferPlayCount > 3) {
+                bufferPlayCount=0;
                 this.playNextVideo();
               } else {
                 var bufferedStart = buffered.start(lastBufferedIndex);
@@ -211,18 +213,19 @@ export default {
           }
         });
 
-        player.on('waiting', function () {
+        player.on('progress',  ()=> {
           var buffered = player.buffered();
           var duration = player.duration();
 
-          if (buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
+          if (duration>0 && buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
             // The video has fully buffered
             console.log('Video has fully buffered. Ready to start buffering next video.');
             // Start buffering the next video
             this.bufferNextVideo();
           } else {
             // The video is still buffering or partially buffered
-            console.log('Video is buffering. Please wait...');
+            console.log('Video is buffering. Please wait...',player.bufferedPercent());
+
           }
         });
 
@@ -333,6 +336,7 @@ export default {
     },
 
     source() {
+      console.log("preloadNextUrl:",this.preloadNextUrl)
       this.init();
     },
     title() {
