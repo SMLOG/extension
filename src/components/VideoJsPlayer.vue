@@ -1,18 +1,7 @@
 <template>
-  <video
-    x5-playsinline
-    preload="auto"
-    webkit-playsinline="true"
-    playsinline="true"
-    x-webkit-airplay="allow"
-    airplay="allow"
-    controls
-    ref="videoPlayer"
-    class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-    poster=""
-    autoplay="false"
-    :title="title"
-  ></video>
+  <video x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
+    airplay="allow" controls ref="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
+    autoplay="false" :title="title"></video>
 </template>
 
 <script>
@@ -20,18 +9,20 @@
 import Vue from "vue";
 
 import videojs from "video.js";
+//import "videojs-playlist";
 import "videojs-contrib-hls";
 import "video.js/dist/video-js.css";
 import "videojs-contrib-quality-levels";
 import "@silvermine/videojs-airplay/dist/silvermine-videojs-airplay.css";
 
 require("@silvermine/videojs-airplay")(videojs);
+
 import bus from "@/bus";
 
 Vue.prototype.$video = videojs;
 
 export default {
-  props: ["source", "cc", "title", "mediaItem", "timeupdate"],
+  props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
       player: null,
@@ -61,7 +52,7 @@ export default {
         controls: "progress,current,durration,volume",
         crossOrigin: false, //设置视频的 CORS 设置。
         textTrackDisplay: true,
-        playbackRates: [0.5,0.6,0.7, 0.8, 0.9, 1],
+        playbackRates: [0.5, 0.6, 0.7, 0.8, 0.9, 1],
         fill: true,
         fluid: true,
         plugins: {
@@ -85,7 +76,7 @@ export default {
       },
     };
   },
-  created() {},
+  created() { },
   computed: {},
   /*updated() {
     this.$nextTick(() => {
@@ -93,6 +84,54 @@ export default {
     });
   },*/
   methods: {
+    async setMediaUrl(url) {
+      if (url) {
+        let filetype = "audio/mpeg";
+        if (url.indexOf(".m3p") > -1) {
+          filetype = "audio/mp3";
+        } else if (url.indexOf(".m4a") > -1) {
+          filetype = "audio/mp4";
+        } else if (url.indexOf(".mp4") > -1) {
+          filetype = "video/mp4";
+        } else if (url.indexOf("m3u8") > -1) {
+          filetype = "application/x-mpegURL";
+        } else if (url.indexOf(".mpd") > -1) {
+          filetype = "application/dash+xml";
+        }
+
+        console.error(url, filetype);
+        if (url.indexOf("/cache/local") > -1) {
+         await fetch(url)
+            .then((r) => r.blob())
+            .then((r) => {
+              this.player.src([
+                {
+                  src: window.URL.createObjectURL(r),
+                  type: filetype,
+                },
+              ]);
+              //  const reader = new FileReader();
+              //   reader.readAsDataURL(r);
+              //  reader.onload = () => {console.error(reader.result)};
+            });
+        } else
+          this.player.src([
+            {
+              src: url,
+              type: filetype,
+            },
+          ]);
+      }
+    },
+    playNextVideo() {
+      this.$emit('ended');
+    },
+    async bufferNextVideo() {
+      if (this.preloadNextUrl) {
+        await this.setMediaUrl(this.preloadNextUrl);
+        this.player.load();
+      }
+    },
     init() {
       let player = this.player;
       let self = this;
@@ -150,8 +189,41 @@ export default {
             }
           }, 0);
         });
+        var bufferPlayCount = 0;
+
         player.on("timeupdate", (e) => {
           this.$emit("timeupdate", e, player);
+          var buffered = player.buffered();
+          if (buffered.length > 0) {
+            var lastBufferedIndex = buffered.length - 1;
+            var bufferedEnd = buffered.end(lastBufferedIndex);
+            var currentTime = player.currentTime();
+            if (currentTime >= bufferedEnd) {
+              bufferPlayCount++;
+              if (bufferPlayCount > 3) {
+                this.playNextVideo();
+              } else {
+                var bufferedStart = buffered.start(lastBufferedIndex);
+                player.currentTime(bufferedStart);
+                player.play();
+              }
+            }
+          }
+        });
+
+        player.on('waiting', function () {
+          var buffered = player.buffered();
+          var duration = player.duration();
+
+          if (buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
+            // The video has fully buffered
+            console.log('Video has fully buffered. Ready to start buffering next video.');
+            // Start buffering the next video
+            this.bufferNextVideo();
+          } else {
+            // The video is still buffering or partially buffered
+            console.log('Video is buffering. Please wait...');
+          }
         });
 
         let tt = 0;
@@ -213,65 +285,31 @@ export default {
         player.on("pause", () => {
           this.$emit("pause");
           bus.$emit("pause");
-         this.updateConfig2({playingM:0})
+          this.updateConfig2({ playingM: 0 })
         });
 
         player.on("play", () => {
           this.$emit("play");
           bus.$emit("play");
-          this.updateConfig2({playingM:1})
+          this.updateConfig2({ playingM: 1 })
         });
 
         player.on("ratechange", () => {
           console.log("change rate");
           if (player.currentTime() > 1) {
-            this.updateConfig({playbackrate:player.playbackRate()})
+            this.updateConfig({ playbackrate: player.playbackRate() })
           }
         });
 
+
+
       }
       //let rate = (sessionStorage.playbackrate = player.playbackRate());
-      let url = this.source;
 
-      if (url) {
-        let filetype = "audio/mpeg";
-        if (url.indexOf(".m3p") > -1) {
-          filetype = "audio/mp3";
-        } else if (url.indexOf(".m4a") > -1) {
-          filetype = "audio/mp4";
-        } else if (url.indexOf(".mp4") > -1) {
-          filetype = "video/mp4";
-        } else if (url.indexOf("m3u8") > -1) {
-          filetype = "application/x-mpegURL";
-        } else if (url.indexOf(".mpd") > -1) {
-          filetype = "application/dash+xml";
-        }
-
-        console.error(url, filetype);
-        if (url.indexOf("/cache/local") > -1) {
-          fetch(url)
-            .then((r) => r.blob())
-            .then((r) => {
-              this.player.src([
-                {
-                  src: window.URL.createObjectURL(r),
-                  type: filetype,
-                },
-              ]);
-              //  const reader = new FileReader();
-              //   reader.readAsDataURL(r);
-              //  reader.onload = () => {console.error(reader.result)};
-            });
-        } else
-          this.player.src([
-            {
-              src: url,
-              type: filetype,
-            },
-          ]);
-      }
-
+      this.setMediaUrl(this.source);
       if (player.paused()) this.player.play();
+
+
 
       /* if (rate) {
         setTimeout(() => {
@@ -289,11 +327,11 @@ export default {
   watch: {
     "$store.state.config.playbackrate": {
       handler(n) {
-        this.player&&this.player.playbackRate(n)
-          
-        }
-      },
-    
+        this.player && this.player.playbackRate(n)
+
+      }
+    },
+
     source() {
       this.init();
     },
@@ -309,15 +347,18 @@ export default {
   width: 90%;
   background: rgba(0, 0, 0, 0.8);
 }
+
 video::cue(u),
-.video-js >>> .vjs-text-track-cue u {
+.video-js>>>.vjs-text-track-cue u {
   color: lightpink;
 }
+
 video::cue(i),
-.video-js >>> .vjs-text-track-cue i {
+.video-js>>>.vjs-text-track-cue i {
   color: lightblue;
 }
-.video-js >>> .vjs-loading-spinner {
+
+.video-js>>>.vjs-loading-spinner {
   width: 2em;
   height: 2em;
   border-radius: 1em;
@@ -325,7 +366,7 @@ video::cue(i),
   margin-left: -1.5em;
 }
 
-.video-js >>> .vjs-big-play-button {
+.video-js>>>.vjs-big-play-button {
   font-size: 3em;
   line-height: 42px !important;
   height: 50px !important;
@@ -345,18 +386,22 @@ video::cue(i),
   -webkit-transition: all 0.4s;
   transition: all 0.4s;
 }
+
 .vjs-paused .vjs-big-play-button,
-.vjs-paused.vjs-has-started >>> .vjs-big-play-button {
+.vjs-paused.vjs-has-started>>>.vjs-big-play-button {
   display: block !important;
 }
+
 .myVideo-dimensions {
   width: 100% !important;
   height: 100% !important;
   display: block !important;
 }
+
 .vjs-poster {
   background-size: 100% 100% !important;
 }
+
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {
   display: block;
@@ -381,9 +426,11 @@ video::cue(i),
 .top {
   max-width: 100vh;
 }
+
 .videoCon {
   width: 100%;
 }
+
 .text {
   word-break: break-all;
   position: absolute;
@@ -404,12 +451,15 @@ video::cue(i),
   box-sizing: border-box;
   text-align: left;
 }
-.text >>> .cur {
+
+.text>>>.cur {
   color: green;
 }
+
 #bts {
   text-align: right;
 }
+
 #bts a {
   display: inline-block;
   margin: 0px 0px 5px 5px;
@@ -423,14 +473,17 @@ video::cue(i),
   background-color: rgba(0, 64, 156, 0.8);
   user-select: none;
 }
+
 #bts input {
   margin: 0;
   padding: 0;
 }
+
 #bts a.enable {
   color: red;
 }
->>> .vjs-text-track-display .vjs-text-track-cue * {
+
+>>>.vjs-text-track-display .vjs-text-track-cue * {
   pointer-events: auto;
   user-select: auto;
   z-index: 1;

@@ -32,6 +32,7 @@
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
             :source="videoUrl"
+            :preloadNextUrl="nextUrl"
             @cuechange="cuechange"
             @initPlayer="initPlayer"
             :cc="cc"
@@ -735,18 +736,10 @@ export default {
       let skip = 0;
       console.log("loadV");
       if (!item.vid) return;
-      try {
-        await this.loadCache("video-" + item.vid).then((r) => {
-          if (r) {
-            Object.assign(item, r);
-          }
-        });
-      } catch (ee) {
-        console.error(ee);
-      }
+
 
       await getAndPrepareNextExtra(item, mediaType, nextItem);
-
+        console.log(item,nextItem);
       if (this.show && this.config.isAudio < 2) {
         try {
           if (!this.isAliPlayer) await this.loadTTV(item.cc);
@@ -793,6 +786,9 @@ export default {
               console.log(item, this.mediaType);
 
               setTimeout(() => {
+                if(nextItem)
+                    this.nextUrl = nextItem.url;
+                 else this.nextUrl = "";
                 this.videoUrl = item.url;
                 this.player.play();
               }, 100);

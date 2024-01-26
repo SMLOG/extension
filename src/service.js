@@ -620,7 +620,9 @@ let serviceMap = {
             updateconfig = 0;
           }
         }
+        let map = Object.values(config.urls).flat().reduce((m,i)=>{m[i.url]=i.enable;return m},{});
         config = Object.assign(config, rconfig);
+        if(config.urls)Object.values(config.urls).flat().map(e=>e.enable=map[e.url]);
       }
 
       sendResponse(config);
