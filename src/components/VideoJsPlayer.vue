@@ -2,11 +2,11 @@
   <div >
   <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
     airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false" :title="title"></video>
+    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" ></video>
 
     <video  ref="bufferPlayer"  x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
     airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false" :title="title" muted ></video>
+    autoplay="false"  :title="hovering?'':title"   @mouseover="hovering = true" @mouseout="hovering = false" muted ></video>
   </div>
 </template>
 
@@ -33,6 +33,7 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      hovering:false,
       players:null,
       options: {
         inactivityTimeout: 5000,
