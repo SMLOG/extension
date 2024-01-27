@@ -262,18 +262,16 @@ export async function getVideoPromiseList(conf) {
 
 export async function getAndPrepareNextExtra(item, mediaType, nextItem) {
   console.error(nextItem);
+  console.error(nextItem);
   if (item.loaded) return item;
-  if(nextItem&&!nextItem.loaded)await getExtra(nextItem, mediaType);
   return await getExtra(item, mediaType);
 }
 
 export async function getExtra(item, mediaType) {
   if (!item) return;
-  if (mediaType == 1) {
-    return await getCnnExtra(item, mediaType);
-  } else if (config.mods.videos.m[item.src]) {
+  if (config.mods.videos.m[item.src]) {
     let ext = config.mods.videos.m[item.src].ext;
-    return ext && (await ext(item));
+    return ext && (await ext(item,mediaType));
   }
 }
 

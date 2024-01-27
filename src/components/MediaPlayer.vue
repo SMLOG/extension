@@ -139,7 +139,6 @@
 
           <a @click="next(1)">
             <font-awesome-icon icon="fa-solid fa-angle-right" />
-            <span v-if="nextUrl">*</span>
           </a>
         </div>
       </div>
@@ -229,6 +228,36 @@ export default {
     ResizeMask,
   },
   methods: {
+    selectVideo(mediaType, item, click, index, index2)  {
+      if (click) this.show = 1;
+      if (location.search.indexOf("hidePlayer=1") > -1) {
+        this.show = 0;
+      }
+      this.videoId = item.vid;
+      this.title = item.title;
+      this.item = item;
+      this.videoIndex = index;
+      this.subIndex = index2;
+      this.mediaType = mediaType; //== 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
+      this.$store.commit("add2CurWords", [[], 1]);
+      this.onCuesChangeSync2 = 0;
+      this.text = "";
+
+      if (this.mediaType == 0) {
+        this.videoUrl = this.url = item.url;
+        this.av = 0;
+      } else {
+        (async () => {
+          try {
+            await this.loadVideo(item, mediaType);
+          } catch (e) {
+            console.error(e);
+            this.end();
+          }
+        })();
+      }
+    
+    },
     touchstartCustCue() {
       this.player && this.player.pause();
       bus.touchstartCustCue = 1;
@@ -475,7 +504,7 @@ export default {
     },
     ajustTextHeight() {
       var topDom = this.$refs.text;
-
+console.log('ajustTextHeight');
       topDom.style.top =
         ($(this.$refs.videoCon).is(":hidden")
           ? 0
@@ -770,20 +799,15 @@ export default {
           if (item.audio == undefined) {
             try {
               await getAAduio(item);
-              if(nextItem)await getAAduio(nextItem);
-              bus.$emit("video", item);
             } catch (eee) {
               console.log(eee);
             }
           }
           console.log(this.config.isAudio);
           console.log('debuga',item, this.mediaType);
-          this.preloadNextUrl='';
           if (this.config.isAudio) {
             if (!item.audio) throw "no audio";
             this.videoUrl = item.audio + "?_=" + this.mediaType;
-            if(nextItem)
-              this.preloadNextUrl = nextItem.audio + "?_=" + this.mediaType;
             this.av = 0;
           } else {
             this.av = 1;
@@ -856,36 +880,6 @@ export default {
     bus.$on("PRE", () => {
       this.prev(1);
     });
-    bus.$on("videoId", (mediaType, item, click, index, index2, nextItem) => {
-      if (click) this.show = 1;
-      if (location.search.indexOf("hidePlayer=1") > -1) {
-        this.show = 0;
-      }
-      this.nextItem = nextItem;
-      this.videoId = item.vid;
-      this.title = item.title;
-      this.item = item;
-      this.videoIndex = index;
-      this.subIndex = index2;
-      this.mediaType = mediaType; //== 0 && item.url && !/\.m(p3|3u8|p4)/.exec(item.url) ? 0 : 1;
-      this.$store.commit("add2CurWords", [[], 1]);
-      this.onCuesChangeSync2 = 0;
-      this.text = "";
-
-      if (this.mediaType == 0) {
-        this.videoUrl = this.url = item.url;
-        this.av = 0;
-      } else {
-        (async () => {
-          try {
-            await this.loadVideo(item, mediaType, nextItem);
-          } catch (e) {
-            console.error(e);
-            this.end();
-          }
-        })();
-      }
-    });
     bus.$on("videos", (videos) => {
       this.videos = videos;
     });
@@ -922,6 +916,16 @@ export default {
   },
 
   watch: {
+    "$store.state.config2.playIndex": {
+      handler(n) {
+        let item = this.config2.playList[n];
+        //mediaType, item, click, index, index2
+        this.show=1;
+        this.selectVideo(this.config2.mediaType,item,0,n);
+        console.log(n)
+      },
+    },
+  
     videoUrl(videoUrl) {
       this.updateConfig2({ videoUrl: videoUrl });
     },
@@ -975,20 +979,7 @@ export default {
         document.querySelector("video").loop = b ? true : false;
       },
     },
-    "$store.state.config.isAudio": {
-      handler() {
-        setTimeout(() => {
-          (async () => {
-            try {
-              await this.loadVideo(this.item, this.mediaType, this.nextItem);
-            } catch (e) {
-              console.error(e);
-              this.end();
-            }
-          })();
-        }, 800);
-      },
-    },
+
   },
 };
 </script>
@@ -1049,7 +1040,6 @@ video::cue(i),
 }
 
 .top {
-  position: absolute;
   background-color: white;
   overflow: scroll;
   width: 100%;

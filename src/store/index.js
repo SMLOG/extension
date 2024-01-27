@@ -17,7 +17,6 @@ export default new Vuex.Store({
     newword: "",
     showApp: 0,
     showSidebar: 0,
-
     hkdcny: { now: "", p: "" },
     nextUrl: "",
     config2: {
@@ -28,6 +27,9 @@ export default new Vuex.Store({
       touchCustCue: 0,
       playingM: 0,
       videoUrl: "",
+      playList:[],
+      playIndex:-1,
+      mediaType:0
     },
     config: {
       backplay: 0,

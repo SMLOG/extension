@@ -1,7 +1,13 @@
 <template>
-  <video x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
-    airplay="allow" controls ref="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
+  <div >
+  <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
+    airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
     autoplay="false" :title="title"></video>
+
+    <video  ref="bufferPlayer"  x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
+    airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
+    autoplay="false" :title="title" muted ></video>
+  </div>
 </template>
 
 <script>
@@ -14,18 +20,20 @@ import "videojs-contrib-hls";
 import "video.js/dist/video-js.css";
 import "videojs-contrib-quality-levels";
 import "@silvermine/videojs-airplay/dist/silvermine-videojs-airplay.css";
-
+import { getAndPrepareNextExtra } from "@/config";
+import { getAAduio } from "@/lib";
 require("@silvermine/videojs-airplay")(videojs);
 
 import bus from "@/bus";
 
 Vue.prototype.$video = videojs;
 
+
 export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
-      player: null,
+      players:null,
       options: {
         inactivityTimeout: 5000,
         userActions: {
@@ -84,7 +92,87 @@ export default {
     });
   },*/
   methods: {
-    async setMediaUrl(url) {
+
+    playListVideo(n){
+           /// getAndPrepareNextExtra
+           (async()=>{
+        let players = this.players;
+        let item = this.config2.playList[n];
+        if(!item)return;
+        let nextIndex = Math.min(this.config2.playList.length,n+1)==this.config2.playList.length?0:n+1;
+        let nextItem = this.config2.playList[nextIndex];
+       let url = await this.getItemUrl(item);
+       let nextUrl = await this.getItemUrl(nextItem);
+       let activeIndex= players.map(e=>e.url).indexOf(url);
+       let bufferIndex= players.map(e=>e.url).indexOf(nextUrl);
+
+       
+        activeIndex = activeIndex<0&&bufferIndex<0?0:bufferIndex<0?1:1-bufferIndex;
+        bufferIndex = 1-activeIndex;
+
+        
+
+
+        let bufferPlaery = players[bufferIndex];
+        bufferPlaery.muted(1);
+        bufferPlaery.actived=0;
+        bufferPlaery.url=nextUrl;
+       await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
+        bufferPlaery.preload('none');
+        setTimeout(()=>{bufferPlaery.pause();},1000);
+        
+
+
+        let actviePlayer = players[activeIndex];
+
+        actviePlayer.muted(0);
+        actviePlayer.actived=1;
+        actviePlayer.url=url;
+
+        await this.setMediaUrl( actviePlayer.url,actviePlayer);
+
+        actviePlayer.currentTime(0);
+        actviePlayer.play();
+        
+   
+        window.players=players;
+
+        document.querySelectorAll('.video-js')[activeIndex].style.display='';
+        document.querySelectorAll('.video-js')[bufferIndex].style.display='none';
+
+
+       })();
+    },
+
+   async getItemUrl(item){
+
+        await getAndPrepareNextExtra(item, this.config2.mediaType);
+        console.log('getItemUrl',this.config2.mediaType,item);
+        if (this.config2.mediaType == 1) {
+        try {
+          if (item.audio == undefined) {
+            try {
+              await getAAduio(item);
+            } catch (eee) {
+              console.log(eee);
+            }
+          }
+          console.log(this.config.isAudio);
+          if (this.config.isAudio) {
+            if (!item.audio) throw "no audio";
+            return item.audio + "?_=" + this.config2.mediaType;
+          } 
+          
+
+        } catch (e) {
+          console.error(e);
+          throw e;
+        }
+      }
+      return item.url;
+
+    },
+    async setMediaUrl(url,player) {
       if (url) {
         let filetype = "audio/mpeg";
         if (url.indexOf(".m3p") > -1) {
@@ -104,7 +192,7 @@ export default {
          await fetch(url)
             .then((r) => r.blob())
             .then((r) => {
-              this.player.src([
+              player.src([
                 {
                   src: window.URL.createObjectURL(r),
                   type: filetype,
@@ -115,7 +203,7 @@ export default {
               //  reader.onload = () => {console.error(reader.result)};
             });
         } else
-          this.player.src([
+          player.src([
             {
               src: url,
               type: filetype,
@@ -127,27 +215,33 @@ export default {
       this.$emit('ended');
     },
     async bufferNextVideo() {
-      if (this.preloadNextUrl) {
-        console.log('preload next url' , this.preloadNextUrl)
-        //await this.setMediaUrl(this.preloadNextUrl);
-        //this.player.load();
+        
+      for(let i=0,bfs=this.players.filter(e=>!e.actived);i<bfs.length;i++){
+        let bufferPlayer = bfs[i];
+        console.log('start bufferNextVideo' , bufferPlayer.url)
+        bufferPlayer.preload('auto');
+        bufferPlayer.play();
       }
+
     },
     init() {
-      let player = this.player;
       let self = this;
 
-      //this.$refs.videoPlayer.setAttribute("title", this.title);
-      //alert(this.title);
-      if (!this.player) {
-        player = this.player = this.$video(
-          this.$refs.videoPlayer,
+
+      if (!this.players) {
+
+        this.players = [this.$refs.videoPlayer,this.$refs.bufferPlayer].map((video)=>{
+          
+          
+          let player = this.player = this.$video(
+            video,
           this.options,
 
           function () {
             let tts = this.textTracks();
 
             let handler = () => {
+              if(!player.actived)return;
               for (let i = 0; i < tts.length; i++) {
                 let track = tts[i];
                 if (track.mode == "showing" && track.kind == "captions") {
@@ -180,6 +274,7 @@ export default {
           }
         );
         player.on("loadeddata", function () {
+          if(!player.actived)return;
           player.playbackRate(self.config.playbackrate);
           setTimeout(() => {
             let tracks = player.textTracks();
@@ -193,6 +288,7 @@ export default {
         var bufferPlayCount = 0;
 
         player.on("timeupdate", (e) => {
+          if(!player.actived)return;
           this.$emit("timeupdate", e, player);
           var buffered = player.buffered();
           if (buffered.length > 0) {
@@ -214,9 +310,10 @@ export default {
         });
 
         player.on('progress',  ()=> {
+          console.log('progress',player.actived)
+          if(!player.actived)return;
           var buffered = player.buffered();
           var duration = player.duration();
-
           if (duration>0 && buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
             // The video has fully buffered
             console.log('Video has fully buffered. Ready to start buffering next video.');
@@ -241,57 +338,32 @@ export default {
           }, 1000);
         });
 
-        let lastVolume = 0;
-        let lastVolumeTime = 0;
-        player.on("volumechange", () => {
-          if (new Date().getTime() - lastVolumeTime < 600) {
-            this.emit(player.volume() - lastVolume > 0 ? "NEXT" : "PRE");
-            player.volume(lastVolume);
-          }
-          lastVolumeTime = new Date().getTime();
-          lastVolume = player.volume();
-        });
+   
 
         this.$emit("initPlayer", player);
         window.player = player;
 
         player.on("ended", () => {
-          // document.querySelector("video").currentTime = 0;
-          // player.play();
-          let item = self.mediaItem;
-          let session = sessionStorage;
-          setTimeout(() => {
-            item._d = +new Date();
-            let doneVideoMap = session.doneVideoMap
-              ? JSON.parse(session.doneVideoMap)
-              : {};
-
-            doneVideoMap[item.vid] = item._d;
-
-            session.doneVideoMap = JSON.stringify(doneVideoMap);
-          }, 1000);
-
-          this.$emit("ended");
+          if(!player.actived)return;
+          this.playNextVideo();
         });
         player.on("error", (err) => {
-          //this.$emit("error");
-          /* setTimeout(() => {
-            if (!player.paused()) this.$emit("ended");
-          }, 2000);*/
-
           console.error(err);
           setTimeout(() => {
+            if(!player.actived)return;
             this.$emit("error", 1);
           }, 0);
         });
 
         player.on("pause", () => {
+          if(!player.actived)return;
           this.$emit("pause");
           bus.$emit("pause");
           this.updateConfig2({ playingM: 0 })
         });
 
         player.on("play", () => {
+          if(!player.actived)return;
           this.$emit("play");
           bus.$emit("play");
           this.updateConfig2({ playingM: 1 })
@@ -299,26 +371,20 @@ export default {
 
         player.on("ratechange", () => {
           console.log("change rate");
+          if(!player.actived)return;
           if (player.currentTime() > 1) {
             this.updateConfig({ playbackrate: player.playbackRate() })
           }
         });
+        return player;
+        });
+  
 
+        
 
 
       }
-      //let rate = (sessionStorage.playbackrate = player.playbackRate());
-
-      this.setMediaUrl(this.source);
-      if (player.paused()) this.player.play();
-
-
-
-      /* if (rate) {
-        setTimeout(() => {
-          player.playbackRate(rate);
-        }, 1000);
-      }*/
+    
     },
   },
   mounted() {
@@ -328,6 +394,22 @@ export default {
   },
 
   watch: {
+    "$store.state.config.isAudio": {
+      handler() {
+        setTimeout(() => {
+          this.playListVideo(this.config2.playIndex);
+        }, 800);
+      },
+    },
+    "$store.state.config2.playIndex": {
+      handler(n) {
+
+  
+          this.playListVideo(n);
+       
+
+      },
+    },
     "$store.state.config.playbackrate": {
       handler(n) {
         this.player && this.player.playbackRate(n)

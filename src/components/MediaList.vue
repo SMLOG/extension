@@ -145,8 +145,6 @@ import { fetchRequest } from "@/lib";
 import { cacheWordTts } from "@/tts";
 
 import PullToRefresh from "pulltorefreshjs";
-import { getAndPrepareNextExtra } from "@/config";
-import { getAAduio, cacheAudio } from "@/lib";
 import { htmlTrans2 } from "@/HtmlTrans";
 
 //import radios from "@/../public/radios.json";
@@ -383,98 +381,7 @@ export default {
         reader.onerror = (error) => reject(error);
       });
     },
-    cache(index) {
-      if (
-        this.config.isAudio &&
-        this.mediaType == 1 &&
-        this.config.audioCacheNum > 0
-      ) {
-        this.curIndex = index;
-        let list = this.searchList();
-        let audioCacheNum = this.config.audioCacheNum;
-        let self = this;
-        (async () => {
-          self.cachedNum = 0;
-          let curcaches = 0;
-          for (let i = index + 1; i < list.length; i++) {
-            if (index != this.curIndex) break;
-            let item = list[i];
-            if (self.config.cacheMode) {
-              console.error("cache mode exist");
-              return;
-            }
-            try {
-              await this.loadCache("video-" + item.vid).then((r) => {
-                if (r) {
-                  Object.assign(item, r);
-                }
-              });
-            } catch (ee) {
-              console.error(ee);
-            }
-
-            await getAndPrepareNextExtra(item, this.mediaType);
-
-            if (item.audio == undefined) {
-              try {
-                await getAAduio(item);
-                bus.$emit("video", item);
-                if (this.config.isAudio < 2 && item.cc) {
-                  console.error("downlod cc");
-                  console.error(item.cc);
-                  await fetchRequest(item.cc);
-                }
-              } catch (eee) {
-                console.log(eee);
-              }
-            }
-            console.error(item.audio);
-            if (item._c) {
-              item._c = 1;
-              self.cachedNum++;
-              console.error("ret", self.cachedNum++);
-              continue;
-            }
-            if (item.audio) {
-              console.error("aaa" + item.audio);
-
-              try {
-                await cacheAudio(item.audio);
-
-                try {
-                  if (this.config.isAudio < 2) await this.cacheWords(item);
-                  console.error("ret");
-                } catch (er) {
-                  console.error(er);
-                }
-              } catch (error) {
-                console.error(error);
-                continue;
-              }
-              item._c = 1;
-              self.cachedNum++;
-              console.error("ret", self.cachedNum++);
-
-              await this.saveCache("video-" + item.vid, item);
-
-              curcaches++;
-            }
-            console.error(self.cachedNum, audioCacheNum);
-            if (curcaches > 3) {
-              console.error("curcaches", curcaches, self.videos);
-              this.saveCache("videos", self.videos);
-              curcaches = 0;
-            }
-
-            if (self.cachedNum >= audioCacheNum) {
-              console.error("curcaches", curcaches, self.videos);
-              if (curcaches > 0) this.saveCache("videos", self.videos);
-              break;
-            }
-          }
-        })();
-      }
-    },
+ 
     del(item) {
       if (confirm("delete?"))
         fetch("cache/local", {
@@ -865,7 +772,7 @@ export default {
       else return mediaArr.filter((e) => search(e, s));
     },
 
-    play(item, click, index, index2, nextItem) {
+    play(item, click, index, index2) {
       this.curVideoId = item.vid;
       console.log("vidoeId" + item.vid);
       let run = 1;
@@ -897,36 +804,18 @@ export default {
         }
       }
       if (run) {
-        bus.$emit(
-          "videoId",
-          parseInt(
-            item.mediaType != undefined ? item.mediaType : this.mediaType
-          ),
-          item,
-          click,
-          index,
-          index2,
-          !nextItem && !index2
-            ? this.pageList[index + 1 < this.pageList.length ? index + 1 : 0]
-            : 0
-        );
+        console.log(this.config2.playList);
+        let cPlayList =  this.config2.playList;
+         cPlayList.splice(0, cPlayList.length, ...this.pageList);
+        this.updateConfig2({
+          mediaType:this.mediaType,
+          playList:cPlayList,playIndex:index});
 
-        let nIndex = index + 1 < this.pageList.length ? index + 1 : 0;
-
-        bus.$emit(
-          "nVideoId",
-          parseInt(
-            item.mediaType != undefined ? item.mediaType : this.mediaType
-          ),
-          this.pageList,
-          nIndex
-        );
       }
 
       if (click) {
         this.$emit("selectItem", item);
       }
-      this.cache(index);
     },
     toPage(i) {
       if (i < 1 || i > this.pages) return;
