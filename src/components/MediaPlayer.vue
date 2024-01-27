@@ -170,7 +170,6 @@ import PlayerControllers from "../components/PlayerControllers";
 import ResizeMask from "../components/ResizeMask";
 
 import { getAndPrepareNextExtra } from "@/config";
-import { getAAduio } from "@/lib";
 
 import "video.js/dist/video-js.css";
 
@@ -763,7 +762,6 @@ console.log('ajustTextHeight');
       return temp.html().replace(/&gt;/g, ">");
     },
     async loadVideo(item, mediaType, nextItem) {
-      let skip = 0;
       console.log("loadV");
       if (!item.vid) return;
 
@@ -777,7 +775,6 @@ console.log('ajustTextHeight');
           console.error(e);
         }
         if (!item.cc) {
-          skip = 0;
           this.cc = 2;
           setTimeout(() => {
             this.tryCaption2TTV();
@@ -793,46 +790,6 @@ console.log('ajustTextHeight');
         }
       }
 
-      console.log('debuga',this.mediaType);
-      if (this.mediaType == 1) {
-        try {
-          if (item.audio == undefined) {
-            try {
-              await getAAduio(item);
-            } catch (eee) {
-              console.log(eee);
-            }
-          }
-          console.log(this.config.isAudio);
-          console.log('debuga',item, this.mediaType);
-          if (this.config.isAudio) {
-            if (!item.audio) throw "no audio";
-            this.videoUrl = item.audio + "?_=" + this.mediaType;
-            this.av = 0;
-          } else {
-            this.av = 1;
-            if (!skip) {
-
-              setTimeout(() => {
-                this.videoUrl = item.url;
-                this.player.play();
-              }, 100);
-
-              console.log(this.videoUrl);
-            }
-          }
-
-          console.log("audio", this.videoUrl);
-        } catch (e) {
-          console.error(e);
-          throw e;
-        }
-      } else {
-        setTimeout(() => {
-          this.videoUrl = item.url;
-          this.player.play();
-        }, 100);
-      }
       setTimeout(() => {
         this.ajustTextHeight();
       }, 1000);

@@ -2,11 +2,13 @@
   <div >
   <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
     airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" ></video>
+    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" muted ></video>
 
-    <video  ref="bufferPlayer"  x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
+    <video ref="bufferPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
     airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false"  :title="hovering?'':title"   @mouseover="hovering = true" @mouseout="hovering = false" muted ></video>
+    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" muted></video>
+
+
   </div>
 </template>
 
@@ -106,40 +108,46 @@ export default {
        let nextUrl = await this.getItemUrl(nextItem);
        let activeIndex= players.map(e=>e.url).indexOf(url);
        let bufferIndex= players.map(e=>e.url).indexOf(nextUrl);
+       console.log(activeIndex,bufferIndex,url,nextUrl);
 
        
-        activeIndex = activeIndex<0&&bufferIndex<0?0:bufferIndex<0?1:1-bufferIndex;
+        activeIndex = activeIndex>-1?activeIndex:activeIndex<0&&bufferIndex<0?0:bufferIndex<0?1:1-bufferIndex;
         bufferIndex = 1-activeIndex;
 
         
 
 
         let bufferPlaery = players[bufferIndex];
-        bufferPlaery.muted(1);
+        bufferPlaery.muted(true);
         bufferPlaery.actived=0;
         bufferPlaery.url=nextUrl;
-       await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
-        bufferPlaery.preload('none');
-        setTimeout(()=>{bufferPlaery.pause();},1000);
+        await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
+      //  bufferPlaery.preload('none');
+      //  setTimeout(()=>{bufferPlaery.pause();},1000);
         
 
 
         let actviePlayer = players[activeIndex];
 
-        actviePlayer.muted(0);
+        actviePlayer.muted(false);
         actviePlayer.actived=1;
         actviePlayer.url=url;
 
         await this.setMediaUrl( actviePlayer.url,actviePlayer);
+        setTimeout(()=>{
+          actviePlayer.currentTime(0);
+          actviePlayer.play();
+        },100);
 
-        actviePlayer.currentTime(0);
-        actviePlayer.play();
+
         
    
         window.players=players;
+            console.log('devvv',this.config.dev)
+          document.querySelectorAll('.video-js')[activeIndex].style.display='';
+          document.querySelectorAll('.video-js')[bufferIndex].style.display=this.config.dev?'':'none';
+        
 
-        document.querySelectorAll('.video-js')[activeIndex].style.display='';
-        document.querySelectorAll('.video-js')[bufferIndex].style.display='none';
 
 
        })();
@@ -392,6 +400,8 @@ export default {
     this.$nextTick(() => {
       this.init();
     });
+    console.log('dev',this.config.dev);
+
   },
 
   watch: {

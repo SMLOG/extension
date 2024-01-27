@@ -20,6 +20,7 @@ export default new Vuex.Store({
     hkdcny: { now: "", p: "" },
     nextUrl: "",
     config2: {
+      dev:0,
       mask: 0,
       showList: 0,
       touchstart: 0,
@@ -173,12 +174,9 @@ export default new Vuex.Store({
       state.news = news;
     },
     config(state, config) {
-      console.error(state.config);
-      console.error(config);
       state.config = Object.assign({}, state.config, config);
     },
     config2(state, config) {
-      console.error(config);
       state.config2 = Object.assign({}, state.config2, config);
     },
     newWord(state, word) {

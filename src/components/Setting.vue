@@ -9,10 +9,16 @@
         >
         <input type="checkbox" v-model="config.autoRefresh" />
 
-        <span>Show Editor</span>
+        <span> Editor</span>
         <input
           type="checkbox"
           v-model="config.editor"
+          @change="updateConfig()"
+        />
+        <span> Dev</span>
+        <input
+          type="checkbox"
+          v-model="config.dev"
           @change="updateConfig()"
         />
       </div>
