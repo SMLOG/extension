@@ -415,7 +415,11 @@ export default {
               } else {
                 var bufferedStart = buffered.start(lastBufferedIndex);
                 player.currentTime(Math.max(bufferedStart,bufferedEnd-10));
+               try{
                 player.play();
+               } catch(ee){
+                console.error(ee);
+               }
               }
             }else{
               bufferPlayCount = 0;
