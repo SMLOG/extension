@@ -90,14 +90,7 @@
       </div>
     </div>
     <div style="text-align: right; background: gray; padding-right: 5px">
-      <label v-if="mediaType == 1"
-        ><span v-if="config.audioCacheNum > 0"
-          ><b style="color: green">{{ cachedNum }}</b
-          >/{{ config.audioCacheNum }}</span
-        >
-        <input type="checkbox" v-model="done" />
-        Done
-      </label>
+
       <select v-show="opts1.length" v-model="curOpt1" @change="page = 1">
         <option value="">All</option>
         <option v-for="src in opts1" :key="src" :value="src">

@@ -49,7 +49,6 @@
         size="lg"
         :class="{active:config.viewMode,left:config.viewMode==2}"
       />
- 
       <font-awesome-icon
         @click="setShowCurWords(!config.seeCurWords)"
         :icon="['fas', 'list']"

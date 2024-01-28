@@ -1006,6 +1006,7 @@ video::cue(i),
   bottom: 0;
   overflow: hidden;
   z-index: 10000;
+  height: 100vh;
 }
 
 /*@media screen and (min-width: 750px) {

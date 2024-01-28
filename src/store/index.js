@@ -39,7 +39,7 @@ export default new Vuex.Store({
       custCue: 0,
       seeCurWords: 0,
       maxTranLen: 300,
-      viewModel: 0,
+      viewMode: 0,
       loopCount: 3,
       isLoop: 0,
       isAudio: 1,

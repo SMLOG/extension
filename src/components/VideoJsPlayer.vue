@@ -138,7 +138,7 @@ export default {
           await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
         }
         bufferPlaery.preload('none');
-        setTimeout(()=>{bufferPlaery.pause();},3000);
+        setTimeout(()=>{bufferPlaery.pause();},6000);
         
 
 
@@ -316,31 +316,13 @@ export default {
             }
           }, 0);
         });
-        var bufferPlayCount = 0;
 
         player.on("timeupdate", (e) => {
           if(!player.actived){
-            bufferPlayCount=0;
             return;
           }
           this.$emit("timeupdate", e, player);
-          var buffered = player.buffered();
-          if (buffered.length > 0) {
-            var lastBufferedIndex = buffered.length - 1;
-            var bufferedEnd = buffered.end(lastBufferedIndex);
-            var currentTime = player.currentTime();
-            if (currentTime>0 && currentTime<player.duration()-1&&currentTime >= bufferedEnd) {
-              bufferPlayCount++;
-              if (bufferPlayCount > 3) {
-                bufferPlayCount=0;
-                this.playNextVideo();
-              } else {
-                var bufferedStart = buffered.start(lastBufferedIndex);
-                player.currentTime(Math.max(bufferedStart,bufferedEnd-10));
-                player.play();
-              }
-            }
-          }
+
         });
 
         player.on('progress',  ()=> {
@@ -412,7 +394,34 @@ export default {
         return player;
         });
   
+        this.$emit("initPlayer", this.players[0]);
 
+        var bufferPlayCount = 0;
+        setInterval(()=>{
+          let activeList = this.players.filter(e=>e.actived);
+          if(!activeList.length)return;
+         let  player= activeList[0];
+
+          var buffered = player.buffered();
+          if (buffered.length > 0) {
+            var lastBufferedIndex = buffered.length - 1;
+            var bufferedEnd = buffered.end(lastBufferedIndex);
+            var currentTime = player.currentTime();
+            if (currentTime>0 && currentTime<player.duration()-1&&currentTime >= bufferedEnd) {
+              bufferPlayCount++;
+              if (bufferPlayCount > 3) {
+                bufferPlayCount=0;
+                this.playNextVideo();
+              } else {
+                var bufferedStart = buffered.start(lastBufferedIndex);
+                player.currentTime(Math.max(bufferedStart,bufferedEnd-10));
+                player.play();
+              }
+            }else{
+              bufferPlayCount = 0;
+            }
+          }
+        },2000);
         
 
 
