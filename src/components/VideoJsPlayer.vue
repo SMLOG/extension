@@ -131,18 +131,26 @@ export default {
 
 
         let bufferPlaery = players[bufferIndex];
+        let actviePlayer = players[activeIndex];
+
+          window.players=players;
+          console.log('devvv',this.config.dev)
+          document.querySelectorAll('.video-js')[activeIndex].style.display='';
+          document.querySelectorAll('.video-js')[bufferIndex].style.display=this.config.dev?'':'none';
+
         bufferPlaery.muted(true);
         bufferPlaery.actived=0;
         bufferPlaery.url=nextUrl;
         if(nextUrl){
           await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
         }
-        bufferPlaery.preload('none');
-        setTimeout(()=>{bufferPlaery.pause();},6000);
+        setTimeout(()=>{
+          bufferPlaery.preload('none');
+          bufferPlaery.pause();
+        },6000);
         
 
 
-        let actviePlayer = players[activeIndex];
 
         this.$emit("initPlayer", actviePlayer);
         window.player = actviePlayer;
@@ -150,7 +158,7 @@ export default {
         actviePlayer.muted(false);
         actviePlayer.actived=1;
         actviePlayer.url=url;
-
+        actviePlayer.bufferPlayCount=0;
         await this.setMediaUrl( actviePlayer.url,actviePlayer);
         setTimeout(()=>{
           actviePlayer.currentTime(0);
@@ -163,11 +171,7 @@ export default {
 
 
         
-   
-        window.players=players;
-            console.log('devvv',this.config.dev)
-          document.querySelectorAll('.video-js')[activeIndex].style.display='';
-          document.querySelectorAll('.video-js')[bufferIndex].style.display=this.config.dev?'':'none';
+
         
 
 
@@ -396,7 +400,6 @@ export default {
   
         this.$emit("initPlayer", this.players[0]);
 
-        var bufferPlayCount = 0;
         setInterval(()=>{
           let activeList = this.players.filter(e=>e.actived);
           if(!activeList.length)return;
@@ -406,14 +409,17 @@ export default {
           if (buffered.length > 0) {
             var lastBufferedIndex = buffered.length - 1;
             var bufferedEnd = buffered.end(lastBufferedIndex);
+
             var currentTime = player.currentTime();
             if (currentTime>0 && currentTime<player.duration()-1&&currentTime >= bufferedEnd) {
-              bufferPlayCount++;
-              if (bufferPlayCount > 3) {
-                bufferPlayCount=0;
+              player.bufferPlayCount++;
+              if (player.bufferPlayCount > 5) {
+                player.bufferPlayCount=0;
                 this.playNextVideo();
               } else {
                 var bufferedStart = buffered.start(lastBufferedIndex);
+                if(player.bufferPlayCount==1)
+                    player.bufferedEnd=bufferedEnd;
                 player.currentTime(Math.max(bufferedStart,bufferedEnd-10));
                try{
                 player.play();
@@ -421,8 +427,8 @@ export default {
                 console.error(ee);
                }
               }
-            }else{
-              bufferPlayCount = 0;
+            }else if(player.bufferPlayCount==0||player.bufferedEnd!=bufferedEnd){
+              player.bufferPlayCount = 0;
             }
           }
         },2000);
