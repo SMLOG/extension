@@ -1,12 +1,14 @@
 <template>
-  <div >
-  <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
-    airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" muted ></video>
+  <div>
+    <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
+      x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
+      @mouseout="hovering = false"></video>
 
-    <video ref="bufferPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"
-    airplay="allow" controls  class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster=""
-    autoplay="false" :title="hovering?'':title"    @mouseover="hovering = true" @mouseout="hovering = false" muted></video>
+    <video ref="bufferPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
+      x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
+      @mouseout="hovering = false"></video>
 
 
   </div>
@@ -35,8 +37,8 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
-      hovering:false,
-      players:null,
+      hovering: false,
+      players: null,
       options: {
         inactivityTimeout: 5000,
         userActions: {
@@ -96,59 +98,60 @@ export default {
   },*/
   methods: {
 
-    playListVideo(n){
-           /// getAndPrepareNextExtra
-           (async()=>{
+    playListVideo(n) {
+      /// getAndPrepareNextExtra
+      (async () => {
         let players = this.players;
         let playList = this.config2.playList;
         let item = playList[n];
-        if(!item)return;
-        let nextIndex = Math.min(playList.length,n+1)==playList.length?0:n+1;
+        if (!item) return;
+        let nextIndex = Math.min(playList.length, n + 1) == playList.length ? 0 : n + 1;
         let nextItem = playList[nextIndex];
-       let url = '';
-       try{
-        url = await this.getItemUrl(item);
-       }catch(err){
-        console.error(err);
-       }
-       let nextUrl = '';
-       try{
-       nextUrl = await this.getItemUrl(nextItem);
-       }catch(err){
-        console.error(err);
-       }
-       if(!url)this.playNextVideo();
+        let url = '';
+        try {
+          url = await this.getItemUrl(item);
+        } catch (err) {
+          console.error(err);
+        }
+        let nextUrl = '';
+        try {
+          nextUrl = await this.getItemUrl(nextItem);
+        } catch (err) {
+          console.error(err);
+        }
+        if (!url) this.playNextVideo();
 
-       let activeIndex= players.map(e=>e.url).indexOf(url);
-       let bufferIndex= players.map(e=>e.url).indexOf(nextUrl);
-       console.log(activeIndex,bufferIndex,url,nextUrl);
+        let activeIndex = players.map(e => e.url).indexOf(url);
+        let bufferIndex = players.map(e => e.url).indexOf(nextUrl);
+        console.log(activeIndex, bufferIndex, url, nextUrl);
 
-       
-        activeIndex = activeIndex>-1?activeIndex:activeIndex<0&&bufferIndex<0?0:bufferIndex<0?1:1-bufferIndex;
-        bufferIndex = 1-activeIndex;
 
-        
+        activeIndex = activeIndex > -1 ? activeIndex : activeIndex < 0 && bufferIndex < 0 ? 0 : bufferIndex < 0 ? 1 : 1 - bufferIndex;
+        bufferIndex = 1 - activeIndex;
+
+
 
 
         let bufferPlaery = players[bufferIndex];
         let actviePlayer = players[activeIndex];
 
-          window.players=players;
-          console.log('devvv',this.config.dev)
-          document.querySelectorAll('.video-js')[activeIndex].style.display='';
-          document.querySelectorAll('.video-js')[bufferIndex].style.display=this.config.dev?'':'none';
+        window.players = players;
+        console.log('devvv', this.config.dev)
+        document.querySelectorAll('.video-js')[activeIndex].style.display = '';
+        document.querySelectorAll('.video-js')[bufferIndex].style.display = this.config.dev ? '' : 'none';
 
-        bufferPlaery.muted(true);
-        bufferPlaery.actived=0;
-        bufferPlaery.url=nextUrl;
-        if(nextUrl){
-          await this.setMediaUrl(bufferPlaery.url,bufferPlaery);
+
+        bufferPlaery.actived = 0;
+        bufferPlaery.url = nextUrl;
+        if (nextUrl) {
+          await this.setMediaUrl(bufferPlaery.url, bufferPlaery);
         }
-        setTimeout(()=>{
-          bufferPlaery.preload('none');
+        bufferPlaery.muted(true);
+        setTimeout(() => {
+          // bufferPlaery.preload('none');
           bufferPlaery.pause();
-        },6000);
-        
+        }, 6000);
+
 
 
 
@@ -156,34 +159,34 @@ export default {
         window.player = actviePlayer;
 
         actviePlayer.muted(false);
-        actviePlayer.actived=1;
-        actviePlayer.url=url;
-        actviePlayer.bufferPlayCount=0;
-        await this.setMediaUrl( actviePlayer.url,actviePlayer);
-        setTimeout(()=>{
+        actviePlayer.actived = 1;
+        actviePlayer.url = url;
+        actviePlayer.bufferPlayCount = 0;
+        await this.setMediaUrl(actviePlayer.url, actviePlayer);
+        setTimeout(() => {
           actviePlayer.currentTime(0);
-          try{
+          try {
             actviePlayer.play();
-          }catch(eror){
-              console.error(eror)
+          } catch (eror) {
+            console.error(eror)
           }
-        },100);
-
-
-        
-
-        
+        }, 100);
 
 
 
-       })();
+
+
+
+
+
+      })();
     },
 
-   async getItemUrl(item){
+    async getItemUrl(item) {
 
-        await getAndPrepareNextExtra(item, this.config2.mediaType);
-        console.log('getItemUrl',this.config2.mediaType,item);
-        if (this.config2.mediaType == 1) {
+      await getAndPrepareNextExtra(item, this.config2.mediaType);
+      console.log('getItemUrl', this.config2.mediaType, item);
+      if (this.config2.mediaType == 1) {
         try {
           if (item.audio == undefined) {
             try {
@@ -196,8 +199,8 @@ export default {
           if (this.config.isAudio) {
             if (!item.audio) throw "no audio";
             return item.audio + "?_=" + this.config2.mediaType;
-          } 
-          
+          }
+
 
         } catch (e) {
           console.error(e);
@@ -207,7 +210,7 @@ export default {
       return item.url;
 
     },
-    async setMediaUrl(url,player) {
+    async setMediaUrl(url, player) {
       if (url) {
         let filetype = "audio/mpeg";
         if (url.indexOf(".m3p") > -1) {
@@ -224,7 +227,7 @@ export default {
 
         console.error(url, filetype);
         if (url.indexOf("/cache/local") > -1) {
-         await fetch(url)
+          await fetch(url)
             .then((r) => r.blob())
             .then((r) => {
               player.src([
@@ -250,10 +253,10 @@ export default {
       this.$emit('ended');
     },
     async bufferNextVideo() {
-        
-      for(let i=0,bfs=this.players.filter(e=>!e.actived);i<bfs.length;i++){
+
+      for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
-        console.log('start bufferNextVideo' , bufferPlayer.url)
+        console.log('start bufferNextVideo', bufferPlayer.url)
         bufferPlayer.preload('auto');
         bufferPlayer.play();
       }
@@ -265,145 +268,144 @@ export default {
 
       if (!this.players) {
 
-        this.players = [this.$refs.videoPlayer,this.$refs.bufferPlayer].map((video)=>{
-          
-          
+        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video) => {
+
+
           let player = this.player = this.$video(
             video,
-          this.options,
+            this.options,
 
-          function () {
-            let tts = this.textTracks();
+            function () {
+              let tts = this.textTracks();
 
-            let handler = () => {
-              if(!player.actived)return;
-              for (let i = 0; i < tts.length; i++) {
-                let track = tts[i];
-                if (track.mode == "showing" && track.kind == "captions") {
-                  //track.removeEventListener(this.cuechange);
-                  if (!track.cuechange) {
-                    track.addEventListener("cuechange", () => {
-                      track.activeCues[0] &&
-                        self.$emit("cuechange", track.activeCues[0], track);
-                      // self.cuechange(track.activeCues[0], track);
-                    });
-                    track.cuechange = 1;
+              let handler = () => {
+                if (!player.actived) return;
+                for (let i = 0; i < tts.length; i++) {
+                  let track = tts[i];
+                  if (track.mode == "showing" && track.kind == "captions") {
+                    //track.removeEventListener(this.cuechange);
+                    if (!track.cuechange) {
+                      track.addEventListener("cuechange", () => {
+                        track.activeCues[0] &&
+                          self.$emit("cuechange", track.activeCues[0], track);
+                        // self.cuechange(track.activeCues[0], track);
+                      });
+                      track.cuechange = 1;
+                    }
+                    break;
                   }
-                  break;
                 }
-              }
-            };
+              };
 
-            ["change", "removtrack", "addtrack"].forEach((e) => {
-              tts.addEventListener(e, handler);
-            });
-            tts.addEventListener("addtrack", () => {
-              setTimeout(() => {
-                for (var d = 0; d < tts.length; d++) {
-                  if (tts[d].kind == "captions")
-                    tts[d].mode = self.cc ? "showing" : "disabled";
-                  if (tts[d].label == "new word") break;
-                }
-              }, 5000);
-            });
-          }
-        );
-        player.on("loadeddata", function () {
-          if(!player.actived)return;
-          player.playbackRate(self.config.playbackrate);
-          setTimeout(() => {
-            let tracks = player.textTracks();
-            for (var d = 0; d < tracks.length; d++) {
-              console.error(tracks[d].label);
-
-              if (tracks[d].label !== "new word") tracks[d].mode = "disabled";
+              ["change", "removtrack", "addtrack"].forEach((e) => {
+                tts.addEventListener(e, handler);
+              });
+              tts.addEventListener("addtrack", () => {
+                setTimeout(() => {
+                  for (var d = 0; d < tts.length; d++) {
+                    if (tts[d].kind == "captions")
+                      tts[d].mode = self.cc ? "showing" : "disabled";
+                    if (tts[d].label == "new word") break;
+                  }
+                }, 5000);
+              });
             }
-          }, 0);
+          );
+          player.on("loadeddata", function () {
+            if (!player.actived) return;
+            player.playbackRate(self.config.playbackrate);
+            setTimeout(() => {
+              let tracks = player.textTracks();
+              for (var d = 0; d < tracks.length; d++) {
+                console.error(tracks[d].label);
+
+                if (tracks[d].label !== "new word") tracks[d].mode = "disabled";
+              }
+            }, 0);
+          });
+
+          player.on("timeupdate", (e) => {
+            if (!player.actived) {
+              return;
+            }
+            this.$emit("timeupdate", e, player);
+
+          });
+
+          player.on('progress', () => {
+            console.log('progress', player.actived)
+            if (!player.actived) return;
+            var buffered = player.buffered();
+            var duration = player.duration();
+            if (duration > 0 && buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
+              // The video has fully buffered
+              console.log('Video has fully buffered. Ready to start buffering next video.');
+              // Start buffering the next video
+              this.bufferNextVideo();
+            } else {
+              // The video is still buffering or partially buffered
+              console.log('Video is buffering. Please wait...', player.bufferedPercent());
+
+            }
+          });
+
+          let tt = 0;
+          player.on("touchstart", () => {
+            this.updateConfig2({ touchstart: 1 });
+            if (tt) clearTimeout(tt);
+            tt = 0;
+          });
+          player.on("touchend", () => {
+            tt = setTimeout(() => {
+              this.updateConfig2({ touchstart: 0 });
+            }, 1000);
+          });
+
+
+
+
+
+          player.on("ended", () => {
+            if (!player.actived) return;
+            this.playNextVideo();
+          });
+          player.on("error", (err) => {
+            console.error(err);
+            setTimeout(() => {
+              if (!player.actived) return;
+              this.$emit("error", 1);
+            }, 0);
+          });
+
+          player.on("pause", () => {
+            if (!player.actived) return;
+            this.$emit("pause");
+            bus.$emit("pause");
+            this.updateConfig2({ playingM: 0 })
+          });
+
+          player.on("play", () => {
+            if (!player.actived) return;
+            this.$emit("play");
+            bus.$emit("play");
+            this.updateConfig2({ playingM: 1 })
+          });
+
+          player.on("ratechange", () => {
+            console.log("change rate");
+            if (!player.actived) return;
+            if (player.currentTime() > 1) {
+              this.updateConfig({ playbackrate: player.playbackRate() })
+            }
+          });
+          return player;
         });
 
-        player.on("timeupdate", (e) => {
-          if(!player.actived){
-            return;
-          }
-          this.$emit("timeupdate", e, player);
-
-        });
-
-        player.on('progress',  ()=> {
-          console.log('progress',player.actived)
-          if(!player.actived)return;
-          var buffered = player.buffered();
-          var duration = player.duration();
-          if (duration>0 && buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
-            // The video has fully buffered
-            console.log('Video has fully buffered. Ready to start buffering next video.');
-            // Start buffering the next video
-            this.bufferNextVideo();
-          } else {
-            // The video is still buffering or partially buffered
-            console.log('Video is buffering. Please wait...',player.bufferedPercent());
-
-          }
-        });
-
-        let tt = 0;
-        player.on("touchstart", () => {
-          this.updateConfig2({ touchstart: 1 });
-          if (tt) clearTimeout(tt);
-          tt = 0;
-        });
-        player.on("touchend", () => {
-          tt = setTimeout(() => {
-            this.updateConfig2({ touchstart: 0 });
-          }, 1000);
-        });
-
-   
-
-
-
-        player.on("ended", () => {
-          if(!player.actived)return;
-          this.playNextVideo();
-        });
-        player.on("error", (err) => {
-          console.error(err);
-          setTimeout(() => {
-            if(!player.actived)return;
-            this.$emit("error", 1);
-          }, 0);
-        });
-
-        player.on("pause", () => {
-          if(!player.actived)return;
-          this.$emit("pause");
-          bus.$emit("pause");
-          this.updateConfig2({ playingM: 0 })
-        });
-
-        player.on("play", () => {
-          if(!player.actived)return;
-          this.$emit("play");
-          bus.$emit("play");
-          this.updateConfig2({ playingM: 1 })
-        });
-
-        player.on("ratechange", () => {
-          console.log("change rate");
-          if(!player.actived)return;
-          if (player.currentTime() > 1) {
-            this.updateConfig({ playbackrate: player.playbackRate() })
-          }
-        });
-        return player;
-        });
-  
         this.$emit("initPlayer", this.players[0]);
-
-        setInterval(()=>{
-          let activeList = this.players.filter(e=>e.actived);
-          if(!activeList.length)return;
-         let  player= activeList[0];
+        setInterval(() => {
+          let activeList = this.players.filter(e => e.actived);
+          if (activeList.length === 0) return;
+          let player = activeList[0];
 
           var buffered = player.buffered();
           if (buffered.length > 0) {
@@ -411,39 +413,51 @@ export default {
             var bufferedEnd = buffered.end(lastBufferedIndex);
 
             var currentTime = player.currentTime();
-            if (currentTime>0 && currentTime<player.duration()-1&&currentTime >= bufferedEnd) {
+            if (currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
               player.bufferPlayCount++;
               if (player.bufferPlayCount > 5) {
-                player.bufferPlayCount=0;
+                player.bufferPlayCount = 0;
                 this.playNextVideo();
               } else {
                 var bufferedStart = buffered.start(lastBufferedIndex);
-                if(player.bufferPlayCount==1)
-                    player.bufferedEnd=bufferedEnd;
-                player.currentTime(Math.max(bufferedStart,bufferedEnd-10));
-               try{
-                player.play();
-               } catch(ee){
-                console.error(ee);
-               }
+                if (player.bufferPlayCount <= 1) {
+                  player.bufferedEnd = bufferedEnd;
+                }
+                player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
+                try {
+                  player.play();
+                } catch (ee) {
+                  console.error(ee);
+                }
               }
-            }else if(player.bufferPlayCount==0||player.bufferedEnd!=bufferedEnd){
+            } else if (player.bufferPlayCount === 0 || player.bufferedEnd !== bufferedEnd) {
               player.bufferPlayCount = 0;
             }
+            if (!player.paused()) {
+              if (player.currentTime() === player.lastTime) {
+                player.bufferPlayCount++;
+                if (player.bufferPlayCount > 5) {
+                  player.lastTime = -1;
+                  this.playNextVideo();
+                }
+              } else {
+                player.lastTime = player.currentTime();
+              }
+            }
           }
-        },2000);
-        
+        }, 2000);
+
 
 
       }
-    
+
     },
   },
   mounted() {
     this.$nextTick(() => {
       this.init();
     });
-    console.log('dev',this.config.dev);
+    console.log('dev', this.config.dev);
 
   },
 
@@ -458,9 +472,9 @@ export default {
     "$store.state.config2.playIndex": {
       handler(n) {
 
-  
-          this.playListVideo(n);
-       
+
+        this.playListVideo(n);
+
 
       },
     },
@@ -472,7 +486,7 @@ export default {
     },
 
     source() {
-      console.log("preloadNextUrl:",this.preloadNextUrl)
+      console.log("preloadNextUrl:", this.preloadNextUrl)
       this.init();
     },
     title() {
