@@ -1,5 +1,19 @@
 <template>
   <div>
+    <div v-if="config.dev" style="    position: absolute;
+    top: 0;
+    z-index: 10000;
+    background: rgba(255,255,255,0.6);
+    text-align: center;
+    width: 100%;">
+      <div v-for="(info,ik) in  infos" :key="ik">
+        #{{ik}}: active:{{ info.active }} bufferedPercent:{{ (info.bufferedPercent*100).toFixed(2) }}%
+        duration:{{ info.lastBufferEnd.toFixed(2) }}/{{ info.duration.toFixed(2) }}
+        currentTime:{{ info.currentTime.toFixed(2) }}
+        bufferPlayCount:{{info.bufferPlayCount }}
+        <br />
+      </div>
+    </div>
     <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
       poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
@@ -39,6 +53,10 @@ export default {
     return {
       hovering: false,
       players: null,
+      infos:[
+      {active:false,bufferedPercent:0,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0},
+      {active:false,bufferedPercent:0,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0}
+      ],
       options: {
         inactivityTimeout: 5000,
         userActions: {
@@ -147,10 +165,10 @@ export default {
           await this.setMediaUrl(bufferPlaery.url, bufferPlaery);
         }
         bufferPlaery.muted(true);
-        setTimeout(() => {
+        //setTimeout(() => {
           // bufferPlaery.preload('none');
-          bufferPlaery.pause();
-        }, 6000);
+         /// bufferPlaery.pause();
+       // }, 6000);
 
 
 
@@ -345,6 +363,7 @@ export default {
             } else {
               // The video is still buffering or partially buffered
               console.log('Video is buffering. Please wait...', player.bufferedPercent());
+              this.bufferedPercent=player.bufferedPercent();
 
             }
           });
@@ -445,6 +464,22 @@ export default {
               }
             }
           }
+
+          if(this.config.dev)
+          this.infos.forEach((e,index)=>{
+            console.log(e,index);
+            let p = this.players[index];
+            e.active = p.actived;
+            e.bufferedPercent = p.bufferedPercent();
+            e.currentTime = p.currentTime();
+            e.duration = p.duration();
+            let buffered = p.buffered();
+            if (buffered.length > 0) {
+              e.lastBufferEnd = buffered.end(buffered.length - 1);
+            }
+
+            
+          });
         }, 2000);
 
 
