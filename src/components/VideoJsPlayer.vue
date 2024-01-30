@@ -164,11 +164,20 @@ export default {
         if (nextUrl) {
           await this.setMediaUrl(bufferPlaery.url, bufferPlaery);
         }
-        bufferPlaery.muted(true);
-        //setTimeout(() => {
+
+        if(this.triggerAllPlayer){
+          bufferPlaery.muted(true);
+        }
+
+       
+       
+        setTimeout(() => {
           // bufferPlaery.preload('none');
          /// bufferPlaery.pause();
-       // }, 6000);
+         bufferPlaery.muted(true);
+         this.triggerAllPlayer=1;
+
+        }, 6000);
 
 
 
