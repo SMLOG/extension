@@ -1,15 +1,15 @@
 <template>
   <div>
-    <div v-if="config.dev" style="    position: absolute;
+    <div v-if="config.dev" style="position: absolute;
     top: 0;
     z-index: 10000;
     background: rgba(255,255,255,0.6);
     text-align: center;
     width: 100%;">
-      <div v-for="(info,ik) in  infos" :key="ik">
-        #{{ik}}: active:{{ info.active }} bufferedPercent:{{ (info.bufferedPercent*100).toFixed(2) }}%
-        duration:{{ info.lastBufferEnd.toFixed(2) }}/{{ info.duration.toFixed(2) }}
-        currentTime:{{ info.currentTime.toFixed(2) }}
+    <div>{{ flushTime }}</div>
+      <div v-for="(info,ik) in  infos" :key="ik" :class="{active:info.active}">
+        #{{ik}}: {{ info.active }} 
+        {{ info.currentTime.toFixed(2) }}/<span :class="{buffered:''+info.lastBufferEnd.toFixed(2)==''+info.duration.toFixed(2)}">{{ info.lastBufferEnd.toFixed(2) }}/{{ info.duration.toFixed(2) }}</span>
         bufferPlayCount:{{info.bufferPlayCount }}
         <br />
       </div>
@@ -51,11 +51,12 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      flushTime:'',
       hovering: false,
       players: null,
       infos:[
-      {active:false,bufferedPercent:0,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0},
-      {active:false,bufferedPercent:0,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0}
+      {active:false,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0},
+      {active:false,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0}
       ],
       options: {
         inactivityTimeout: 5000,
@@ -115,7 +116,11 @@ export default {
     });
   },*/
   methods: {
-
+     getCurrentTime() {
+  var currentDate = new Date();
+  var formattedTime = currentDate.toTimeString().slice(0, 8);
+  return formattedTime;
+},
     playListVideo(n) {
       /// getAndPrepareNextExtra
       (async () => {
@@ -172,10 +177,13 @@ export default {
        
        
         setTimeout(() => {
-          // bufferPlaery.preload('none');
-         /// bufferPlaery.pause();
+        // bufferPlaery.preload('none');
          bufferPlaery.muted(true);
          this.triggerAllPlayer=1;
+         setTimeout(()=>{
+          bufferPlaery.pause();
+
+         },10000);
 
         }, 6000);
 
@@ -364,7 +372,7 @@ export default {
             if (!player.actived) return;
             var buffered = player.buffered();
             var duration = player.duration();
-            if (duration > 0 && buffered.length > 0 && buffered.end(buffered.length - 1) === duration) {
+            if (duration > 0 && buffered.length > 0 && parseInt(buffered.end(buffered.length - 1)) === parseInt(duration)) {
               // The video has fully buffered
               console.log('Video has fully buffered. Ready to start buffering next video.');
               // Start buffering the next video
@@ -372,8 +380,6 @@ export default {
             } else {
               // The video is still buffering or partially buffered
               console.log('Video is buffering. Please wait...', player.bufferedPercent());
-              this.bufferedPercent=player.bufferedPercent();
-
             }
           });
 
@@ -458,28 +464,27 @@ export default {
                   console.error(ee);
                 }
               }
-            } else if (player.bufferPlayCount === 0 || player.bufferedEnd !== bufferedEnd) {
+            } else if (player.bufferPlayCount === 0 || parseInt(player.bufferedEnd()) !== parseInt(bufferedEnd)) {
               player.bufferPlayCount = 0;
             }
             if (!player.paused()) {
-              if (player.currentTime() === player.lastTime) {
+              if (parseInt(player.currentTime()) === player.lastTime) {
                 player.bufferPlayCount++;
                 if (player.bufferPlayCount > 5) {
                   player.lastTime = -1;
                   this.playNextVideo();
                 }
               } else {
-                player.lastTime = player.currentTime();
+                player.lastTime = parseInt(player.currentTime());
               }
             }
           }
 
-          if(this.config.dev)
-          this.infos.forEach((e,index)=>{
+          if(this.config.dev){
+            this.infos.forEach((e,index)=>{
             console.log(e,index);
             let p = this.players[index];
             e.active = p.actived;
-            e.bufferedPercent = p.bufferedPercent();
             e.currentTime = p.currentTime();
             e.duration = p.duration();
             let buffered = p.buffered();
@@ -489,6 +494,9 @@ export default {
 
             
           });
+          this.flushTime=this.getCurrentTime();
+          }
+
         }, 2000);
 
 
@@ -685,5 +693,12 @@ video::cue(i),
   pointer-events: auto;
   user-select: auto;
   z-index: 1;
+}
+.active{
+  color:red;
+}
+.buffered{
+  color:green;
+  font-weight: bold;
 }
 </style>
