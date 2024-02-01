@@ -10,8 +10,8 @@
       <div v-for="(info, ik) in  infos" :key="ik" :class="{ active: info.active }">
         #{{ ik }}: {{ info.active }}
         {{ info.currentTime.toFixed(2) }}/<span
-          :class="{ buffered:  toInt(info.lastBufferEnd) ==toInt( info.duration) }">{{
-            toInt(info.lastBufferEnd) }}/{{ toInt( info.duration) }}</span>
+          :class="{ buffered: toInt(info.lastBufferEnd) == toInt(info.duration) }">{{
+            toInt(info.lastBufferEnd) }}/{{ toInt(info.duration) }}</span>
         bufferPlayCount:{{ info.bufferPlayCount }}
         <br />
       </div>
@@ -118,10 +118,72 @@ export default {
     });
   },*/
   methods: {
-    toInt(value){
-      try{
+    smoothCheck() {
+      let activeList = this.players.filter(e => e.actived);
+
+
+      for (let d = 0; d < activeList.length; d++) {
+        let player = activeList[d];
+        var buffered = player.buffered();
+        if (buffered.length > 0) {
+          var lastBufferedIndex = buffered.length - 1;
+          var bufferedEnd = this.toInt(buffered.end(lastBufferedIndex));
+
+          var currentTime = this.toInt(player.currentTime());
+          if (player.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA || currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
+            player.bufferPlayCount++;
+            if (player.bufferPlayCount > 5) {
+              player.bufferPlayCount = 0;
+              this.playNextVideo();
+            } else {
+              var bufferedStart = buffered.start(lastBufferedIndex);
+              if (player.bufferPlayCount <= 1) {
+                player.bufferedEnd = bufferedEnd;
+              }
+              player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
+              try {
+                player.play();
+              } catch (ee) {
+                console.error(ee);
+              }
+            }
+          } else if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
+            player.bufferPlayCount = 0;
+          }
+          if (!player.paused()) {
+            if (this.toInt(player.currentTime()) === player.lastTime) {
+              player.bufferPlayCount++;
+              if (player.bufferPlayCount > 5) {
+                player.lastTime = -1;
+                this.playNextVideo();
+              }
+            } else {
+              player.lastTime = this.toInt(player.currentTime());
+            }
+          }
+        }
+      }
+      if (this.config.dev) {
+        this.infos.forEach((e, index) => {
+          let p = this.players[index];
+          e.active = p.actived;
+          e.currentTime = p.currentTime();
+          e.duration = p.duration();
+          let buffered = p.buffered();
+          if (buffered.length > 0) {
+            e.lastBufferEnd = buffered.end(buffered.length - 1);
+          }
+
+
+        });
+        this.flushTime = this.getCurrentTime();
+      }
+
+    },
+    toInt(value) {
+      try {
         return parseInt(value);
-      }catch(e){
+      } catch (e) {
         return '';
       }
     },
@@ -194,7 +256,7 @@ export default {
 
           }, 10000);
 
-        }, 6000);
+        }, 3000);
 
 
 
@@ -215,13 +277,6 @@ export default {
             console.error(eror)
           }
         }, 100);
-
-
-
-
-
-
-
 
       })();
     },
@@ -373,7 +428,7 @@ export default {
               return;
             }
             this.$emit("timeupdate", e, player);
-
+            this.smoothCheck();
           });
 
           player.on('progress', () => {
@@ -381,7 +436,7 @@ export default {
             if (!player.actived) return;
             var buffered = player.buffered();
             var duration = player.duration();
-            if (duration > 0 && buffered.length > 0 && parseInt(buffered.end(buffered.length - 1)) === parseInt(duration)) {
+            if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1)) >= this.toInt(duration)) {
               // The video has fully buffered
               console.log('Video has fully buffered. Ready to start buffering next video.');
               // Start buffering the next video
@@ -445,69 +500,12 @@ export default {
         });
 
         this.$emit("initPlayer", this.players[0]);
-        setInterval(() => {
-          let activeList = this.players.filter(e => e.actived);
 
-
-          for (let d = 0; d < activeList.length; d++) {
-            let player = activeList[d];
-            var buffered = player.buffered();
-            if (buffered.length > 0) {
-              var lastBufferedIndex = buffered.length - 1;
-              var bufferedEnd =this.toInt(buffered.end(lastBufferedIndex));
-
-              var currentTime = this.toInt( player.currentTime());
-              if (currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
-                player.bufferPlayCount++;
-                if (player.bufferPlayCount > 5) {
-                  player.bufferPlayCount = 0;
-                  this.playNextVideo();
-                } else {
-                  var bufferedStart = buffered.start(lastBufferedIndex);
-                  if (player.bufferPlayCount <= 1) {
-                    player.bufferedEnd = bufferedEnd;
-                  }
-                  player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
-                  try {
-                    player.play();
-                  } catch (ee) {
-                    console.error(ee);
-                  }
-                }
-              } else if (player.bufferPlayCount === 0 || this.toInt(player.bufferedEnd()) !== this.toInt(bufferedEnd)) {
-                player.bufferPlayCount = 0;
-              }
-              if (!player.paused()) {
-                if (this.toInt(player.currentTime()) === player.lastTime) {
-                  player.bufferPlayCount++;
-                  if (player.bufferPlayCount > 5) {
-                    player.lastTime = -1;
-                    this.playNextVideo();
-                  }
-                } else {
-                  player.lastTime = this.toInt(player.currentTime());
-                }
-              }
-            }
-          }
-          if (this.config.dev) {
-            this.infos.forEach((e, index) => {
-              console.log(e, index);
-              let p = this.players[index];
-              e.active = p.actived;
-              e.currentTime = p.currentTime();
-              e.duration = p.duration();
-              let buffered = p.buffered();
-              if (buffered.length > 0) {
-                e.lastBufferEnd = buffered.end(buffered.length - 1);
-              }
-
-
-            });
-            this.flushTime = this.getCurrentTime();
-          }
-
-        }, 2000);
+        let timeoutCheckFn = () => {
+          this.smoothCheck();
+          setTimeout(timeoutCheckFn, 5000);
+        };
+        timeoutCheckFn();
 
 
 
@@ -712,4 +710,5 @@ video::cue(i),
 .buffered {
   color: green;
   font-weight: bold;
-}</style>
+}
+</style>
