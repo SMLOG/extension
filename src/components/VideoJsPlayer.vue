@@ -445,6 +445,9 @@ export default {
               // The video is still buffering or partially buffered
               console.log('Video is buffering. Please wait...', player.bufferedPercent());
             }
+            if(player.readyState()!= HTMLMediaElement.HAVE_ENOUGH_DATA){
+              this.smoothCheck();
+            }
           });
 
           let tt = 0;
