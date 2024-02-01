@@ -15,6 +15,9 @@
         bufferPlayCount:{{ info.bufferPlayCount }}
         <br />
       </div>
+      {{ bufferNextStarted }}
+      <br />
+      {{ debugStr }}
     </div>
     <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
@@ -53,6 +56,8 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      debugStr: '',
+      bufferNextStarted: false,
       flushTime: '',
       hovering: false,
       players: null,
@@ -123,8 +128,35 @@ export default {
 
 
       for (let d = 0; d < activeList.length; d++) {
+
         let player = activeList[d];
         var buffered = player.buffered();
+
+        var duration = player.duration();
+        this.bufferNextStarted = false;
+        this.debugStr = `${duration} , 
+            ${buffered.length},
+            ${this.toInt(buffered.end(buffered.length - 1))},
+            ${this.toInt(duration)},
+            ${this.getCurrentTime()},
+            ${player.actived}
+            ${player.buffered().end(player.buffered().length - 1)}
+            `;
+        if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1))+2 >= this.toInt(duration)) {
+          // The video has fully buffered
+          console.log('Video has fully buffered. Ready to start buffering next video.');
+          this.bufferNextStarted = true;
+          // Start buffering the next video
+          this.bufferNextVideo();
+        } else {
+          // The video is still buffering or partially buffered
+          console.log('Video is buffering. Please wait...', player.bufferedPercent());
+        }
+
+        if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
+          break;
+        }
+
         if (buffered.length > 0) {
           var lastBufferedIndex = buffered.length - 1;
           var bufferedEnd = this.toInt(buffered.end(lastBufferedIndex));
@@ -269,14 +301,14 @@ export default {
         actviePlayer.url = url;
         actviePlayer.bufferPlayCount = 0;
         await this.setMediaUrl(actviePlayer.url, actviePlayer);
-        setTimeout(() => {
-          actviePlayer.currentTime(0);
-          try {
-            actviePlayer.play();
-          } catch (eror) {
-            console.error(eror)
-          }
-        }, 100);
+        // setTimeout(() => {
+        actviePlayer.currentTime(0);
+        try {
+          actviePlayer.play();
+        } catch (eror) {
+          console.error(eror)
+        }
+        //  }, 100);
 
       })();
     },
@@ -356,8 +388,9 @@ export default {
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
         console.log('start bufferNextVideo', bufferPlayer.url)
+
         bufferPlayer.preload('auto');
-        bufferPlayer.play();
+        bufferPlayer.paused()&&bufferPlayer.play();
       }
 
     },
@@ -434,20 +467,10 @@ export default {
           player.on('progress', () => {
             console.log('progress', player.actived)
             if (!player.actived) return;
-            var buffered = player.buffered();
-            var duration = player.duration();
-            if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1)) >= this.toInt(duration)) {
-              // The video has fully buffered
-              console.log('Video has fully buffered. Ready to start buffering next video.');
-              // Start buffering the next video
-              this.bufferNextVideo();
-            } else {
-              // The video is still buffering or partially buffered
-              console.log('Video is buffering. Please wait...', player.bufferedPercent());
-            }
-            if(player.readyState()!= HTMLMediaElement.HAVE_ENOUGH_DATA){
-              this.smoothCheck();
-            }
+
+
+            this.smoothCheck();
+
           });
 
           let tt = 0;
