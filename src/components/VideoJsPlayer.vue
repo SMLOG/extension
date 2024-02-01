@@ -6,11 +6,13 @@
     background: rgba(255,255,255,0.6);
     text-align: center;
     width: 100%;">
-    <div>{{ flushTime }}</div>
-      <div v-for="(info,ik) in  infos" :key="ik" :class="{active:info.active}">
-        #{{ik}}: {{ info.active }} 
-        {{ info.currentTime.toFixed(2) }}/<span :class="{buffered:''+info.lastBufferEnd.toFixed(2)==''+info.duration.toFixed(2)}">{{ info.lastBufferEnd.toFixed(2) }}/{{ info.duration.toFixed(2) }}</span>
-        bufferPlayCount:{{info.bufferPlayCount }}
+      <div>{{ flushTime }}</div>
+      <div v-for="(info, ik) in  infos" :key="ik" :class="{ active: info.active }">
+        #{{ ik }}: {{ info.active }}
+        {{ info.currentTime.toFixed(2) }}/<span
+          :class="{ buffered:  toInt(info.lastBufferEnd) ==toInt( info.duration) }">{{
+            toInt(info.lastBufferEnd) }}/{{ toInt( info.duration) }}</span>
+        bufferPlayCount:{{ info.bufferPlayCount }}
         <br />
       </div>
     </div>
@@ -51,12 +53,12 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
-      flushTime:'',
+      flushTime: '',
       hovering: false,
       players: null,
-      infos:[
-      {active:false,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0},
-      {active:false,currentTime:0,duration:0,bufferPlayCount:0,bufferedEnd:0,lastBufferEnd:0}
+      infos: [
+        { active: false, currentTime: 0, duration: 0, bufferPlayCount: 0, bufferedEnd: 0, lastBufferEnd: 0 },
+        { active: false, currentTime: 0, duration: 0, bufferPlayCount: 0, bufferedEnd: 0, lastBufferEnd: 0 }
       ],
       options: {
         inactivityTimeout: 5000,
@@ -116,11 +118,18 @@ export default {
     });
   },*/
   methods: {
-     getCurrentTime() {
-  var currentDate = new Date();
-  var formattedTime = currentDate.toTimeString().slice(0, 8);
-  return formattedTime;
-},
+    toInt(value){
+      try{
+        return parseInt(value);
+      }catch(e){
+        return '';
+      }
+    },
+    getCurrentTime() {
+      var currentDate = new Date();
+      var formattedTime = currentDate.toTimeString().slice(0, 8);
+      return formattedTime;
+    },
     playListVideo(n) {
       /// getAndPrepareNextExtra
       (async () => {
@@ -170,20 +179,20 @@ export default {
           await this.setMediaUrl(bufferPlaery.url, bufferPlaery);
         }
 
-        if(this.triggerAllPlayer){
+        if (this.triggerAllPlayer) {
           bufferPlaery.muted(true);
         }
 
-       
-       
-        setTimeout(() => {
-        // bufferPlaery.preload('none');
-         bufferPlaery.muted(true);
-         this.triggerAllPlayer=1;
-         setTimeout(()=>{
-          bufferPlaery.pause();
 
-         },10000);
+
+        setTimeout(() => {
+          // bufferPlaery.preload('none');
+          bufferPlaery.muted(true);
+          this.triggerAllPlayer = 1;
+          setTimeout(() => {
+            bufferPlaery.pause();
+
+          }, 10000);
 
         }, 6000);
 
@@ -438,63 +447,64 @@ export default {
         this.$emit("initPlayer", this.players[0]);
         setInterval(() => {
           let activeList = this.players.filter(e => e.actived);
-          if (activeList.length === 0) return;
-          let player = activeList[0];
 
-          var buffered = player.buffered();
-          if (buffered.length > 0) {
-            var lastBufferedIndex = buffered.length - 1;
-            var bufferedEnd = buffered.end(lastBufferedIndex);
 
-            var currentTime = player.currentTime();
-            if (currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
-              player.bufferPlayCount++;
-              if (player.bufferPlayCount > 5) {
-                player.bufferPlayCount = 0;
-                this.playNextVideo();
-              } else {
-                var bufferedStart = buffered.start(lastBufferedIndex);
-                if (player.bufferPlayCount <= 1) {
-                  player.bufferedEnd = bufferedEnd;
-                }
-                player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
-                try {
-                  player.play();
-                } catch (ee) {
-                  console.error(ee);
-                }
-              }
-            } else if (player.bufferPlayCount === 0 || parseInt(player.bufferedEnd()) !== parseInt(bufferedEnd)) {
-              player.bufferPlayCount = 0;
-            }
-            if (!player.paused()) {
-              if (parseInt(player.currentTime()) === player.lastTime) {
+          for (let d = 0; d < activeList.length; d++) {
+            let player = activeList[d];
+            var buffered = player.buffered();
+            if (buffered.length > 0) {
+              var lastBufferedIndex = buffered.length - 1;
+              var bufferedEnd =this.toInt(buffered.end(lastBufferedIndex));
+
+              var currentTime = this.toInt( player.currentTime());
+              if (currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
                 player.bufferPlayCount++;
                 if (player.bufferPlayCount > 5) {
-                  player.lastTime = -1;
+                  player.bufferPlayCount = 0;
                   this.playNextVideo();
+                } else {
+                  var bufferedStart = buffered.start(lastBufferedIndex);
+                  if (player.bufferPlayCount <= 1) {
+                    player.bufferedEnd = bufferedEnd;
+                  }
+                  player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
+                  try {
+                    player.play();
+                  } catch (ee) {
+                    console.error(ee);
+                  }
                 }
-              } else {
-                player.lastTime = parseInt(player.currentTime());
+              } else if (player.bufferPlayCount === 0 || this.toInt(player.bufferedEnd()) !== this.toInt(bufferedEnd)) {
+                player.bufferPlayCount = 0;
+              }
+              if (!player.paused()) {
+                if (this.toInt(player.currentTime()) === player.lastTime) {
+                  player.bufferPlayCount++;
+                  if (player.bufferPlayCount > 5) {
+                    player.lastTime = -1;
+                    this.playNextVideo();
+                  }
+                } else {
+                  player.lastTime = this.toInt(player.currentTime());
+                }
               }
             }
           }
+          if (this.config.dev) {
+            this.infos.forEach((e, index) => {
+              console.log(e, index);
+              let p = this.players[index];
+              e.active = p.actived;
+              e.currentTime = p.currentTime();
+              e.duration = p.duration();
+              let buffered = p.buffered();
+              if (buffered.length > 0) {
+                e.lastBufferEnd = buffered.end(buffered.length - 1);
+              }
 
-          if(this.config.dev){
-            this.infos.forEach((e,index)=>{
-            console.log(e,index);
-            let p = this.players[index];
-            e.active = p.actived;
-            e.currentTime = p.currentTime();
-            e.duration = p.duration();
-            let buffered = p.buffered();
-            if (buffered.length > 0) {
-              e.lastBufferEnd = buffered.end(buffered.length - 1);
-            }
 
-            
-          });
-          this.flushTime=this.getCurrentTime();
+            });
+            this.flushTime = this.getCurrentTime();
           }
 
         }, 2000);
@@ -694,11 +704,12 @@ video::cue(i),
   user-select: auto;
   z-index: 1;
 }
-.active{
-  color:red;
+
+.active {
+  color: red;
 }
-.buffered{
-  color:green;
+
+.buffered {
+  color: green;
   font-weight: bold;
-}
-</style>
+}</style>
