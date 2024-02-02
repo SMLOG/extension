@@ -56,6 +56,7 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      curPlayIndex:0,
       activeIndex: 0,
       bufferIndex: 1,
       debugStr: '',
@@ -126,6 +127,22 @@ export default {
   },*/
   methods: {
 
+    async getNextPlayUrl(n) {
+      let nextIndex = n;
+      let playList = this.config2.playList;
+      for (let k = 0; k < playList.length; k++) {
+        try {
+          nextIndex = nextIndex + 1;
+          nextIndex = Math.min(playList.length, nextIndex) == playList.length ? 0 : nextIndex;
+          let nextItem = playList[nextIndex];
+          return await this.getItemUrl(nextItem);
+        } catch (err) {
+          console.error(err);
+          continue;
+        }
+      }
+      return '';
+    },
     toInt(value) {
       try {
         return parseInt(value);
@@ -225,21 +242,9 @@ export default {
         } catch (err) {
           console.error(err);
         }
-        let nextUrl = '';
-        let nextIndex = n;
+        this.curPlayIndex=n;
+        let nextUrl = await this.getNextPlayUrl(n);
 
-        for (let k = 0; k < playList.length; k++) {
-          try {
-            nextIndex = nextIndex + 1;
-            nextIndex = Math.min(playList.length, nextIndex) == playList.length ? 0 : nextIndex;
-            let nextItem = playList[nextIndex];
-            nextUrl = await this.getItemUrl(nextItem);
-          } catch (err) {
-            console.error(err);
-            continue;
-          }
-          break;
-        }
 
         if (!url) this.playNextVideo();
 
@@ -277,7 +282,7 @@ export default {
           // bufferPlaery.preload('none');
           bufferPlaery = players[this.bufferIndex];
           if (!bufferPlaery.muted()) {
-            this.bufferNextStarted="mute buffer:"+this.getCurrentTime();
+            this.bufferNextStarted = "mute buffer:" + this.getCurrentTime();
             bufferPlaery.muted(true);
             bufferPlaery.pause();
           }
@@ -379,7 +384,8 @@ export default {
       let p = this.players[this.bufferIndex];
       p.currentTime(0);
       p.muted(false);
-      this.$emit('ended');
+     // this.$emit('ended',this.curPlayIndex);
+      bus.$emit("end",this.config2.playList[this.curPlayIndex].videoId);
       this.bufferNextStarted = 'switch to next:' + this.getCurrentTime();
 
     },
@@ -388,7 +394,7 @@ export default {
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
 
-        if(bufferPlayer.paused()){
+        if (bufferPlayer.paused()) {
           this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
           console.log('start bufferNextVideo', bufferPlayer.url)
 
@@ -501,9 +507,18 @@ export default {
           player.on("error", (err) => {
             console.error(err);
             setTimeout(() => {
-              if (!player.actived) return;
+              if (!player.actived) {
+                (async()=>{
+                  let nextUrl = this.getNextPlayUrl(++this.curPlayIndex);
+                  this.bufferNextStarted="buffer error switch:"+this.curPlayIndex;
+                  this.setMediaUrl(nextUrl,player);
+                  player.play();
+                })();
+              }else{
+                this.playNextVideo();
+
+              }
               // this.$emit("error", 1);
-              this.playNextVideo();
             }, 0);
           });
 
