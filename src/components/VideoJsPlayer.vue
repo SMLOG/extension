@@ -177,23 +177,10 @@ export default {
           var bufferedEnd = this.toInt(buffered.end(lastBufferedIndex));
 
           var currentTime = this.toInt(player.currentTime());
-          if (player.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA || currentTime > 0 && currentTime < player.duration() - 1 && currentTime >= bufferedEnd) {
-            player.bufferPlayCount++;
-            if (player.bufferPlayCount > 5) {
+          if ( currentTime > 0 && currentTime >= bufferedEnd) {
               player.bufferPlayCount = 0;
               this.playNextVideo();
-            } else {
-              var bufferedStart = buffered.start(lastBufferedIndex);
-              if (player.bufferPlayCount <= 1) {
-                player.bufferedEnd = bufferedEnd;
-              }
-              player.currentTime(Math.max(bufferedStart, bufferedEnd - 10));
-              try {
-                player.play();
-              } catch (ee) {
-                console.error(ee);
-              }
-            }
+            
           } else if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
             player.bufferPlayCount = 0;
           }
@@ -382,13 +369,11 @@ export default {
       }
     },
     playNextVideo() {
-      let p = this.players[this.bufferIndex];
+      let p =  this.players[this.bufferIndex];
 p.currentTime(0);
-p.mute(false);
-p = this.players[this.activeIndex];
-p.mute(true);
-this.activeIndex=this.bufferedIndex;
-this.bufferedIndex=1-this.activeIndex;
+p.muted(false);
+
+
       this.$emit('ended');
       
     },
