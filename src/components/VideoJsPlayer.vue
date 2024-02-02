@@ -231,6 +231,8 @@ export default {
     },
     playListVideo(n) {
       /// getAndPrepareNextExtra
+      if(n<0)return;
+
       (async () => {
         let players = this.players;
         let playList = this.config2.playList;
@@ -384,8 +386,9 @@ export default {
       let p = this.players[this.bufferIndex];
       p.currentTime(0);
       p.muted(false);
+      p.actived=1;
      // this.$emit('ended',this.curPlayIndex);
-      bus.$emit("end",this.config2.playList[this.curPlayIndex].videoId);
+      bus.$emit("end",0,0,this.curPlayIndex);
       this.bufferNextStarted = 'switch to next:' + this.getCurrentTime();
 
     },
@@ -578,7 +581,6 @@ export default {
     },
     "$store.state.config2.playIndex": {
       handler(n) {
-
 
         this.playListVideo(n);
 

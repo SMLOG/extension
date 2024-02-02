@@ -856,20 +856,6 @@ console.log('ajustTextHeight');
       self.ajustTextHeight();
     });
 
-    let lastTime = 0;
-    setInterval(() => {
-      let video = document.querySelector("video");
-      if (video && !video.paused) {
-        if (lastTime == video.currentTime) {
-          console.error("timeout next");
-          // this.next();
-          if (this.config.timeoutnext) {
-            lastTime = 0;
-            this.next();
-          }
-        } else lastTime = video.currentTime;
-      }
-    }, 20 * 1000);
   },
 
   watch: {
