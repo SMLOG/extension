@@ -56,10 +56,10 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
-      activeIndex:0,
-      bufferIndex:1,
+      activeIndex: 0,
+      bufferIndex: 1,
       debugStr: '',
-      bufferNextStarted: false,
+      bufferNextStarted: '',
       flushTime: '',
       hovering: false,
       players: null,
@@ -148,7 +148,6 @@ export default {
         var buffered = player.buffered();
 
         var duration = player.duration();
-        this.bufferNextStarted = false;
         this.debugStr = `${duration} , 
             ${buffered.length},
             ${this.toInt(buffered.end(buffered.length - 1))},
@@ -157,10 +156,9 @@ export default {
             ${player.actived}
             ${player.buffered().end(player.buffered().length - 1)}
             `;
-        if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1))+2 >= this.toInt(duration)) {
+        if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1)) + 2 >= this.toInt(duration)) {
           // The video has fully buffered
           console.log('Video has fully buffered. Ready to start buffering next video.');
-          this.bufferNextStarted = true;
           // Start buffering the next video
           this.bufferNextVideo();
         } else {
@@ -177,10 +175,10 @@ export default {
           var bufferedEnd = this.toInt(buffered.end(lastBufferedIndex));
 
           var currentTime = this.toInt(player.currentTime());
-          if ( currentTime > 0 && currentTime >= bufferedEnd) {
-              player.bufferPlayCount = 0;
-              this.playNextVideo();
-            
+          if (currentTime > 0 && currentTime >= bufferedEnd) {
+            player.bufferPlayCount = 0;
+            this.playNextVideo();
+
           } else if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
             player.bufferPlayCount = 0;
           }
@@ -228,13 +226,21 @@ export default {
           console.error(err);
         }
         let nextUrl = '';
-        try {
-          let nextIndex = Math.min(playList.length, n + 1) == playList.length ? 0 : n + 1;
-          let nextItem = playList[nextIndex];
-          nextUrl = await this.getItemUrl(nextItem);
-        } catch (err) {
-          console.error(err);
+        let nextIndex = n;
+
+        for (let k = 0; k < playList.length; k++) {
+          try {
+            nextIndex = nextIndex + 1;
+            nextIndex = Math.min(playList.length, nextIndex) == playList.length ? 0 : nextIndex;
+            let nextItem = playList[nextIndex];
+            nextUrl = await this.getItemUrl(nextItem);
+          } catch (err) {
+            console.error(err);
+            continue;
+          }
+          break;
         }
+
         if (!url) this.playNextVideo();
 
         this.activeIndex = players.map(e => e.url).indexOf(url);
@@ -270,10 +276,11 @@ export default {
         setTimeout(() => {
           // bufferPlaery.preload('none');
           bufferPlaery = players[this.bufferIndex];
-          if(!bufferPlaery.muted()){
+          if (!bufferPlaery.muted()) {
+            this.bufferNextStarted="mute buffer:"+this.getCurrentTime();
             bufferPlaery.muted(true);
             bufferPlaery.pause();
-          } 
+          }
         }, 6000);
 
 
@@ -328,7 +335,7 @@ export default {
     },
     async setMediaUrl(url, player) {
       console.log(url);
-      if(player.url===url)return;
+      if (player.url === url) return;
       if (url) {
         let filetype = "audio/mpeg";
         if (url.indexOf(".m3p") > -1) {
@@ -365,26 +372,30 @@ export default {
               type: filetype,
             },
           ]);
-          player.url=url;
+        player.url = url;
       }
     },
     playNextVideo() {
-      let p =  this.players[this.bufferIndex];
-p.currentTime(0);
-p.muted(false);
-
-
+      let p = this.players[this.bufferIndex];
+      p.currentTime(0);
+      p.muted(false);
       this.$emit('ended');
-      
+      this.bufferNextStarted = 'switch to next:' + this.getCurrentTime();
+
     },
     async bufferNextVideo() {
 
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
-        console.log('start bufferNextVideo', bufferPlayer.url)
 
-        bufferPlayer.preload('auto');
-        bufferPlayer.paused()&&bufferPlayer.play();
+        if(bufferPlayer.paused()){
+          this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
+          console.log('start bufferNextVideo', bufferPlayer.url)
+
+          bufferPlayer.preload('auto');
+          bufferPlayer.paused() && bufferPlayer.play();
+        }
+
       }
 
     },
@@ -491,8 +502,8 @@ p.muted(false);
             console.error(err);
             setTimeout(() => {
               if (!player.actived) return;
-             // this.$emit("error", 1);
-             this.playNextVideo();
+              // this.$emit("error", 1);
+              this.playNextVideo();
             }, 0);
           });
 
