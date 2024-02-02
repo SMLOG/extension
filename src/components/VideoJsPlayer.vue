@@ -56,6 +56,8 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      activeIndex:0,
+      bufferIndex:1,
       debugStr: '',
       bufferNextStarted: false,
       flushTime: '',
@@ -123,6 +125,19 @@ export default {
     });
   },*/
   methods: {
+
+    toInt(value) {
+      try {
+        return parseInt(value);
+      } catch (e) {
+        return '';
+      }
+    },
+    getCurrentTime() {
+      var currentDate = new Date();
+      var formattedTime = currentDate.toTimeString().slice(0, 8);
+      return formattedTime;
+    },
     smoothCheck() {
       let activeList = this.players.filter(e => e.actived);
 
@@ -212,18 +227,6 @@ export default {
       }
 
     },
-    toInt(value) {
-      try {
-        return parseInt(value);
-      } catch (e) {
-        return '';
-      }
-    },
-    getCurrentTime() {
-      var currentDate = new Date();
-      var formattedTime = currentDate.toTimeString().slice(0, 8);
-      return formattedTime;
-    },
     playListVideo(n) {
       /// getAndPrepareNextExtra
       (async () => {
@@ -231,8 +234,6 @@ export default {
         let playList = this.config2.playList;
         let item = playList[n];
         if (!item) return;
-        let nextIndex = Math.min(playList.length, n + 1) == playList.length ? 0 : n + 1;
-        let nextItem = playList[nextIndex];
         let url = '';
         try {
           url = await this.getItemUrl(item);
@@ -241,54 +242,52 @@ export default {
         }
         let nextUrl = '';
         try {
+          let nextIndex = Math.min(playList.length, n + 1) == playList.length ? 0 : n + 1;
+          let nextItem = playList[nextIndex];
           nextUrl = await this.getItemUrl(nextItem);
         } catch (err) {
           console.error(err);
         }
         if (!url) this.playNextVideo();
 
-        let activeIndex = players.map(e => e.url).indexOf(url);
-        let bufferIndex = players.map(e => e.url).indexOf(nextUrl);
-        console.log(activeIndex, bufferIndex, url, nextUrl);
+        this.activeIndex = players.map(e => e.url).indexOf(url);
+        this.bufferIndex = players.map(e => e.url).indexOf(nextUrl);
+        console.log(this.activeIndex, this.bufferIndex, url, nextUrl);
 
 
-        activeIndex = activeIndex > -1 ? activeIndex : activeIndex < 0 && bufferIndex < 0 ? 0 : bufferIndex < 0 ? 1 : 1 - bufferIndex;
-        bufferIndex = 1 - activeIndex;
+        this.activeIndex = this.activeIndex > -1 ? this.activeIndex : this.activeIndex < 0 && this.bufferIndex < 0 ? 0 : this.bufferIndex < 0 ? 1 : 1 - this.bufferIndex;
+        this.bufferIndex = 1 - this.activeIndex;
 
 
 
 
-        let bufferPlaery = players[bufferIndex];
-        let actviePlayer = players[activeIndex];
+        let bufferPlaery = players[this.bufferIndex];
+        let actviePlayer = players[this.activeIndex];
 
         window.players = players;
         console.log('devvv', this.config.dev)
-        document.querySelectorAll('.video-js')[activeIndex].style.display = '';
-        document.querySelectorAll('.video-js')[bufferIndex].style.display = this.config.dev ? '' : 'none';
+        document.querySelectorAll('.video-js')[this.activeIndex].style.display = '';
+        document.querySelectorAll('.video-js')[this.bufferIndex].style.display = this.config.dev ? '' : 'none';
 
 
         bufferPlaery.actived = 0;
-        bufferPlaery.url = nextUrl;
         if (nextUrl) {
-          await this.setMediaUrl(bufferPlaery.url, bufferPlaery);
+          await this.setMediaUrl(nextUrl, bufferPlaery);
         }
 
         if (this.triggerAllPlayer) {
           bufferPlaery.muted(true);
         }
-
-
+        this.triggerAllPlayer = 1;
 
         setTimeout(() => {
           // bufferPlaery.preload('none');
-          bufferPlaery.muted(true);
-          this.triggerAllPlayer = 1;
-          setTimeout(() => {
+          bufferPlaery = players[this.bufferIndex];
+          if(!bufferPlaery.muted()){
+            bufferPlaery.muted(true);
             bufferPlaery.pause();
-
-          }, 10000);
-
-        }, 3000);
+          } 
+        }, 6000);
 
 
 
@@ -298,9 +297,8 @@ export default {
 
         actviePlayer.muted(false);
         actviePlayer.actived = 1;
-        actviePlayer.url = url;
         actviePlayer.bufferPlayCount = 0;
-        await this.setMediaUrl(actviePlayer.url, actviePlayer);
+        await this.setMediaUrl(url, actviePlayer);
         // setTimeout(() => {
         actviePlayer.currentTime(0);
         try {
@@ -342,6 +340,8 @@ export default {
 
     },
     async setMediaUrl(url, player) {
+      console.log(url);
+      if(player.url===url)return;
       if (url) {
         let filetype = "audio/mpeg";
         if (url.indexOf(".m3p") > -1) {
@@ -378,10 +378,19 @@ export default {
               type: filetype,
             },
           ]);
+          player.url=url;
       }
     },
     playNextVideo() {
+      let p = this.players[this.bufferIndex];
+p.currentTime(0);
+p.mute(false);
+p = this.players[this.activeIndex];
+p.mute(true);
+this.activeIndex=this.bufferedIndex;
+this.bufferedIndex=1-this.activeIndex;
       this.$emit('ended');
+      
     },
     async bufferNextVideo() {
 
@@ -497,7 +506,8 @@ export default {
             console.error(err);
             setTimeout(() => {
               if (!player.actived) return;
-              this.$emit("error", 1);
+             // this.$emit("error", 1);
+             this.playNextVideo();
             }, 0);
           });
 
