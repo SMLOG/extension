@@ -1,97 +1,34 @@
 <template>
-  <div
-    class="op_tool"
-    @touchstart="onTouch(1)"
-    :class="{ show: opacity, hide: !opacity }"
-    @mouseover="onTouch()"
-    @mouseout="onLeave(0)"
-    @touchmove="onTouch()"
-    ref="op_tool"
-  >
-    <div
-      ref="mask"
-      @touchstart.prevent
-      @touchend.prevent
-      @touchmove.prevent
-      style="
+  <div class="op_tool" @touchstart="onTouch(1)" :class="{ show: opacity, hide: !opacity }" @mouseover="onTouch()"
+    @mouseout="onLeave(0)" @touchmove="onTouch()" ref="op_tool">
+    <div ref="mask" @touchstart.prevent @touchend.prevent @touchmove.prevent style="
         width: 150%;
         height: 100%;
         position: absolute;
         z-index: 1;
         user-select: none;
-      "
-      v-show="opacity < 1"
-    ></div>
+      " v-show="opacity < 1"></div>
     <div class="icons">
-      <span
-        @click="togglePlayAndMode()"
-        :class="{ playing: config2.playing }"
-        >{{ playMode }}</span
-      >
-      <font-awesome-icon
-        icon="volume-high"
-        fixed-width
-        v-show="config.seeCurWords && config2.playing"
-        @click="updateConfig2({ playing: !config2.playing })"
-        size="lg"
-      ></font-awesome-icon>
-      <font-awesome-icon
-        @click="updateConfig2({ playing: !config2.playing })"
-        icon="volume-xmark"
-        fixed-width
-        v-show="config.seeCurWords && !config2.playing"
-        size="lg"
-      ></font-awesome-icon>
-      <font-awesome-icon
-      @click="updateConfig({ viewMode: ++config.viewMode>2?0:config.viewMode })"
-        icon="fa-solid fa-maximize"
-        fixed-width
-        size="lg"
-        :class="{active:config.viewMode,left:config.viewMode==2}"
-      />
-      <font-awesome-icon
-        @click="setShowCurWords(!config.seeCurWords)"
-        :icon="['fas', 'list']"
-        fixed-width
-        size="lg"
-        :class="{active:config.seeCurWords}"
-      />
-   
+      <span @click="togglePlayAndMode()" :class="{ playing: config2.playing }">{{ playMode }}</span>
+      <font-awesome-icon icon="volume-high" fixed-width v-show="config.seeCurWords && config2.playing"
+        @click="updateConfig2({ playing: !config2.playing })" size="lg"></font-awesome-icon>
+      <font-awesome-icon @click="updateConfig2({ playing: !config2.playing })" icon="volume-xmark" fixed-width
+        v-show="config.seeCurWords && !config2.playing" size="lg"></font-awesome-icon>
+      <font-awesome-icon @click="updateConfig({ viewMode: ++config.viewMode > 2 ? 0 : config.viewMode })"
+        icon="fa-solid fa-maximize" fixed-width size="lg" :class="{ active: config.viewMode, left: config.viewMode == 2 }" />
+      <font-awesome-icon @click="setShowCurWords(!config.seeCurWords)" :icon="['fas', 'list']" fixed-width size="lg"
+        :class="{ active: config.seeCurWords }" />
 
-      <font-awesome-icon
-        v-if="config.isAudio == 1"
-        @click="clickAudio"
-        :icon="['fas', 'headphones']"
-        fixed-width
-        size="lg"
-      />
-      <font-awesome-icon
-        v-else-if="config.isAudio == 2"
-        :icon="['fas', 'headphones-simple']"
-        @click="clickAudio"
-        fixed-width
-        size="lg"
-      />
-      <font-awesome-icon
-        v-else
-        :icon="['fas', 'tv']"
-        @click="clickAudio"
-        fixed-width
-        size="lg"
-      />
-     <font-awesome-icon
-        :icon="['fas', 'closed-captioning']"
-        @click="updateConfig({custCue:++config.custCue>2?0:config.custCue})"
-        fixed-width
-        size="lg"
-        :class="{active:config.custCue,borderTop:config.custCue==2,borderBottom:config.custCue==1}"
-      />
-      <font-awesome-icon
-        @click="toggleSetting()"
-        icon="eye"
-        fixed-width
-        size="lg"
-      />
+
+      <font-awesome-icon v-if="config.isAudio == 1" @click="clickAudio" :icon="['fas', 'headphones']" fixed-width
+        size="lg" />
+      <font-awesome-icon v-else-if="config.isAudio == 2" :icon="['fas', 'headphones-simple']" @click="clickAudio"
+        fixed-width size="lg" />
+      <font-awesome-icon v-else :icon="['fas', 'tv']" @click="clickAudio" fixed-width size="lg" />
+      <font-awesome-icon :icon="['fas', 'closed-captioning']"
+        @click="updateConfig({ custCue: ++config.custCue > 2 ? 0 : config.custCue })" fixed-width size="lg"
+        :class="{ active: config.custCue, borderTop: config.custCue == 2, borderBottom: config.custCue == 1 }" />
+      <font-awesome-icon @click="toggleSetting()" icon="eye" fixed-width size="lg" />
       <a @click="changeRate()">{{ config.playbackrate }}</a>
     </div>
   </div>
@@ -108,24 +45,63 @@ export default {
       opacity: 0.1,
     };
   },
-  created() {},
+  created() { },
   computed: {},
   components: {},
-  watch:{
+  watch: {
     "$store.state.config2.mask": {
       handler(n) {
-        if (!n ) { this.onLeave()
-          
+        if (!n) {
+          this.onLeave()
+
+        }
+      },
+    },
+    "$store.state.config.viewMode": {
+      handler(n) {
+        try {
+          if (n) {
+            this.enterFullscreen(document.querySelector(".videoview"));
+
+          } else {
+
+            this.exitFullscreen(document.querySelector(".videoview"));
+
+          }
+        } catch (ee) {
+          console.log(ee);
         }
       },
     },
   },
   methods: {
-    changeRate(){
+    exitFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) { // Firefox
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { // Internet Explorer and Edge
+        document.msExitFullscreen();
+      }
+    },
+    enterFullscreen(element) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) { // Firefox
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) { // Internet Explorer and Edge
+        element.msRequestFullscreen();
+      }
+    },
+    changeRate() {
 
-      this.config.playbackrate=(0.1+parseFloat(this.config.playbackrate)).toFixed(1);
+      this.config.playbackrate = (0.1 + parseFloat(this.config.playbackrate)).toFixed(1);
 
-      this.updateConfig({playbackrate:this.config.playbackrate>1?0.5:this.config.playbackrate})
+      this.updateConfig({ playbackrate: this.config.playbackrate > 1 ? 0.5 : this.config.playbackrate })
     },
     clickAudio() {
       this.updateConfig({
@@ -134,12 +110,12 @@ export default {
     },
     onLeave() {
       this.opacity = 0;
-      this.updateConfig2({mask:0})
+      this.updateConfig2({ mask: 0 })
 
     },
     onTouch() {
       this.opacity = 1;
-      this.updateConfig2({mask:1})
+      this.updateConfig2({ mask: 1 })
     },
     togglePlayAndMode() {
       this.playMode++;
@@ -168,12 +144,15 @@ export default {
 p {
   font-size: 20px;
 }
+
 table tr:nth-child(odd) {
   background-color: #f5f5f5;
 }
+
 table tr:nth-child(even) {
   background-color: #fff;
 }
+
 .ctrl {
   user-select: none;
   cursor: pointer;
@@ -193,6 +172,7 @@ table tr:nth-child(even) {
   min-width: 1.5em;
   text-align: center;
 }
+
 .op_tool::before {
   content: "";
   position: absolute;
@@ -203,34 +183,42 @@ table tr:nth-child(even) {
   border-left: 1px solid green;
   user-select: none;
 }
+
 .op_tool.show {
   transition: opacity 0s linear, font-size 0s linear;
   opacity: 1;
   font-size: 150%;
   right: 10px;
 }
-.op_tool > * {
+
+.op_tool>* {
   margin-bottom: 10px;
   user-select: none;
 }
+
 .playing {
   color: green;
   font-weight: bold;
 }
-.icons > * {
+
+.icons>* {
   margin-top: 10px;
 }
-.active{
-  color:red;
+
+.active {
+  color: red;
   font-weight: bold;
 }
-.borderTop{
-  border-top:2px solid green;
+
+.borderTop {
+  border-top: 2px solid green;
 }
-.borderBottom{
-  border-bottom:2px solid green;
+
+.borderBottom {
+  border-bottom: 2px solid green;
 }
-.left{
-  border-left:2px solid green;
+
+.left {
+  border-left: 2px solid green;
 }
 </style>
