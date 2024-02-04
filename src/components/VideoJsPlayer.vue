@@ -56,7 +56,7 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
-      curPlayIndex:0,
+      curPlayIndex: 0,
       activeIndex: 0,
       bufferIndex: 1,
       debugStr: '',
@@ -231,7 +231,7 @@ export default {
     },
     playListVideo(n) {
       /// getAndPrepareNextExtra
-      if(n<0)return;
+      if (n < 0) return;
 
       (async () => {
         let players = this.players;
@@ -244,7 +244,7 @@ export default {
         } catch (err) {
           console.error(err);
         }
-        this.curPlayIndex=n;
+        this.curPlayIndex = n;
         let nextUrl = await this.getNextPlayUrl(n);
 
 
@@ -299,14 +299,18 @@ export default {
         actviePlayer.muted(false);
         actviePlayer.actived = 1;
         actviePlayer.bufferPlayCount = 0;
+
         await this.setMediaUrl(url, actviePlayer);
         // setTimeout(() => {
-        actviePlayer.currentTime(0);
-        try {
-          actviePlayer.play();
-        } catch (eror) {
-          console.error(eror)
+        if (actviePlayer.muted()) {
+          actviePlayer.currentTime(0);
+          try {
+            actviePlayer.play();
+          } catch (eror) {
+            console.error(eror)
+          }
         }
+
         //  }, 100);
 
       })();
@@ -386,9 +390,10 @@ export default {
       let p = this.players[this.bufferIndex];
       p.currentTime(0);
       p.muted(false);
-      p.actived=1;
-     // this.$emit('ended',this.curPlayIndex);
-      bus.$emit("end",0,0,this.curPlayIndex);
+      p.actived = 1;
+
+      // this.$emit('ended',this.curPlayIndex);
+      bus.$emit("end", 0, 0, this.curPlayIndex);
       this.bufferNextStarted = 'switch to next:' + this.getCurrentTime();
 
     },
@@ -511,13 +516,13 @@ export default {
             console.error(err);
             setTimeout(() => {
               if (!player.actived) {
-                (async()=>{
+                (async () => {
                   let nextUrl = this.getNextPlayUrl(++this.curPlayIndex);
-                  this.bufferNextStarted="buffer error switch:"+this.curPlayIndex;
-                  this.setMediaUrl(nextUrl,player);
+                  this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex;
+                  this.setMediaUrl(nextUrl, player);
                   player.play();
                 })();
-              }else{
+              } else {
                 this.playNextVideo();
 
               }
