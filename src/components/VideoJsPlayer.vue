@@ -613,6 +613,12 @@ export default {
 
       }
     },
+    "$store.state.config.dev": {
+      handler(n) {
+        document.querySelectorAll('.video-js')[this.bufferIndex].style.display = n ? '' : 'none';
+      }
+    },
+
 
     source() {
       console.log("preloadNextUrl:", this.preloadNextUrl)
