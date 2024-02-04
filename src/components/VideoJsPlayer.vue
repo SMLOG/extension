@@ -155,6 +155,22 @@ export default {
       var formattedTime = currentDate.toTimeString().slice(0, 8);
       return formattedTime;
     },
+    smoothBuffer() {
+      let bufferList = this.players.filter(e => !e.actived);
+
+      for (let d = 0; d < bufferList.length; d++) {
+
+        let player = bufferList[d];
+        var buffered = player.buffered();
+        let end = buffered.end(buffered.length - 1);
+        if (player.startBufferTime && end > 10) {
+          this.bufferNextStarted = "pause buffer for end " + end + " >10 " + this.getCurrentTime();
+          player.pause();
+          player.startBufferTime = 0;
+        }
+      }
+
+    },
     smoothCheck() {
       let activeList = this.players.filter(e => e.actived);
 
@@ -279,16 +295,16 @@ export default {
           bufferPlaery.muted(true);
         }
         this.triggerAllPlayer = 1;
-
+        bufferPlaery.startBufferTime = this.getCurrentTime();
         setTimeout(() => {
           // bufferPlaery.preload('none');
           bufferPlaery = players[this.bufferIndex];
           if (!bufferPlaery.muted()) {
             this.bufferNextStarted = "mute buffer:" + this.getCurrentTime();
             bufferPlaery.muted(true);
-            bufferPlaery.pause();
           }
-        }, 6000);
+
+        }, 3000);
 
 
 
@@ -401,7 +417,7 @@ export default {
 
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
-
+        bufferPlayer.startBufferTime = 0;
         if (bufferPlayer.paused()) {
           this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
           console.log('start bufferNextVideo', bufferPlayer.url)
@@ -485,10 +501,9 @@ export default {
 
           player.on('progress', () => {
             console.log('progress', player.actived)
-            if (!player.actived) return;
-
-
-            this.smoothCheck();
+            if (!player.actived) {
+              this.smoothBuffer();
+            } else this.smoothCheck();
 
           });
 
