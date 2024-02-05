@@ -189,15 +189,22 @@ export default {
             ${player.actived}
             ${player.buffered().end(player.buffered().length - 1)}
             `;
-        if (duration > 0 && buffered.length > 0 && this.toInt(buffered.end(buffered.length - 1)) + 2 >= this.toInt(duration)) {
-          // The video has fully buffered
-          console.log('Video has fully buffered. Ready to start buffering next video.');
-          // Start buffering the next video
-          this.bufferNextVideo();
-        } else {
-          // The video is still buffering or partially buffered
-          console.log('Video is buffering. Please wait...', player.bufferedPercent());
+
+        if (duration > 0 && buffered.length > 0) {
+          if (
+            this.toInt(buffered.end(buffered.length - 1)) + 2 >= this.toInt(duration)
+          ) {
+            // The video has fully buffered
+            console.log('Video has fully buffered. Ready to start buffering next video.');
+            // Start buffering the next video
+            this.bufferNextVideo();
+          }
+
+          if (player.currentTime() > buffered.end(buffered.length - 1)) {
+            this.playNextVideo();
+          }
         }
+
 
         if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
           break;
@@ -532,8 +539,8 @@ export default {
             setTimeout(() => {
               if (!player.actived) {
                 (async () => {
-                  let nextUrl = this.getNextPlayUrl(++this.curPlayIndex);
-                  this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex;
+                  let nextUrl = await this.getNextPlayUrl(++this.curPlayIndex);
+                  this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex + " " + nextUrl;
                   this.setMediaUrl(nextUrl, player);
                   player.play();
                 })();

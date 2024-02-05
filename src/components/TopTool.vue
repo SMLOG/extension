@@ -61,11 +61,11 @@ export default {
       handler(n) {
         try {
           if (n) {
-            this.enterFullscreen(document.querySelector(".videoview"));
+            this.enterFullscreen(document.querySelector("#app"));
 
           } else {
 
-            this.exitFullscreen(document.querySelector(".videoview"));
+            this.exitFullscreen(document.querySelector("#app"));
 
           }
         } catch (ee) {
