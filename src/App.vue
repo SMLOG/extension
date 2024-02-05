@@ -8,7 +8,7 @@
     <Editor />
     <div
       :class="{
-        viewMode: config.viewMode,
+        viewMode: config.viewMode>0,
         viewMode2: config.viewMode == 2,
         touchstart: config2.touchstart,
         showList: config2.showList,
@@ -18,6 +18,7 @@
         pause: !config2.playingM,
         videoUrl: config2.videoUrl || config.shownews,
       }"
+      :data="config.viewMode"
     >
       <div
         v-if="showApp || showSidebar || config2.mask"

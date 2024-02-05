@@ -14,8 +14,8 @@
         @click="updateConfig2({ playing: !config2.playing })" size="lg"></font-awesome-icon>
       <font-awesome-icon @click="updateConfig2({ playing: !config2.playing })" icon="volume-xmark" fixed-width
         v-show="config.seeCurWords && !config2.playing" size="lg"></font-awesome-icon>
-      <font-awesome-icon @click="updateConfig({ viewMode: ++config.viewMode > 2 ? 0 : config.viewMode })"
-        icon="fa-solid fa-maximize" fixed-width size="lg" :class="{ active: config.viewMode, left: config.viewMode == 2 }" />
+      <font-awesome-icon @click="updateConfig({ viewMode: ++config.viewMode > 2 ? -1 : config.viewMode })"
+        icon="fa-solid fa-maximize" fixed-width size="lg" :class="{ active: config.viewMode, vmode0:config.viewMode==0, left: config.viewMode == 2 }" />
       <font-awesome-icon @click="setShowCurWords(!config.seeCurWords)" :icon="['fas', 'list']" fixed-width size="lg"
         :class="{ active: config.seeCurWords }" />
 
@@ -25,6 +25,12 @@
       <font-awesome-icon v-else-if="config.isAudio == 2" :icon="['fas', 'headphones-simple']" @click="clickAudio"
         fixed-width size="lg" />
       <font-awesome-icon v-else :icon="['fas', 'tv']" @click="clickAudio" fixed-width size="lg" />
+      <a
+            @click="updateConfig({ fs: config.fs >= 8 ? 1 : config.fs + 1 })"
+          >
+            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+            <span>{{ config.fs }}</span>
+          </a>
       <font-awesome-icon :icon="['fas', 'closed-captioning']"
         @click="updateConfig({ custCue: ++config.custCue > 2 ? 0 : config.custCue })" fixed-width size="lg"
         :class="{ active: config.custCue, borderTop: config.custCue == 2, borderBottom: config.custCue == 1 }" />
@@ -60,7 +66,8 @@ export default {
     "$store.state.config.viewMode": {
       handler(n) {
         try {
-          if (n) {
+          console.log('view mode:'+n);
+          if (n==0) {
             this.enterFullscreen(document.querySelector("#app"));
 
           } else {
@@ -69,12 +76,21 @@ export default {
 
           }
         } catch (ee) {
+  
           console.log(ee);
         }
       },
     },
   },
   methods: {
+     isFullscreen() {
+  return (
+    document.fullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement
+  );
+},
     exitFullscreen() {
       if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -136,6 +152,15 @@ export default {
       }
     };
     document.addEventListener("click", clickHandler);
+
+    try{
+      if(!this.isFullscreen() && this.config.viewMode==0){
+       this.updateConfig({viewMode:-1});
+   }
+    }catch(error){
+      console.error(error);
+    }
+
   },
 };
 </script>
@@ -220,5 +245,8 @@ table tr:nth-child(even) {
 
 .left {
   border-left: 2px solid green;
+}
+.vmode0{
+background: green;
 }
 </style>

@@ -4,6 +4,7 @@
       hover: autoHide || isM() || isHover,
       isActivedTran: config.activeTran,
     }"
+    :style="{ opacity:config.viewMode!=0 || isHover?1:0.01}"
     class="vb_1 is-fixed-bottom is-hidden-desktop"
     @mouseenter="(isHover = 1), updateConfig2({ showList: 1 })"
     @mouseleave="isHover = 0"
