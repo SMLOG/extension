@@ -17,6 +17,7 @@ const mixin = {
     },
     updateConfig(config) {
       service(null, { cmd: "setConfig", content: Object.assign(this.config, config) }, () => {
+        console.log('setConfig');
         this.$store.commit("config", this.config);
       });
     },

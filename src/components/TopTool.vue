@@ -92,6 +92,7 @@ export default {
   );
 },
     exitFullscreen() {
+      if(!this.isFullscreen())return;
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) { // Firefox
@@ -153,13 +154,16 @@ export default {
     };
     document.addEventListener("click", clickHandler);
 
-    try{
+    setTimeout(()=>{
+      try{
       if(!this.isFullscreen() && this.config.viewMode==0){
        this.updateConfig({viewMode:-1});
    }
     }catch(error){
       console.error(error);
     }
+    },1000);
+
 
   },
 };

@@ -189,6 +189,7 @@ export default {
             ${player.actived}
             ${player.buffered().end(player.buffered().length - 1)}
             `;
+   
 
         if (duration > 0 && buffered.length > 0) {
           if (
@@ -411,6 +412,7 @@ export default {
     },
     playNextVideo() {
       let p = this.players[this.bufferIndex];
+      this.players[1-this.bufferIndex].muted(true);
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
