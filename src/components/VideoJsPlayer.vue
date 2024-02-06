@@ -12,7 +12,6 @@
         {{ info.currentTime.toFixed(2) }}/<span
           :class="{ buffered: toInt(info.lastBufferEnd) == toInt(info.duration) }">{{
             toInt(info.lastBufferEnd) }}/{{ toInt(info.duration) }}</span>
-        bufferPlayCount:{{ info.bufferPlayCount }}
         <br />
       </div>
       {{ bufferNextStarted }}
@@ -65,8 +64,8 @@ export default {
       hovering: false,
       players: null,
       infos: [
-        { active: false, currentTime: 0, duration: 0, bufferPlayCount: 0, bufferedEnd: 0, lastBufferEnd: 0 },
-        { active: false, currentTime: 0, duration: 0, bufferPlayCount: 0, bufferedEnd: 0, lastBufferEnd: 0 }
+        { active: false, currentTime: 0, duration: 0,  bufferedEnd: 0, lastBufferEnd: 0 },
+        { active: false, currentTime: 0, duration: 0,  bufferedEnd: 0, lastBufferEnd: 0 }
       ],
       options: {
         inactivityTimeout: 5000,
@@ -241,17 +240,16 @@ export default {
               clearTimeout(player.timer);
               player.timer = 0;
             }
-            if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
-              player.bufferPlayCount = 0;
-            }
           }
           if (!player.paused()) {
-            if (this.toInt(player.currentTime()) === player.lastTime) {
-              player.bufferPlayCount++;
-              if (player.bufferPlayCount > 5) {
+            if (this.toInt(player.currentTime()) === player.lastTime&& !player.timer) {
+this.timer=setTimeout(()=>{
+if(this.toInt(player.currentTime()) === player.lastTime){
                 player.lastTime = -1;
                 this.playNextVideo();
-              }
+
+}
+},3000);
             } else {
               player.lastTime = this.toInt(player.currentTime());
             }
@@ -344,7 +342,6 @@ export default {
 
         actviePlayer.muted(false);
         actviePlayer.actived = 1;
-        actviePlayer.bufferPlayCount = 0;
 
         await this.setMediaUrl(url, actviePlayer);
         // setTimeout(() => {
@@ -433,9 +430,10 @@ export default {
       }
     },
     playNextVideo() {
-      let p = this.players[this.bufferIndex];
+      let p = this.players[1 - this.bufferIndex];
+	p.muted(true);
+      p = this.players[this.bufferIndex];
 
-      this.players[1 - this.bufferIndex].muted(true);
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
