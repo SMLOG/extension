@@ -163,12 +163,13 @@ export default {
         let player = bufferList[d];
         var buffered = player.buffered();
         let end = buffered.end(buffered.length - 1);
-        if (player.startBufferTime && end > 10) {
+        if (player.startBufferTime>0 && end > 10) {
           this.bufferNextStarted = "pause buffer for end " + end + " >10 " + this.getCurrentTime();
           player.pause();
           player.startBufferTime = 0;
-        }else if(end>=player.duration()){
+        }else if(!player.paused()&&end+1>=player.duration()){
           player.pause();
+          player.startBufferTime=-1;
           this.bufferNextStarted = "pause buffer for buffer finish: " + end + " at " + this.getCurrentTime();
 
         }
@@ -420,7 +421,8 @@ export default {
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
-
+      
+      p.play();
       // this.$emit('ended',this.curPlayIndex);
       bus.$emit("end", 0, 0, this.curPlayIndex);
       this.bufferNextStarted = 'switch to next:' + this.getCurrentTime();
@@ -431,7 +433,7 @@ export default {
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
         bufferPlayer.startBufferTime = 0;
-        if (bufferPlayer.paused()) {
+        if (bufferPlayer.paused() && bufferPlayer.startBufferTime <0) {
           this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
           console.log('start bufferNextVideo', bufferPlayer.url)
 
@@ -506,6 +508,7 @@ export default {
 
           player.on("timeupdate", (e) => {
             if (!player.actived) {
+              this.smoothBuffer();
               return;
             }
             this.$emit("timeupdate", e, player);
