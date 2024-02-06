@@ -127,6 +127,14 @@ export default {
   },*/
   methods: {
 
+    currentTimeLargeThanBufferEnd(player) {
+      let buf = player.buffered();
+      if (buf.length > 0) {
+        return player.currentTime() > 0 && player.currentTime() > buf.end(buf.length - 1);
+      }
+      return false;
+
+    },
     async getNextPlayUrl(n) {
       let nextIndex = n;
       let playList = this.config2.playList;
@@ -163,13 +171,13 @@ export default {
         let player = bufferList[d];
         var buffered = player.buffered();
         let end = buffered.end(buffered.length - 1);
-        if (player.startBufferTime>0 && end > 10) {
+        if (player.startBufferTime > 0 && end > 10) {
           this.bufferNextStarted = "pause buffer for end " + end + " >10 " + this.getCurrentTime();
           player.pause();
           player.startBufferTime = 0;
-        }else if(!player.paused()&&end+1>=player.duration()){
+        } else if (!player.paused() && end + 1 >= player.duration()) {
           player.pause();
-          player.startBufferTime=-1;
+          player.startBufferTime = -1;
           this.bufferNextStarted = "pause buffer for buffer finish: " + end + " at " + this.getCurrentTime();
 
         }
@@ -194,7 +202,7 @@ export default {
             ${player.actived}
             ${player.buffered().end(player.buffered().length - 1)}
             `;
-   
+
 
         if (duration > 0 && buffered.length > 0) {
           if (
@@ -205,9 +213,14 @@ export default {
             // Start buffering the next video
             this.bufferNextVideo();
           }
-
-          if (player.currentTime() > buffered.end(buffered.length - 1)) {
-            this.playNextVideo();
+          if (this.currentTimeLargeThanBufferEnd(player) && !player.timer) {
+            setTimeout(() => {
+              if (this.currentTimeLargeThanBufferEnd(player))
+                this.playNextVideo();
+            }, 3000);
+          } else {
+            clearTimeout(player.timer);
+            player.timer = 0;
           }
         }
 
@@ -217,16 +230,20 @@ export default {
         }
 
         if (buffered.length > 0) {
-          var lastBufferedIndex = buffered.length - 1;
-          var bufferedEnd = this.toInt(buffered.end(lastBufferedIndex));
 
-          var currentTime = this.toInt(player.currentTime());
-          if (currentTime > 0 && currentTime >= bufferedEnd) {
-            player.bufferPlayCount = 0;
-            this.playNextVideo();
-
-          } else if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
-            player.bufferPlayCount = 0;
+          if (this.currentTimeLargeThanBufferEnd(player) && !player.timer) {
+            setTimeout(() => {
+              if (this.currentTimeLargeThanBufferEnd(player))
+                this.playNextVideo();
+            }, 3000);
+          } else {
+            if (player.timer) {
+              clearTimeout(player.timer);
+              player.timer = 0;
+            }
+            if (player.readyState() == HTMLMediaElement.HAVE_ENOUGH_DATA) {
+              player.bufferPlayCount = 0;
+            }
           }
           if (!player.paused()) {
             if (this.toInt(player.currentTime()) === player.lastTime) {
@@ -417,11 +434,12 @@ export default {
     },
     playNextVideo() {
       let p = this.players[this.bufferIndex];
-      this.players[1-this.bufferIndex].muted(true);
+
+      this.players[1 - this.bufferIndex].muted(true);
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
-      
+
       p.play();
       // this.$emit('ended',this.curPlayIndex);
       bus.$emit("end", 0, 0, this.curPlayIndex);
@@ -433,7 +451,7 @@ export default {
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
         bufferPlayer.startBufferTime = 0;
-        if (bufferPlayer.paused() && bufferPlayer.startBufferTime <0) {
+        if (bufferPlayer.paused() && bufferPlayer.startBufferTime < 0) {
           this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
           console.log('start bufferNextVideo', bufferPlayer.url)
 
