@@ -55,7 +55,7 @@
 
       <div
         style="position: relative; z-index: 10000"
-        v-show="!config.viewMode && (isMask < 2 || isTouch)"
+        v-show="config.viewMode<0 && (isMask < 2 || isTouch)"
       >
         <div :class="{ preload: preload }" id="bts" ref="bts">
           <a

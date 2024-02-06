@@ -167,6 +167,10 @@ export default {
           this.bufferNextStarted = "pause buffer for end " + end + " >10 " + this.getCurrentTime();
           player.pause();
           player.startBufferTime = 0;
+        }else if(end>=player.duration()){
+          player.pause();
+          this.bufferNextStarted = "pause buffer for buffer finish: " + end + " at " + this.getCurrentTime();
+
         }
       }
 
