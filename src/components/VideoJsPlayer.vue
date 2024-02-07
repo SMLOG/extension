@@ -17,6 +17,7 @@
       {{ bufferNextStarted }}
       <br />
       {{ debugStr }}
+      <audio ref="audio" controls @ended="playNextVideo"></audio>
     </div>
     <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
@@ -27,6 +28,7 @@
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
       poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
       @mouseout="hovering = false"></video>
+
 
 
   </div>
@@ -47,7 +49,7 @@ import { getAAduio } from "@/lib";
 require("@silvermine/videojs-airplay")(videojs);
 
 import bus from "@/bus";
-
+import { SILENT } from "@/tts";
 Vue.prototype.$video = videojs;
 
 
@@ -64,8 +66,8 @@ export default {
       hovering: false,
       players: null,
       infos: [
-        { active: false, currentTime: 0, duration: 0,  bufferedEnd: 0, lastBufferEnd: 0 },
-        { active: false, currentTime: 0, duration: 0,  bufferedEnd: 0, lastBufferEnd: 0 }
+        { active: false, currentTime: 0, duration: 0, bufferedEnd: 0, lastBufferEnd: 0 },
+        { active: false, currentTime: 0, duration: 0, bufferedEnd: 0, lastBufferEnd: 0 }
       ],
       options: {
         inactivityTimeout: 5000,
@@ -242,14 +244,14 @@ export default {
             }
           }
           if (!player.paused()) {
-            if (this.toInt(player.currentTime()) === player.lastTime&& !player.timer) {
-this.timer=setTimeout(()=>{
-if(this.toInt(player.currentTime()) === player.lastTime){
-                player.lastTime = -1;
-                this.playNextVideo();
+            if (this.toInt(player.currentTime()) === player.lastTime && !player.timer) {
+              this.timer = setTimeout(() => {
+                if (this.toInt(player.currentTime()) === player.lastTime) {
+                  player.lastTime = -1;
+                  this.playNextVideo();
 
-}
-},3000);
+                }
+              }, 3000);
             } else {
               player.lastTime = this.toInt(player.currentTime());
             }
@@ -431,12 +433,25 @@ if(this.toInt(player.currentTime()) === player.lastTime){
     },
     playNextVideo() {
       let p = this.players[1 - this.bufferIndex];
-	p.muted(true);
+      if (!this.$refs.audio.tryTimes) this.$refs.audio.tryTimes = 0;
+      if (p.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA && this.$refs.audio.tryTimes < 10) {
+        this.$refs.audio.currentTime(0);
+        this.$refs.audio.play();
+        this.$refs.audio.tryTimes++;
+      } else if (!this.$refs.audio.paused()) {
+        this.$refs.audio.pause();
+        this.$refs.audio.tryTimes = 0;
+      }
+
+      p.muted(true);
       p = this.players[this.bufferIndex];
 
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
+      document.querySelectorAll('.video-js')[this.bufferIndex].style.display = '';
+      document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
+
 
       p.play();
       // this.$emit('ended',this.curPlayIndex);
@@ -616,6 +631,8 @@ if(this.toInt(player.currentTime()) === player.lastTime){
     },
   },
   mounted() {
+    this.$refs.audio.src = SILENT;
+
     this.$nextTick(() => {
       this.init();
     });
