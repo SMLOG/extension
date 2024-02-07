@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="config.dev" style="position: absolute;
+    <div v-show="config.dev" style="position: absolute;
     top: 0;
     z-index: 10000;
     background: rgba(255,255,255,0.6);
@@ -278,7 +278,9 @@ export default {
     playListVideo(n) {
       /// getAndPrepareNextExtra
       if (n < 0) return;
-
+      if(this.$refs.audio.tryTimes ===undefined){
+        this.$refs.audio.play();
+      }
       (async () => {
         let players = this.players;
         let playList = this.config2.playList;
@@ -432,20 +434,31 @@ export default {
       }
     },
     playNextVideo() {
+      if (this.$refs.audio.tryTimes == undefined){
+        this.$refs.audio.tryTimes = 0;
+        return;
+      } 
       let p = this.players[1 - this.bufferIndex];
-      if (!this.$refs.audio.tryTimes) this.$refs.audio.tryTimes = 0;
+      p.muted(true);
+      
+      p = this.players[this.bufferIndex];
+
+
       if (p.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA && this.$refs.audio.tryTimes < 10) {
-        this.$refs.audio.currentTime(0);
-        this.$refs.audio.play();
+        this.$refs.audio.currentTime=0;
         this.$refs.audio.tryTimes++;
-      } else if (!this.$refs.audio.paused()) {
-        this.$refs.audio.pause();
+        this.players[1 - this.bufferIndex].pause();
+        setTimeout(()=>{
+          this.$refs.audio.play();
+        },500);
+        return;
+      } else  {
+        if (!this.$refs.audio.paused)
+             this.$refs.audio.pause();
         this.$refs.audio.tryTimes = 0;
       }
 
-      p.muted(true);
-      p = this.players[this.bufferIndex];
-
+      
       p.currentTime(0);
       p.muted(false);
       p.actived = 1;
@@ -631,6 +644,7 @@ export default {
     },
   },
   mounted() {
+
     this.$refs.audio.src = SILENT;
 
     this.$nextTick(() => {
