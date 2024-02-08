@@ -501,10 +501,8 @@ export default {
       switch (mediaAlias) {
         case "TV":
           {
-            let tvtime = storage.tvtime || 0;
 
             (async () => {
-              if (new Date().getTime() - tvtime > 72 * 3600 * 1000) {
                 const groupTitle = "group-title";
                 this.loading = 1;
                 for (let t = 0; t < 10; t++) {
@@ -592,7 +590,6 @@ export default {
                     t++;
                   }
                 }
-              }
               this.loading = 0;
 
             })();

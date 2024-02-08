@@ -473,6 +473,8 @@ export default {
 
       for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
         let bufferPlayer = bfs[i];
+	if(bufferPlayer.duration()===Infinity)return;
+
         bufferPlayer.startBufferTime = 0;
         if (bufferPlayer.paused() && bufferPlayer.startBufferTime < 0) {
           this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
@@ -549,6 +551,11 @@ export default {
 
           player.on("timeupdate", (e) => {
             if (!player.actived) {
+if(player.duration()===Infinity)
+{
+player.pause();
+return;
+}
               this.smoothBuffer();
               return;
             }
@@ -593,7 +600,14 @@ export default {
                   this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex + " " + nextUrl;
                   this.setMediaUrl(nextUrl, player);
                   player.play();
-                })();
+setTimeout(()=>{
+if(player.muted())
+{
+this.bufferNextStarted = "stop->buffer next";
+player.pause();
+}
+},3000);
+})();
               } else {
                 this.playNextVideo();
 
