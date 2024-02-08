@@ -497,10 +497,11 @@ export default {
     changeMediaType() {
       console.log(this.mediaType);
       let mediaAlias = this.mediaTypes[this.mediaType].n;
+      let storage= sessionStorage;
       switch (mediaAlias) {
         case "TV":
           {
-            let tvtime = localStorage.tvtime || 0;
+            let tvtime = storage.tvtime || 0;
 
             (async () => {
               if (new Date().getTime() - tvtime > 72 * 3600 * 1000) {
@@ -576,13 +577,14 @@ export default {
                         });
                       }
                     });
-                    let data = {
-                      mapCount: mapCount,
-                      allChannels: allChannels,
-                      types: types,
-                    };
-                    await this.saveCache("tv", data);
-                    localStorage.tvtime = new Date().getTime();
+                    let allChannels2 = this.mediaTypes[this.mediaType].data;
+                    let types2 = this.mediaTypes[this.mediaType].c;
+                    let mapCount2 = this.mediaTypes[this.mediaType].cnt;
+                    types2.length = allChannels2.length = 0;
+                    allChannels2.push(...allChannels);
+                    types2.push(...types);
+                    Object.assign(mapCount2, mapCount);
+                    storage.tvtime = new Date().getTime();
                     break;
                   } catch (e) {
                     console.error(e);
@@ -593,22 +595,6 @@ export default {
               }
               this.loading = 0;
 
-              await this.loadCache("tv")
-                .catch(() => {
-                  localStorage.tvtime = 0;
-                })
-                .then((e) => {
-                  if (!e.allChannels) localStorage.tvtime = 0;
-                  else {
-                    let allChannels = this.mediaTypes[this.mediaType].data;
-                    let types = this.mediaTypes[this.mediaType].c;
-                    let mapCount = this.mediaTypes[this.mediaType].cnt;
-                    types.length = allChannels.length = 0;
-                    allChannels.push(...e.allChannels);
-                    types.push(...e.types);
-                    Object.assign(mapCount, e.mapCount);
-                  }
-                });
             })();
           }
           break;
