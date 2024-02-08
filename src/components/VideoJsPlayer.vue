@@ -444,19 +444,16 @@ export default {
       p = this.players[this.bufferIndex];
 
 
-      if (p.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA && this.$refs.audio.tryTimes < 10) {
+      if (p.readyState() != HTMLMediaElement.HAVE_ENOUGH_DATA && this.$refs.audio.tryTimes < 100) {
         this.$refs.audio.currentTime=0;
         this.$refs.audio.tryTimes++;
         this.players[1 - this.bufferIndex].pause();
-        setTimeout(()=>{
           this.$refs.audio.play();
-        },500);
         return;
       } else  {
-        if (!this.$refs.audio.paused)
              this.$refs.audio.pause();
-        this.$refs.audio.tryTimes = 0;
       }
+	this.$refs.audio.tryTimes = 0;
 
       
       p.currentTime(0);
