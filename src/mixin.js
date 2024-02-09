@@ -106,8 +106,8 @@ const mixin = {
       return this.$store.state.config;
     },
 
-    autoHide() {
-      return this.$store.state.config.autoHide;
+    dockList() {
+      return this.$store.state.config.dockList;
     },
     shownews() {
       return this.$store.state.config.shownews;

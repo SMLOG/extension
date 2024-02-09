@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      hover: autoHide || isM() || isHover,
+      hover: dockList || isM() || isHover,
       isActivedTran: config.activeTran,
     }"
     :style="{ opacity:config.viewMode!=0 || isHover?1:0.01}"
@@ -63,7 +63,7 @@ export default {
   },
 
   created() {
-    console.log(this.autoHide);
+    console.log(this.dockList);
   },
   computed: {
     ...mapState(["curItem", "words"]),

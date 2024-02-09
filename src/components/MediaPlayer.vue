@@ -20,14 +20,19 @@
         <font-awesome-icon
           class="pbtn"
           :icon="['fas', 'arrow-left']"
-          @click="emit('PRE')"
+          @click.stop.prevent="emit('PRE');"
           style="left: 0"
+          @mouseenter=" updateConfig2({ touchstart: 1 });"
+          @mouseleave=" updateConfig2({ touchstart: 0 });"
         />
         <font-awesome-icon
           :icon="['fas', 'arrow-right']"
-          @click="emit('NEXT')"
+          @click.stop.prevent="emit('NEXT')"
           class="pbtn"
           style="right: 0"
+          @mouseenter=" updateConfig2({ touchstart: 1 });"
+          @mouseleave=" updateConfig2({ touchstart: 0 });"
+          
         />
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
@@ -1090,11 +1095,11 @@ a.selected {
   transform: translateY(-50%);
   font-size: 200%;
   color: white;
-  visibility: hidden;
   opacity: 0;
-  transition: visibility 0s linear 3s, opacity 3s linear;
+  transition: opacity 3s linear;
   z-index: 2;
   padding: 10px;
+  visibility: visible;
 }
 .touchstart .pbtn {
   visibility: visible;

@@ -17,6 +17,7 @@
         cueBotton: config.custCue == 1,
         pause: !config2.playingM,
         videoUrl: config2.videoUrl || config.shownews,
+        dockList:config.dockList
       }"
       :data="config.viewMode"
     >
@@ -669,5 +670,8 @@ export default {
   margin-left: -0.5em;
   z-index: 11110;
   color: white;
+}
+.sidebarsetting{
+  margin-bottom: 40px;
 }
 </style>

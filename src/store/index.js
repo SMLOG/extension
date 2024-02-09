@@ -33,6 +33,7 @@ export default new Vuex.Store({
       mediaType:0
     },
     config: {
+      waitTimes:2,
       backplay: 0,
       editor: 0,
       playbackrate: 1,
@@ -63,7 +64,7 @@ export default new Vuex.Store({
       relwords: 0,
       timeoutnext: 0,
       audioCacheNum: 1,
-      autoHide: 0,
+      dockList: 0,
       rsss: [],
       urls: {},
     },

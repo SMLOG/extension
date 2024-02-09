@@ -343,10 +343,17 @@
             min="0"
           />s
         </div>
-
         <div>
-          autoHide:<input
-            v-model="config.autoHide"
+          waitTimes:
+          <input
+            style="width: 40px"
+            v-model.number="config.waitTimes"
+            min="0"
+          />
+        </div>
+        <div>
+          Dock List:<input
+            v-model="config.dockList"
             type="checkbox"
             @change="updateConfig()"
           />
