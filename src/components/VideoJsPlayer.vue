@@ -474,7 +474,10 @@ export default {
           });
 
           player.on("ended", () => {
-            if (!player.actived) return;
+            if (!player.actived){
+              player.currentTime(0);
+              return;
+            } 
             this.playNextVideo();
           });
           player.on("error", (err) => {
