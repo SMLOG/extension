@@ -341,6 +341,7 @@ export default {
 
       p.currentTime(0);
       p.muted(false);
+      this.players[this.bufferIndex].muted(true);
       document.querySelectorAll('.video-js')[this.bufferIndex].style.display = '';
       document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
 
@@ -430,7 +431,12 @@ export default {
 
           player.on("timeupdate", (e) => {
             if (!player.actived) {
-              !player.muted() && player.muted(true);
+              if(!player.muted()) {
+                setTimeout(() => {
+                  !player.actived&&player.muted(true);
+                }, 1000);
+                
+              } 
               if (player.duration() === Infinity) {
                 player.pause();
                 return;
