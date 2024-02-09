@@ -13,7 +13,7 @@
           {{ info.currentTime.toFixed(2) }}/<span
             :class="{ buffered: toInt(info.lastBufferEnd) == toInt(info.duration) }">{{
               toInt(info.lastBufferEnd) }}/{{ toInt(info.duration) }}</span>
-              <span>wt:{{ info.waitTimes }}</span>
+          <span>wt:{{ info.waitTimes }}</span>
           <br />
         </div>
       </div>
@@ -141,10 +141,10 @@ export default {
       })();
     },
     isStuck(player) {
-      if( player.currentTime()> player.duration())return true;
+      if (player.currentTime() > player.duration()) return true;
       let buf = player.buffered();
-      if (buf.length > 0) {
-        return player.currentTime() > 3 && player.currentTime() > buf.end(buf.length - 1);
+      if (buf.length > 0 && buf.end(buf.length - 1) > 0) {
+        return player.currentTime() > buf.end(buf.length - 1);
       }
       return false;
 
@@ -221,14 +221,13 @@ export default {
         actviePlayer.actived = 1;
 
         await this.setMediaUrl(url, actviePlayer);
-        if (actviePlayer.muted()) {
-          actviePlayer.currentTime(0);
-          try {
-            actviePlayer.play();
-          } catch (eror) {
-            console.error(eror)
-          }
+        actviePlayer.currentTime(0);
+        try {
+          actviePlayer.play();
+        } catch (eror) {
+          console.error(eror)
         }
+
 
 
       })();
@@ -265,7 +264,7 @@ export default {
     async setMediaUrl(url, player) {
       console.log(url);
       player.checkTime = 0;
-      if(player.timer){
+      if (player.timer) {
         clearTimeout(player.timer);
       }
       player.timer = 0;
@@ -313,24 +312,24 @@ export default {
     playNextVideo() {
       let wt = this.players[this.bufferIndex].waitTimes || 0;
 
-      if(wt<this.config.waitTimes){
-      this.players[this.bufferIndex].currentTime(0);
-      if (this.players[this.bufferIndex].readyState() < 1) {
-        if (wt < this.config.waitTimes) {
-          this.players[this.bufferIndex].waitTimes = 0;
-          this.players[this.activeIndex].currentTime(0);
-          if (this.players[this.activeIndex].readyState() > 0) {
-            this.players[this.activeIndex].play();
-            this.bufferNext(this.players[this.bufferIndex]);
-            return;
+      if (wt < this.config.waitTimes) {
+        this.players[this.bufferIndex].currentTime(0);
+        if (this.players[this.bufferIndex].readyState() < 1) {
+          if (wt < this.config.waitTimes) {
+            this.players[this.bufferIndex].waitTimes = 0;
+            this.players[this.activeIndex].currentTime(0);
+            if (this.players[this.activeIndex].readyState() > 0) {
+              this.players[this.activeIndex].play();
+              this.bufferNext(this.players[this.bufferIndex]);
+              return;
+            }
           }
+
+          this.players[this.bufferIndex].waitTimes = ++wt;
+
         }
-
-        this.players[this.bufferIndex].waitTimes = ++wt;
-
       }
-    }
-    this.players[this.bufferIndex].waitTimes=0;
+      this.players[this.bufferIndex].waitTimes = 0;
 
       this.players[this.activeIndex].actived = false;
 
@@ -443,9 +442,9 @@ export default {
               if (player.timer) clearTimeout(player.timer);
 
               player.timer = setTimeout(() => {
-                let isStuck = this.isStuck(player) ;
-                if (isStuck|| this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
-                  console.log(isStuck,this.toInt(player.checkTime),this.toInt(player.currentTime()))
+                let isStuck = this.isStuck(player);
+                if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
+                  console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
                   if (!player.paused()) {
                     this.playNextVideo();
                   }
@@ -474,10 +473,10 @@ export default {
           });
 
           player.on("ended", () => {
-            if (!player.actived){
+            if (!player.actived) {
               player.currentTime(0);
               return;
-            } 
+            }
             this.playNextVideo();
           });
           player.on("error", (err) => {
