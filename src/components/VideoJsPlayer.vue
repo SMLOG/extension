@@ -137,6 +137,7 @@ export default {
         this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex + " " + nextUrl;
         this.setMediaUrl(nextUrl, player);
         player.play();
+        this.players[this.activeIndex].play();
       })();
     },
     isStuck(player) {
@@ -175,21 +176,6 @@ export default {
       var currentDate = new Date();
       var formattedTime = currentDate.toTimeString().slice(0, 8);
       return formattedTime;
-    },
-
-    smoothCheck(player) {
-
-      var buffered = player.buffered();
-
-      var duration = player.duration();
-
-      if (duration > 0 && buffered.length > 0) {
-        if (
-          this.toInt(buffered.end(buffered.length - 1)) + 2 >= this.toInt(duration)
-        ) {
-          this.startBufferNext();
-        }
-      }
     },
     playListVideo(n) {
       if (n < 0) return;
