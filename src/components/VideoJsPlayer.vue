@@ -347,6 +347,8 @@ export default {
 
 
       p.play();
+
+
       bus.$emit("end", 0, 0, this.curPlayIndex);
 
     },
@@ -382,7 +384,7 @@ export default {
 
             function () {
               let tts = this.textTracks();
-
+               
               let handler = () => {
                 if (!player.actived) return;
                 for (let i = 0; i < tts.length; i++) {
@@ -391,6 +393,7 @@ export default {
                     //track.removeEventListener(this.cuechange);
                     if (!track.cuechange) {
                       track.addEventListener("cuechange", () => {
+                        if (!player.actived) return;
                         track.activeCues[0] &&
                           self.$emit("cuechange", track.activeCues[0], track);
                         // self.cuechange(track.activeCues[0], track);
@@ -419,6 +422,9 @@ export default {
           player.on("loadeddata", function () {
             if (!player.actived) return;
             player.playbackRate(self.config.playbackrate);
+
+          });
+          player.on('play',()=>{
             setTimeout(() => {
               let tracks = player.textTracks();
               for (var d = 0; d < tracks.length; d++) {
