@@ -317,12 +317,15 @@ export default {
         if (this.players[this.bufferIndex].readyState() < 1) {
           if (wt < this.config.waitTimes) {
             this.players[this.bufferIndex].waitTimes = 0;
-            this.players[this.activeIndex].currentTime(0);
-            if (this.players[this.activeIndex].readyState() > 0) {
-              this.players[this.activeIndex].play();
-              this.bufferNext(this.players[this.bufferIndex]);
-              return;
+            if (this.players[this.activeIndex].currentTime() > 0) {
+              this.players[this.activeIndex].currentTime(0);
+              if (this.players[this.activeIndex].readyState() > 0) {
+                this.players[this.activeIndex].play();
+                this.bufferNext(this.players[this.bufferIndex]);
+                return;
+              }
             }
+
           }
 
           this.players[this.bufferIndex].waitTimes = ++wt;
@@ -384,7 +387,7 @@ export default {
 
             function () {
               let tts = this.textTracks();
-               
+
               let handler = () => {
                 if (!player.actived) return;
                 for (let i = 0; i < tts.length; i++) {
@@ -424,7 +427,7 @@ export default {
             player.playbackRate(self.config.playbackrate);
 
           });
-          player.on('play',()=>{
+          player.on('play', () => {
             setTimeout(() => {
               let tracks = player.textTracks();
               for (var d = 0; d < tracks.length; d++) {
@@ -437,12 +440,12 @@ export default {
 
           player.on("timeupdate", (e) => {
             if (!player.actived) {
-              if(!player.muted()) {
+              if (!player.muted()) {
                 setTimeout(() => {
-                  !player.actived&&player.muted(true);
+                  !player.actived && player.muted(true);
                 }, 1000);
-                
-              } 
+
+              }
               if (player.duration() === Infinity) {
                 player.pause();
                 return;
