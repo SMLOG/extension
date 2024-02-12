@@ -147,7 +147,7 @@
           </a>
         </div>
       </div>
-      <div ref="text" class="text" v-show="isMask < 2">
+      <div ref="text" class="text" v-show="isMask < 2 && config.viewMode!==0">
         <a @click="clickUrl(videoUrl)" style="color: blue; cursor: pointer">{{
           title
         }}</a>
