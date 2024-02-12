@@ -269,6 +269,7 @@ export default {
       }
 
       player.timer = setTimeout(()=>{
+        console.error('time out');
         player.error({
           code: 500, 
           message: 'loading too long', 
@@ -447,6 +448,11 @@ export default {
           });
 
           player.on("timeupdate", (e) => {
+            console.log('timeupdate');
+              if (player.timer) {
+                
+                clearTimeout(player.timer);
+              }
             if (!player.actived) {
               if (!player.muted()) {
                 setTimeout(() => {
@@ -460,9 +466,8 @@ export default {
               }
               return;
             }
-            if (!player.timer) {
+
               player.checkTime = player.currentTime();
-              if (player.timer) clearTimeout(player.timer);
 
               player.timer = setTimeout(() => {
                 let isStuck = this.isStuck(player);
@@ -475,7 +480,7 @@ export default {
                 }
                 player.timer = 0;
               }, 2000);
-            }
+           
 
             if (this.config.dev) {
               this.flushTime = this.getCurrentTime();
