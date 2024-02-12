@@ -267,7 +267,15 @@ export default {
       if (player.timer) {
         clearTimeout(player.timer);
       }
-      player.timer = 0;
+
+      player.timer = setTimeout(()=>{
+        player.error({
+          code: 500, 
+          message: 'loading too long', 
+          type: 'CustomError' 
+        });
+      },5000);
+     
       player.waitTimes = 0;
       if (player.url === url) return;
       if (url) {
