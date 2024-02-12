@@ -74,6 +74,7 @@ export default {
       ],
       options: {
         inactivityTimeout: 5000,
+        userActive:2000,
         userActions: {
           hotkeys: function (event) {
             // `this` is the player in this context
@@ -493,16 +494,12 @@ export default {
             this.$emit("timeupdate", e, player);
           });
 
-          let tt = 0;
-          player.on("touchstart", () => {
+          player.on("useractive", () => {
             this.updateConfig2({ touchstart: 1 });
-            if (tt) clearTimeout(tt);
-            tt = 0;
+         
           });
-          player.on("touchend", () => {
-            tt = setTimeout(() => {
-              this.updateConfig2({ touchstart: 0 });
-            }, 1000);
+          player.on("userinactive", () => {
+            this.updateConfig2({ touchstart: 0 });
           });
 
           player.on("ended", () => {

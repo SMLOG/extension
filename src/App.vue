@@ -142,20 +142,7 @@
           </keep-alive>
         </div>
       </div>
-      <font-awesome-icon
-        v-show="!config2.playingM"
-        @click="emit('togglePlay')"
-        fixed-width
-        :icon="['far', 'circle-play']"
-        class="playbtn"
-      />
-      <font-awesome-icon
-        v-show="config2.playingM && config2.touchstart"
-        @click="emit('togglePlay')"
-        fixed-width
-        :icon="['far', 'circle-pause']"
-        class="playbtn"
-      />
+
     </div>
     <top-tool />
   </div>
@@ -673,5 +660,8 @@ export default {
 }
 .sidebarsetting{
   margin-bottom: 40px;
+}
+>>> .vjs-control-bar, >>>.vjs-big-play-button{
+  transform: translateZ(1px);
 }
 </style>
