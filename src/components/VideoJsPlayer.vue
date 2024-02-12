@@ -387,7 +387,7 @@ export default {
 
       if (!this.players) {
 
-        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video) => {
+        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video,index) => {
 
 
           let player = this.player = this.$video(
@@ -395,6 +395,7 @@ export default {
             this.options,
 
             function () {
+              player.index=index;
               let tts = this.textTracks();
 
               let handler = () => {
@@ -424,7 +425,7 @@ export default {
                 setTimeout(() => {
                   for (var d = 0; d < tts.length; d++) {
                     if (tts[d].kind == "captions")
-                      tts[d].mode = self.cc ? "showing" : "disabled";
+                      tts[d].mode = self.cc && tts[d].label == "new word" && player.actived ? "showing" : "disabled";
                     if (tts[d].label == "new word") break;
                   }
                 }, 5000);
@@ -432,20 +433,24 @@ export default {
             }
           );
           player.on("loadeddata", function () {
-            if (!player.actived) return;
-            player.playbackRate(self.config.playbackrate);
-
-          });
-          player.on('play', () => {
             setTimeout(() => {
+              console.error('play '+ player.index);
               let tracks = player.textTracks();
               for (var d = 0; d < tracks.length; d++) {
                 console.error(tracks[d].label);
 
-                if (tracks[d].label !== "new word") tracks[d].mode = "disabled";
+                if (!player.actived || tracks[d].label !== "new word") {
+                  console.log('disable ' + player.index+" " +tracks[d].label);
+                  tracks[d].mode = "disabled";
+                }
               }
-            }, 0);
+            }, 100);
+
+            if (!player.actived) return;
+            player.playbackRate(self.config.playbackrate);
+
           });
+
 
           player.on("timeupdate", (e) => {
             console.log('timeupdate');
@@ -524,10 +529,14 @@ export default {
           });
 
           player.on("play", () => {
+
+
             if (!player.actived) return;
             this.$emit("play");
             bus.$emit("play");
             this.updateConfig2({ playingM: 1 })
+
+            
           });
 
           player.on("ratechange", () => {
