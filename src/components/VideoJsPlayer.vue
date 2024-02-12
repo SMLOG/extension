@@ -359,7 +359,7 @@ export default {
 
       p.play();
 
-
+      this.$emit("initPlayer",p);
       bus.$emit("end", 0, 0, this.curPlayIndex);
 
     },
