@@ -29,7 +29,7 @@ document.addEventListener("keyup", (event) => {
       }
     } else if (new Date().getTime() - lastTime < 500) {
 
-      ls.run_tran_always = confirm('make the site always run translate?');
+      ls.run_tran_always =  confirm(ls.run_tran_always?'cancel the site always run translate?':'make the site always run translate?') && !ls.run_tran_always;
 
 
     }

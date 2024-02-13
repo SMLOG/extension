@@ -237,7 +237,7 @@ export default {
         if (!text || text.length == 0 || text.length > this.config.maxTranLen)
           return;
         let chars = text.trim();
-        if (/\//.test(text)) return;
+        if (/\/\/:/.test(text)) return;
         /*else if( /[\u4e00-\u9fa5]/.test(text)){
 
         }*/
