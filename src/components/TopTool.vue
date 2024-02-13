@@ -15,7 +15,7 @@
       <font-awesome-icon @click="updateConfig2({ playing: !config2.playing })" icon="volume-xmark" fixed-width
         v-show="config.seeCurWords && !config2.playing" size="lg"></font-awesome-icon>
       <font-awesome-icon @click="updateConfig({ viewMode: ++config.viewMode > 2 ? -1 : config.viewMode })"
-        icon="fa-solid fa-maximize" fixed-width size="lg" :class="{ active: config.viewMode, vmode0:config.viewMode==0, left: config.viewMode == 2 }" />
+        icon="fa-solid fa-maximize" fixed-width size="lg" :class="{ active: config.viewMode>-1, vmode0:config.viewMode==0, left: config.viewMode == 2 }" />
       <font-awesome-icon @click="setShowCurWords(!config.seeCurWords)" :icon="['fas', 'list']" fixed-width size="lg"
         :class="{ active: config.seeCurWords }" />
 

@@ -126,7 +126,7 @@ export default {
               right: "auto",
             });
           }
-          if (this.config.viewMode) {
+          if (this.config.viewMode>-1) {
             root.css({ top: 0 });
           }
         }, 100);
