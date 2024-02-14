@@ -2,7 +2,7 @@
 
 #while ! git pull --rebase ; do echo 'lll';done;
 VERSION=`git branch --show-current`
-mkdir -p ../testdemo/v8
+mkdir -p ../testdemo/${VERSION}
 (node updateVersion.js && npm run build2 -- --dest="../testdemo/${VERSION}" --no-clean )&&echo 'build done'
 sed -E -i  "s|<base href=\"[^\"]*?\">|<base href=\"${VERSION}/\">|" ../testdemo/index.html
 #cp -a ../my-extension3/dist/* .

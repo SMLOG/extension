@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="config.dev && players && players.length > 0" style="position: absolute;
+    <div v-show="config.dev && players && players.length > 0" style="
     top: 0;
     z-index: 10000;
     background: rgba(255,255,255,0.6);
@@ -271,7 +271,9 @@ export default {
 
       player.timer = setTimeout(()=>{
         console.error('time out');
-        player.error({
+        if(player.actived){
+          this.playNextVideo();
+        }else  player.error({
           code: 500, 
           message: 'loading too long', 
           type: 'CustomError' 
@@ -475,17 +477,28 @@ export default {
 
               player.checkTime = player.currentTime();
 
-              player.timer = setTimeout(() => {
-                let isStuck = this.isStuck(player);
-                if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
-                  console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
-                  if (!player.paused()) {
-                    this.playNextVideo();
-                  }
-
+              if(player.duration() -  player.checkTime<3 ){
+                let nextplayer =  this.players[this.bufferIndex];
+                let nextbuffer =nextplayer.buffered();
+                if(nextplayer.readyState()<=0 || !nextbuffer.length||nextbuffer.end(nextbuffer.length-1)<10){
+                  player.currentTime(0);
+                  player.play();
                 }
-                player.timer = 0;
-              }, 2000);
+                   
+              }else{
+
+                  player.timer = setTimeout(() => {
+                    let isStuck = this.isStuck(player);
+                    if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
+                      console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
+                      if (!player.paused()) {
+                        this.playNextVideo();
+                      }
+
+                    }
+                    player.timer = 0;
+                  }, 2000);
+            }
            
 
             if (this.config.dev) {
