@@ -239,7 +239,7 @@ export default {
 
       await getAndPrepareNextExtra(item, this.config2.mediaType);
       console.log('getItemUrl', this.config2.mediaType, item);
-      if (this.config2.mediaType == 1) {
+      if (this.config.isAudio != 0) {
         try {
           if (item.audio == undefined) {
             try {
@@ -436,11 +436,10 @@ export default {
               });
             }
           );
-          let config = this.config;
-          player.on("loadeddata", function () {
-
-            setTimeout(() => {
-              if (config.maxBitRate) {
+          player.on("loadeddata",  () =>{
+            this.config.isAudio == 0 && setTimeout(() => {
+             
+              if (this.config.maxBitRate) {
 
                 var levels = player.qualityLevels();
                 var maxBitrate = 0;
@@ -505,7 +504,7 @@ export default {
 
             player.checkTime = player.currentTime();
 
-            if (player.duration() - player.checkTime < 3) {
+            if (this.config.isAudio != 0 && player.duration() - player.checkTime < 3) {
               let nextplayer = this.players[this.bufferIndex];
               let nextbuffer = nextplayer.buffered();
               if (nextplayer.readyState() <= 0 || !nextbuffer.length || nextbuffer.end(nextbuffer.length - 1) < 10) {
