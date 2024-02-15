@@ -447,6 +447,7 @@ export default {
 
               for (var i = 0; i < levels.length; i++) {
                 var level = levels[i];
+                level.enabled=false;
                 if (level.bitrate > maxBitrate) {
                   maxBitrate = level.bitrate;
                   maxLevel = level;
