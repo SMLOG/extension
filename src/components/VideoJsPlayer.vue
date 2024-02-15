@@ -439,27 +439,30 @@ export default {
           let config = this.config;
           player.on("loadeddata", function () {
 
-            if (config.maxBitRate) {
+            setTimeout(() => {
+              if (config.maxBitRate) {
 
-              var levels = player.qualityLevels();
-              var maxBitrate = 0;
-              var maxLevel = null;
+                var levels = player.qualityLevels();
+                var maxBitrate = 0;
+                var maxLevel = null;
 
-              for (var i = 0; i < levels.length; i++) {
-                var level = levels[i];
-                level.enabled=false;
-                if (level.bitrate > maxBitrate) {
-                  maxBitrate = level.bitrate;
-                  maxLevel = level;
+                for (var i = 0; i < levels.length; i++) {
+                  var level = levels[i];
+                  level.enabled = false;
+                  if (level.bitrate > maxBitrate) {
+                    maxBitrate = level.bitrate;
+                    maxLevel = level;
+                  }
                 }
+
+                if (maxLevel) {
+                  maxLevel.enabled = true;
+                }
+
+
               }
+            }, 0);
 
-              if (maxLevel) {
-                maxLevel.enabled = true;
-              }
-
-
-            }
 
             setTimeout(() => {
               console.error('play ' + player.index);
