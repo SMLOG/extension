@@ -374,6 +374,8 @@
             {{ config.custCue }}
           </a>
         </div>
+        <div>maxBitRate:<input type="checkbox" v-model="config.maxBitRate" @change="updateConfig()" /></div>
+
       </div>
     </div>
   </div>

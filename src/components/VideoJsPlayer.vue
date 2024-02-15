@@ -60,6 +60,7 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      maxBitRate: false,
       curPlayIndex: 0,
       activeIndex: 0,
       bufferIndex: 1,
@@ -74,7 +75,7 @@ export default {
       ],
       options: {
         inactivityTimeout: 5000,
-        userActive:2000,
+        userActive: 2000,
         userActions: {
           hotkeys: function (event) {
             // `this` is the player in this context
@@ -269,17 +270,17 @@ export default {
         clearTimeout(player.timer);
       }
 
-      player.timer = setTimeout(()=>{
+      player.timer = setTimeout(() => {
         console.error('time out');
-        if(player.actived){
+        if (player.actived) {
           this.playNextVideo();
-        }else  player.error({
-          code: 500, 
-          message: 'loading too long', 
-          type: 'CustomError' 
+        } else player.error({
+          code: 500,
+          message: 'loading too long',
+          type: 'CustomError'
         });
-      },5000);
-     
+      }, 5000);
+
       player.waitTimes = 0;
       if (player.url === url) return;
       if (url) {
@@ -363,7 +364,7 @@ export default {
 
       p.play();
 
-      this.$emit("initPlayer",p);
+      this.$emit("initPlayer", p);
       bus.$emit("end", 0, 0, this.curPlayIndex);
 
     },
@@ -390,7 +391,7 @@ export default {
 
       if (!this.players) {
 
-        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video,index) => {
+        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video, index) => {
 
 
           let player = this.player = this.$video(
@@ -398,7 +399,7 @@ export default {
             this.options,
 
             function () {
-              player.index=index;
+              player.index = index;
               let tts = this.textTracks();
 
               let handler = () => {
@@ -435,15 +436,38 @@ export default {
               });
             }
           );
+          let config = this.config;
           player.on("loadeddata", function () {
+
+            if (config.maxBitRate) {
+
+              var levels = player.qualityLevels();
+              var maxBitrate = 0;
+              var maxLevel = null;
+
+              for (var i = 0; i < levels.length; i++) {
+                var level = levels[i];
+                if (level.bitrate > maxBitrate) {
+                  maxBitrate = level.bitrate;
+                  maxLevel = level;
+                }
+              }
+
+              if (maxLevel) {
+                maxLevel.enabled = true;
+              }
+
+
+            }
+
             setTimeout(() => {
-              console.error('play '+ player.index);
+              console.error('play ' + player.index);
               let tracks = player.textTracks();
               for (var d = 0; d < tracks.length; d++) {
                 console.error(tracks[d].label);
 
                 if (!player.actived || tracks[d].label !== "new word") {
-                  console.log('disable ' + player.index+" " +tracks[d].label);
+                  console.log('disable ' + player.index + " " + tracks[d].label);
                   tracks[d].mode = "disabled";
                 }
               }
@@ -457,10 +481,10 @@ export default {
 
           player.on("timeupdate", (e) => {
             console.log('timeupdate');
-              if (player.timer) {
-                
-                clearTimeout(player.timer);
-              }
+            if (player.timer) {
+
+              clearTimeout(player.timer);
+            }
             if (!player.actived) {
               if (!player.muted()) {
                 setTimeout(() => {
@@ -475,31 +499,31 @@ export default {
               return;
             }
 
-              player.checkTime = player.currentTime();
+            player.checkTime = player.currentTime();
 
-              if(player.duration() -  player.checkTime<3 ){
-                let nextplayer =  this.players[this.bufferIndex];
-                let nextbuffer =nextplayer.buffered();
-                if(nextplayer.readyState()<=0 || !nextbuffer.length||nextbuffer.end(nextbuffer.length-1)<10){
-                  player.currentTime(0);
-                  player.play();
+            if (player.duration() - player.checkTime < 3) {
+              let nextplayer = this.players[this.bufferIndex];
+              let nextbuffer = nextplayer.buffered();
+              if (nextplayer.readyState() <= 0 || !nextbuffer.length || nextbuffer.end(nextbuffer.length - 1) < 10) {
+                player.currentTime(0);
+                player.play();
+              }
+
+            } else {
+
+              player.timer = setTimeout(() => {
+                let isStuck = this.isStuck(player);
+                if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
+                  console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
+                  if (!player.paused()) {
+                    this.playNextVideo();
+                  }
+
                 }
-                   
-              }else{
-
-                  player.timer = setTimeout(() => {
-                    let isStuck = this.isStuck(player);
-                    if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
-                      console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
-                      if (!player.paused()) {
-                        this.playNextVideo();
-                      }
-
-                    }
-                    player.timer = 0;
-                  }, 2000);
+                player.timer = 0;
+              }, 2000);
             }
-           
+
 
             if (this.config.dev) {
               this.flushTime = this.getCurrentTime();
@@ -509,7 +533,7 @@ export default {
 
           player.on("useractive", () => {
             this.updateConfig2({ touchstart: 1 });
-         
+
           });
           player.on("userinactive", () => {
             this.updateConfig2({ touchstart: 0 });
@@ -546,7 +570,7 @@ export default {
             bus.$emit("play");
             this.updateConfig2({ playingM: 1 })
 
-            
+
           });
 
           player.on("ratechange", () => {

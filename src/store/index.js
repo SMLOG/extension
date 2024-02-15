@@ -33,6 +33,7 @@ export default new Vuex.Store({
       mediaType:0
     },
     config: {
+      maxBitRate:0,
       waitTimes:2,
       backplay: 0,
       editor: 0,
