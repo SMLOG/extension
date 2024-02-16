@@ -1,39 +1,10 @@
 <template>
   <div>
-    <div v-show="config.dev && players && players.length > 0" style="
-    top: 0;
-    z-index: 10000;
-    background: rgba(255,255,255,0.6);
-    text-align: center;
-    width: 100%;">
-      <div>{{ flushTime }}</div>
-      <div v-if="players">
-        <div v-for="(info, ik) in  infos" :key="ik" :class="{ active: info.active }">
-          #{{ ik }}: {{ info.active }}
-          {{ info.currentTime.toFixed(2) }}/<span
-            :class="{ buffered: toInt(info.lastBufferEnd) == toInt(info.duration) }">{{
-              toInt(info.lastBufferEnd) }}/{{ toInt(info.duration) }}</span>
-          <span>wt:{{ info.waitTimes }}</span>
-          <br />
-        </div>
-      </div>
-      {{ bufferNextStarted }}
-      <br />
-      {{ debugStr }}
-      <br />
-    </div>
-    <video ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
+
+    <video v-for="i in 3" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
       poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
-      @mouseout="hovering = false"></video>
-
-    <video ref="bufferPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
-      x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
-      @mouseout="hovering = false"></video>
-
-
-
+      @mouseout="hovering = false" :id="i" :key="i"></video>
   </div>
 </template>
 
@@ -391,7 +362,7 @@ export default {
 
       if (!this.players) {
 
-        this.players = [this.$refs.videoPlayer, this.$refs.bufferPlayer].map((video, index) => {
+        this.players = this.$refs.videoPlayer.map((video, index) => {
 
 
           let player = this.player = this.$video(
