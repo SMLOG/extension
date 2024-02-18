@@ -1,6 +1,10 @@
 <template>
   <div>
-
+<div style="    position: absolute;
+    top: 0;
+    color: white;
+    z-index: 1000;
+    transform: translateZ(10px);">{{ debugStr }}</div>
     <video v-for="i in 2" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
       poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false"
@@ -302,6 +306,7 @@ export default {
     playNextVideo(ended) {
 
       console.log('playNextVideo',this.players[this.activeIndex].paused());
+      this.debugStr = `ended:${ended},paused:${this.players[this.activeIndex].paused()},readyState:${this.players[this.activeIndex].readyState()}`;
       if (!ended && this.config.isAudio && !this.players[this.activeIndex].paused()) {
 
 
@@ -320,7 +325,9 @@ export default {
           let time = (new Date().getTime()-this.$refs.keeplive.tryTime)/1000;
           let title ='keep live['+time+'] '+ new Date();
           console.log(title);
+
           $(this.$refs.keeplive).attr('title',title);
+          this.debugStr = `ended:${ended} time:${time},paused:${this.players[this.activeIndex].paused()},readyState:${this.players[this.activeIndex].readyState()}`;
 
           if(time<10)
                return;
