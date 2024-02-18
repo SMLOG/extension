@@ -5,7 +5,7 @@
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
       poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false"
       :id="i" :key="i"></video>
-      <audio ref="keeplive" @ended="playNextVideo()" controls src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA">
+      <audio ref="keeplive" @ended="keepOnLive()"  controls src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV">
       </audio>
 
   </div>
@@ -106,6 +106,10 @@ export default {
   },*/
   methods: {
 
+    keepOnLive(){
+      if(this.config.isAudio)
+        this.playNextVideo();
+    },
     bufferNext(player) {
       (async () => {
         let nextUrl = await this.getNextPlayUrl(++this.curPlayIndex);
@@ -513,13 +517,13 @@ export default {
           });
 
           player.on('stalled', () => {
-            this.playNextVideo();
+            player.actived && this.config.isAudio && this.playNextVideo();
           });
           player.on('suspend', () => {
-            this.playNextVideo();
+            player.actived && this.config.isAudio&& this.playNextVideo();
           });
           player.on('waiting', () => {
-            player.actived &&  setTimeout(()=>{
+            player.actived && this.config.isAudio &&  setTimeout(()=>{
               this.playNextVideo();
             },2000);
           });
