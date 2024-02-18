@@ -297,15 +297,21 @@ export default {
     },
     playNextVideo(ended) {
 
-      if (!ended && this.config.isAudio) {
+      console.log('playNextVideo',this.players[this.activeIndex].paused());
+      if (!ended && this.config.isAudio && !this.players[this.activeIndex].paused()) {
 
 
         if (this.players[this.activeIndex].readyState() <3) {
 
 
           this.$refs.keeplive.currentTime=0;
-          this.$refs.keeplive.play();
-          this.players[this.activeIndex].play();
+          try{
+            this.$refs.keeplive.play();
+            this.players[this.activeIndex].play();
+          }catch(error){
+            console.error(error);
+          }
+
           if(!this.$refs.keeplive.tryTime)this.$refs.keeplive.tryTime=new Date().getTime();
           let time = (new Date().getTime()-this.$refs.keeplive.tryTime)/1000;
           let title ='keep live['+time+'] '+ new Date();
@@ -315,7 +321,12 @@ export default {
           if(time<10)
                return;
         }else{
-          this.players[this.activeIndex].play();
+          try{
+            this.players[this.activeIndex].play();
+          }catch(error){
+            console.error(error);
+          }
+        
           return;
         }
         this.$refs.keeplive.tryTime=0;
@@ -508,7 +519,9 @@ export default {
             this.playNextVideo();
           });
           player.on('waiting', () => {
-            player.actived &&  this.playNextVideo();
+            player.actived &&  setTimeout(()=>{
+              this.playNextVideo();
+            },2000);
           });
           player.on("ended", () => {
             if (!player.actived) {
