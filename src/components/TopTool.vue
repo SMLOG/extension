@@ -83,37 +83,7 @@ export default {
     },
   },
   methods: {
-     isFullscreen() {
-  return (
-    document.fullscreenElement ||
-    document.mozFullScreenElement ||
-    document.webkitFullscreenElement ||
-    document.msFullscreenElement
-  );
-},
-    exitFullscreen() {
-      if(!this.isFullscreen())return;
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) { // Firefox
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) { // Internet Explorer and Edge
-        document.msExitFullscreen();
-      }
-    },
-    enterFullscreen(element) {
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.mozRequestFullScreen) { // Firefox
-        element.mozRequestFullScreen();
-      } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-        element.webkitRequestFullscreen();
-      } else if (element.msRequestFullscreen) { // Internet Explorer and Edge
-        element.msRequestFullscreen();
-      }
-    },
+
     changeRate() {
 
       this.config.playbackrate = (0.1 + parseFloat(this.config.playbackrate)).toFixed(1);
@@ -154,15 +124,7 @@ export default {
     };
     document.addEventListener("click", clickHandler);
 
-    setTimeout(()=>{
-      try{
-      if(!this.isFullscreen() && this.config.viewMode==0){
-       this.updateConfig({viewMode:-1});
-   }
-    }catch(error){
-      console.error(error);
-    }
-    },3000);
+
 
 
   },

@@ -1,10 +1,13 @@
 <template>
   <div>
 
-    <video v-for="i in 3" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
+    <video v-for="i in 2" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
       x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true"
-      @mouseout="hovering = false" :id="i" :key="i"></video>
+      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false"
+      :id="i" :key="i"></video>
+      <audio ref="keeplive" @ended="playNextVideo()" controls src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA">
+      </audio>
+
   </div>
 </template>
 
@@ -37,7 +40,6 @@ export default {
       bufferIndex: 1,
       debugStr: '',
       bufferNextStarted: '',
-      flushTime: '',
       hovering: false,
       players: null,
       infos: [
@@ -145,11 +147,7 @@ export default {
         return '';
       }
     },
-    getCurrentTime() {
-      var currentDate = new Date();
-      var formattedTime = currentDate.toTimeString().slice(0, 8);
-      return formattedTime;
-    },
+
     playListVideo(n) {
       if (n < 0) return;
 
@@ -159,13 +157,15 @@ export default {
         let item = playList[n];
         if (!item) return;
         let url = '';
+        let nextUrl='';
         try {
           url = await this.getItemUrl(item);
+          nextUrl = await this.getNextPlayUrl(n);
+
         } catch (err) {
           console.error(err);
         }
         this.curPlayIndex = n;
-        let nextUrl = await this.getNextPlayUrl(n);
 
 
         if (!url) this.playNextVideo();
@@ -179,9 +179,10 @@ export default {
         let bufferPlaery = players[this.bufferIndex];
         let actviePlayer = players[this.activeIndex];
 
-        window.players = players;
+        window.players = this.players;
         document.querySelectorAll('.video-js')[this.activeIndex].style.display = '';
         document.querySelectorAll('.video-js')[this.bufferIndex].style.display = this.config.dev ? '' : 'none';
+        this.$refs.keeplive.style.display = this.config.dev ? '' : 'none';
         bufferPlaery.actived = 0;
         if (nextUrl) {
           await this.setMediaUrl(nextUrl, bufferPlaery);
@@ -194,6 +195,11 @@ export default {
         actviePlayer.actived = 1;
 
         await this.setMediaUrl(url, actviePlayer);
+        if (!this.$refs.keeplive.inited) {
+          this.$refs.keeplive.play();
+          this.$refs.keeplive.inited=true;
+        }
+
         actviePlayer.currentTime(0);
         try {
           actviePlayer.play();
@@ -245,11 +251,7 @@ export default {
         console.error('time out');
         if (player.actived) {
           this.playNextVideo();
-        } else player.error({
-          code: 500,
-          message: 'loading too long',
-          type: 'CustomError'
-        });
+        } 
       }, 5000);
 
       player.waitTimes = 0;
@@ -293,45 +295,44 @@ export default {
         player.url = url;
       }
     },
-    playNextVideo() {
-      let wt = this.players[this.bufferIndex].waitTimes || 0;
+    playNextVideo(ended) {
 
-      if (wt < this.config.waitTimes) {
-        this.players[this.bufferIndex].currentTime(0);
-        if (this.players[this.bufferIndex].readyState() < 1) {
-          if (wt < this.config.waitTimes) {
-            this.players[this.bufferIndex].waitTimes = 0;
-            if (this.players[this.activeIndex].currentTime() > 0) {
-              this.players[this.activeIndex].currentTime(0);
-              if (this.players[this.activeIndex].readyState() > 0) {
-                this.players[this.activeIndex].play();
-                this.bufferNext(this.players[this.bufferIndex]);
-                return;
-              }
-            }
+      if (!ended && this.config.isAudio) {
 
-          }
 
-          this.players[this.bufferIndex].waitTimes = ++wt;
+        if (this.players[this.activeIndex].readyState() <3) {
 
+
+          this.$refs.keeplive.currentTime=0;
+          this.$refs.keeplive.play();
+          this.players[this.activeIndex].play();
+          if(!this.$refs.keeplive.tryTime)this.$refs.keeplive.tryTime=new Date().getTime();
+          let time = (new Date().getTime()-this.$refs.keeplive.tryTime)/1000;
+          let title ='keep live['+time+'] '+ new Date();
+          console.log(title);
+          $(this.$refs.keeplive).attr('title',title);
+
+          if(time<10)
+               return;
+        }else{
+          this.players[this.activeIndex].play();
+          return;
         }
+        this.$refs.keeplive.tryTime=0;
       }
-      this.players[this.bufferIndex].waitTimes = 0;
 
-      this.players[this.activeIndex].actived = false;
-
-      this.players[this.bufferIndex].actived = true;
 
       [this.bufferIndex, this.activeIndex] = [this.activeIndex, this.bufferIndex];
 
+      this.players[this.bufferIndex].actived = false;
+      this.players[this.activeIndex].actived = true;
       let p = this.players[this.activeIndex];
-
       p.currentTime(0);
       p.muted(false);
-      this.players[this.bufferIndex].muted(true);
+
       document.querySelectorAll('.video-js')[this.bufferIndex].style.display = '';
       document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
-
+      this.$refs.keeplive.style.display = this.config.dev ? '' : 'none';
 
       p.play();
 
@@ -346,8 +347,7 @@ export default {
 
         bufferPlayer.startBufferTime = 0;
         if (bufferPlayer.paused() && bufferPlayer.startBufferTime < 0) {
-          this.bufferNextStarted = 'buffer Next:' + this.getCurrentTime();
-          console.log('start startBufferNext', bufferPlayer.url)
+
 
           bufferPlayer.preload('auto');
           bufferPlayer.paused() && bufferPlayer.play();
@@ -407,9 +407,9 @@ export default {
               });
             }
           );
-          player.on("loadeddata",  () =>{
+          player.on("loadeddata", () => {
             this.config.isAudio == 0 && setTimeout(() => {
-             
+
               if (this.config.maxBitRate) {
 
                 var levels = player.qualityLevels();
@@ -475,15 +475,6 @@ export default {
 
             player.checkTime = player.currentTime();
 
-            if (this.config.isAudio != 0 && player.duration() - player.checkTime < 3) {
-              let nextplayer = this.players[this.bufferIndex];
-              let nextbuffer = nextplayer.buffered();
-              if (nextplayer.readyState() <= 0 || !nextbuffer.length || nextbuffer.end(nextbuffer.length - 1) < 10) {
-                player.currentTime(0);
-                player.play();
-              }
-
-            } else {
 
               player.timer = setTimeout(() => {
                 let isStuck = this.isStuck(player);
@@ -496,12 +487,9 @@ export default {
                 }
                 player.timer = 0;
               }, 2000);
-            }
+           
 
 
-            if (this.config.dev) {
-              this.flushTime = this.getCurrentTime();
-            }
             this.$emit("timeupdate", e, player);
           });
 
@@ -513,12 +501,22 @@ export default {
             this.updateConfig2({ touchstart: 0 });
           });
 
+          player.on('stalled', () => {
+            this.playNextVideo();
+          });
+          player.on('suspend', () => {
+            this.playNextVideo();
+          });
+          player.on('waiting', () => {
+            player.actived &&  this.playNextVideo();
+          });
           player.on("ended", () => {
             if (!player.actived) {
               player.currentTime(0);
+              player.pause();
               return;
             }
-            this.playNextVideo();
+            this.playNextVideo(1);
           });
           player.on("error", (err) => {
             console.error(err);
@@ -573,21 +571,7 @@ export default {
   },
 
   watch: {
-    flushTime() {
-      this.infos.forEach((e, index) => {
-        let p = this.players[index];
-        e.active = p.actived;
-        e.currentTime = p.currentTime();
-        e.duration = p.duration();
-        e.waitTimes = p.waitTimes;
-        let buffered = p.buffered();
 
-        if (buffered.length > 0) {
-          e.lastBufferEnd = buffered.end(buffered.length - 1);
-        }
-
-      });
-    },
     "$store.state.config.isAudio": {
       handler() {
         setTimeout(() => {
@@ -612,6 +596,7 @@ export default {
     "$store.state.config.dev": {
       handler(n) {
         document.querySelectorAll('.video-js')[this.bufferIndex].style.display = n ? '' : 'none';
+        this.$refs.keeplive.style.display = n ? '' : 'none';
         setTimeout(() => {
           $(window).resize();
         }, 100);

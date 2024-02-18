@@ -615,7 +615,7 @@ console.log('ajustTextHeight');
       this.cc = 0;
       let raw = "";
       let text = "";
-
+      let self = this;
       if (webvtt) {
         let r = "";
         if (webvtt.indexOf("http") == 0) {

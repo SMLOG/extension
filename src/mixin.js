@@ -12,6 +12,37 @@ const mixin = {
     return {};
   },
   methods: {
+    isFullscreen() {
+      return (
+        document.fullscreenElement ||
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+      );
+    },
+        exitFullscreen() {
+          if(!this.isFullscreen())return;
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { // Internet Explorer and Edge
+            document.msExitFullscreen();
+          }
+        },
+        enterFullscreen(element) {
+          if (element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if (element.mozRequestFullScreen) { // Firefox
+            element.mozRequestFullScreen();
+          } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            element.webkitRequestFullscreen();
+          } else if (element.msRequestFullscreen) { // Internet Explorer and Edge
+            element.msRequestFullscreen();
+          }
+        },
     emit(event) {
       bus.$emit(event)
     },

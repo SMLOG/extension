@@ -491,6 +491,16 @@ export default {
             //if (this.$store.videos) this.saveCache("videos", this.$store.videos);
             this.saveCache("new-" + id, content);
           });
+
+          setTimeout(()=>{
+            try{
+            if(!this.isFullscreen() && this.config.viewMode==0){
+            this.updateConfig({viewMode:-1});
+        }
+          }catch(error){
+            console.error(error);
+          }
+          },3000);
         }
       }, 1000);
     })();
