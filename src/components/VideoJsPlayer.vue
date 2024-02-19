@@ -261,7 +261,7 @@ export default {
           this.playNextVideo();
         } 
       }, 5000);
-
+      player.endTimer && clearTimeout(player.endTimer);
       player.waitTimes = 0;
       if (player.url === url) return;
       if (url) {
@@ -351,7 +351,7 @@ export default {
       let p = this.players[this.activeIndex];
       p.currentTime(0);
       p.muted(false);
-
+      this.players[this.bufferIndex].muted(true);
       document.querySelectorAll('.video-js')[this.bufferIndex].style.display = '';
       document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
       this.$refs.keeplive.style.display = this.config.dev ? '' : 'none';
@@ -540,6 +540,7 @@ export default {
               player.pause();
               return;
             }
+            if(player.endTimer)clearTimeout(player.endTimer);
             this.playNextVideo(1);
           });
           player.on("error", (err) => {
@@ -556,6 +557,8 @@ export default {
             this.$emit("pause");
             bus.$emit("pause");
             this.updateConfig2({ playingM: 0 })
+            if(player.endTimer)clearTimeout(player.endTimer);
+
           });
 
           player.on("play", () => {
@@ -564,10 +567,26 @@ export default {
             if (!player.actived) return;
             this.$emit("play");
             bus.$emit("play");
-            this.updateConfig2({ playingM: 1 })
+            this.updateConfig2({ playingM: 1 });
 
 
           });
+
+          player.on("playing", () => {
+
+
+if (!player.actived) return;
+
+if(player.endTimer)clearTimeout(player.endTimer);
+if(this.config.isAudio&&player.duration()!=Infinity){
+  player.endTimer=setTimeout(()=>{
+    if(!player.paused()){
+        this.playNextVideo(1);
+    }
+  },(player.duration()-player.currentTime())*1000);
+}
+
+});
 
           player.on("ratechange", () => {
             console.log("change rate");
