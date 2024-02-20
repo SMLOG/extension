@@ -499,16 +499,14 @@ export default {
 
 
               player.timer = setTimeout(() => {
-                let isStuck = this.isStuck(player);
-                if (isStuck || this.toInt(player.checkTime) == this.toInt(player.currentTime())) {
-                  console.log(isStuck, this.toInt(player.checkTime), this.toInt(player.currentTime()))
+                if (this.toInt(player.checkTime) === this.toInt(player.currentTime())) {
                   if (!player.paused()) {
-                    this.playNextVideo();
+                    this.playNextVideo(1);
                   }
 
                 }
                 player.timer = 0;
-              }, 2000);
+              }, 10000);
            
 
 
