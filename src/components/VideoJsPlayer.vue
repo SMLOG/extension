@@ -30,7 +30,7 @@ import $ from 'jquery';
 import bus from "@/bus";
 Vue.prototype.$video = videojs;
 
-const timeout = 100000;
+const timeout = 10000;
 
 export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
@@ -362,7 +362,7 @@ export default {
       }
 
 
-      this.nextIndex = this.players.map((e,i)=>[i,e.idx]).sort((a,b)=>a.idx-b.idx)[1][0];
+      this.nextIndex = this.players.map((e,i)=>[i,e.idx]).sort((a,b)=>a[1]-b[1])[1][0];
       console.log(' this.nextIndex:'+ this.nextIndex);
       [this.nextIndex, this.activeIndex] = [this.activeIndex, this.nextIndex];
       console.log(' this.nextIndex:'+ this.nextIndex, "this.activeIndex:"+this.activeIndex);
