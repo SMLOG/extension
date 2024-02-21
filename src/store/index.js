@@ -35,6 +35,7 @@ export default new Vuex.Store({
     config: {
       maxBitRate:0,
       waitTimes:2,
+      playerNum:3,
       backplay: 0,
       editor: 0,
       playbackrate: 1,

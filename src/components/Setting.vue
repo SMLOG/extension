@@ -333,6 +333,8 @@
             v-model.number="config.maxTranLen"
             min="0"
           />
+
+          
         </div>
 
         <div>
@@ -351,6 +353,15 @@
             min="0"
           />
         </div>
+        <div>
+          playerNum:
+          <input
+            style="width: 40px"
+            v-model.number="config.playerNum"
+            min="1"
+          />
+        </div>
+        
         <div>
           Dock List:<input
             v-model="config.dockList"
@@ -413,6 +424,24 @@ export default {
   },
   created() {
     const that = this;
+    let reqId = +new Date();
+
+    service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
+      if(resp){
+        this.$store.commit("config", resp);
+        setTimeout(()=>{
+            try{
+            if(!this.isFullscreen() && this.config.viewMode==0){
+            this.updateConfig({viewMode:-1});
+        }
+          }catch(error){
+            console.error(error);
+          }
+          },3000);
+      }
+    });
+
+
     (async () => {
       let rconfig = {};
 
@@ -420,7 +449,6 @@ export default {
         if (document.readyState === "complete") {
           window.clearInterval(that.timer);
 
-          let reqId = +new Date();
           service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
             if (!resp) return;
             let config = Object.assign(this.config, resp, rconfig);
@@ -483,24 +511,7 @@ export default {
             }
           );
 
-          bus.$on("video", (item) => {
-            //if (this.$store.videos) this.saveCache("videos", this.$store.videos);
-            this.saveCache("video-" + item.vid, item);
-          });
-          bus.$on("new", (id, content) => {
-            //if (this.$store.videos) this.saveCache("videos", this.$store.videos);
-            this.saveCache("new-" + id, content);
-          });
 
-          setTimeout(()=>{
-            try{
-            if(!this.isFullscreen() && this.config.viewMode==0){
-            this.updateConfig({viewMode:-1});
-        }
-          }catch(error){
-            console.error(error);
-          }
-          },3000);
         }
       }, 1000);
     })();
