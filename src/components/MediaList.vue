@@ -751,6 +751,7 @@ export default {
     play(item, click, index, index2) {
       this.curVideoId = item.vid;
       console.log("vidoeId" + item.vid);
+      this.updateConfig2({mediaTypeText:mediaTypes[this.mediaType].n})
       let run = 1;
       if (this.mediaType == 4) {
         index2 = index2 || 0;

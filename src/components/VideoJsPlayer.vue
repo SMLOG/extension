@@ -161,13 +161,14 @@ export default {
         let playList = this.config2.playList;
         let item = playList[n];
         if (!item) return;
+        console.log(this.config2.mediaTypeText);
         let url = '';
         try {
           url = await this.getItemUrl(item);
           navigator.mediaSession.metadata = new window.MediaMetadata({
             title: item.title,
-            artist: '',
-            album: '',
+            artist: this.config2.mediaTypeText,
+            album: this.config2.mediaTypeText,
             artwork: [
               { src: 'icon.png', sizes: '32x32', type: 'image/png' },
             ],

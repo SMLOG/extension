@@ -30,7 +30,8 @@ export default new Vuex.Store({
       videoUrl: "",
       playList:[],
       playIndex:-1,
-      mediaType:0
+      mediaType:0,
+      mediaTypeText:''
     },
     config: {
       maxBitRate:0,
