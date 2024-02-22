@@ -1,13 +1,14 @@
 <template>
   <div>
 
-    <video v-for="i in config.playerNum" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true" playsinline="true"
-      x-webkit-airplay="allow" airplay="allow" controls class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-      poster="" autoplay="false" :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false"
-      :id="i" :key="i"></video>
+    <video v-for="i in config.playerNum" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true"
+      playsinline="true" x-webkit-airplay="allow" airplay="allow" controls
+      class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster="" autoplay="false"
+      :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false" :id="i" :key="i"></video>
 
-      <audio ref="keeplive" @ended="keepOnLive()"  controls src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV">
-      </audio>
+    <audio ref="keeplive" @ended="keepOnLive()" controls
+      src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV">
+    </audio>
 
   </div>
 </template>
@@ -30,7 +31,7 @@ import $ from 'jquery';
 import bus from "@/bus";
 Vue.prototype.$video = videojs;
 
-const timeout = 10000;
+const timeout = 100000;
 
 export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
@@ -41,13 +42,8 @@ export default {
       activeIndex: 0,
       nextIndex: 1,
       debugStr: '',
-      bufferNextStarted: '',
       hovering: false,
       players: null,
-      infos: [
-        { active: false, currentTime: 0, duration: 0, bufferedEnd: 0, lastBufferEnd: 0, waitTimes: 0 },
-        { active: false, currentTime: 0, duration: 0, bufferedEnd: 0, lastBufferEnd: 0, waitTimes: 0 }
-      ],
       options: {
         inactivityTimeout: 5000,
         userActive: 2000,
@@ -108,18 +104,18 @@ export default {
   },*/
   methods: {
 
-    keepOnLive(){
-      if(this.config.isAudio)
+    keepOnLive() {
+      if (this.config.isAudio)
         this.playNextVideo();
     },
     bufferNext(player) {
       (async () => {
-        let [idx,nextUrl] = await this.getNextPlayUrl(++this.curPlayIndex);
-        this.bufferNextStarted = "buffer error switch:" + this.curPlayIndex + " " + nextUrl;
-        player.idx=idx;
-        this.setMediaUrl(nextUrl, player);
-        player.play();
-        //this.players[this.activeIndex].play();
+        let [idx, nextUrl] = await this.getNextPlayUrl(this.curPlayIndex);
+        if (nextUrl) {
+          player.idx = idx;
+          this.setMediaUrl(nextUrl, player);
+          player.play();
+        }
 
       })();
     },
@@ -141,13 +137,13 @@ export default {
           nextIndex = Math.min(playList.length, nextIndex) == playList.length ? 0 : nextIndex;
           let nextItem = playList[nextIndex];
           this.curPlayIndex = nextIndex;
-          return [nextIndex,await this.getItemUrl(nextItem)] ;
+          return [nextIndex, await this.getItemUrl(nextItem)];
         } catch (err) {
           console.error(err);
           continue;
         }
       }
-      return [0,0];
+      return [0, 0];
     },
     toInt(value) {
       try {
@@ -157,10 +153,10 @@ export default {
       }
     },
 
-    playListVideo(n) {
-      if (n < 0) return;
+    async playListVideo(n) {
+      
 
-      (async () => {
+        if (n < 0) return;
         let players = this.players;
         let playList = this.config2.playList;
         let item = playList[n];
@@ -168,42 +164,51 @@ export default {
         let url = '';
         try {
           url = await this.getItemUrl(item);
-         
+          navigator.mediaSession.metadata = new window.MediaMetadata({
+            title: item.title,
+            artist: '',
+            album: '',
+            artwork: [
+              { src: 'icon.png', sizes: '32x32', type: 'image/png' },
+            ],
+          });
 
         } catch (err) {
           console.error(err);
         }
-      
+
 
 
         if (!url) this.playNextVideo();
 
         this.activeIndex = players.map(e => e.url).indexOf(url);
-      
 
-        if(this.activeIndex==-1){
-          this.activeIndex=0;
+        console.log(this.activeIndex);
+        if (this.activeIndex == -1) {
+          this.activeIndex = 0;
           this.curPlayIndex = n;
-          players[this.activeIndex].idx=n
+          players.map(e=>e.idx=-1);
+          players[this.activeIndex].idx = n;
+
         }
         let actviePlayer = players[this.activeIndex];
         window.players = this.players;
         document.querySelectorAll('.video-js')[this.activeIndex].style.display = '';
-        for(let i=0;i<this.players.length;i++){
-          if(i!=this.activeIndex){
+        for (let i = 0; i < this.players.length; i++) {
+          if (i != this.activeIndex) {
 
-            if(this.players[i].idx && this.players[i].idx-n>0 && this.players[i].idx-n<this.players.length){
-              console.log(i,'=>',this.players[i].idx,n,"skip")
+            if (this.players[i].idx && this.players[i].idx - n > 0 && this.players[i].idx - n < this.players.length) {
+              console.log(i, '=>', this.players[i].idx, n, "skip")
               continue;
             }
 
-           let [nidx, nextUrl] = await this.getNextPlayUrl(this.curPlayIndex);
+            let [nidx, nextUrl] = await this.getNextPlayUrl(this.curPlayIndex);
             if (nextUrl) {
-              this.players[i].idx=nidx;
-              console.error(i,'=>next nidx:'+nidx);
-              console.error('next nidx:'+nidx);
+              this.players[i].idx = nidx;
+              console.error(i, '=>next nidx:' + nidx);
+              console.error('next nidx:' + nidx);
               await this.setMediaUrl(nextUrl, this.players[i]);
-              this.players[i].actived=false;
+              this.players[i].actived = false;
               this.players[i].play();
             }
 
@@ -222,20 +227,17 @@ export default {
         await this.setMediaUrl(url, actviePlayer);
         if (!this.$refs.keeplive.inited) {
           this.$refs.keeplive.play();
-          this.$refs.keeplive.inited=true;
+          this.$refs.keeplive.inited = true;
         }
         try {
-        if(actviePlayer.paused())
+          if (actviePlayer.paused())
             actviePlayer.currentTime(0);
-       
+
           actviePlayer.play();
         } catch (eror) {
           console.error(eror)
         }
 
-
-
-      })();
     },
 
     async getItemUrl(item) {
@@ -277,7 +279,7 @@ export default {
         console.error('time out');
         if (player.actived) {
           this.playNextVideo();
-        } 
+        }
       }, 5000);
       player.endTimer && clearTimeout(player.endTimer);
       player.waitTimes = 0;
@@ -323,49 +325,45 @@ export default {
     },
     playNextVideo(ended) {
 
-      console.log('playNextVideo',this.players[this.activeIndex].paused());
-      this.debugStr = `ended:${ended},paused:${this.players[this.activeIndex].paused()},readyState:${this.players[this.activeIndex].readyState()}`;
       if (!ended && this.config.isAudio && !this.players[this.activeIndex].paused()) {
 
 
-        if (this.players[this.activeIndex].readyState() <3) {
+        if (this.players[this.activeIndex].readyState() < 3) {
 
 
-          this.$refs.keeplive.currentTime=0;
-          try{
+          this.$refs.keeplive.currentTime = 0;
+          try {
             this.$refs.keeplive.play();
             this.players[this.activeIndex].play();
-          }catch(error){
+          } catch (error) {
             console.error(error);
           }
 
-          if(!this.$refs.keeplive.tryTime)this.$refs.keeplive.tryTime=new Date().getTime();
-          let time = (new Date().getTime()-this.$refs.keeplive.tryTime)/1000;
-          let title ='keep live['+time+'] '+ new Date();
-          console.log(title);
+          if (!this.$refs.keeplive.tryTime) this.$refs.keeplive.tryTime = new Date().getTime();
+          let time = (new Date().getTime() - this.$refs.keeplive.tryTime) / 1000;
+          let title = 'keep live[' + time + '] ' + new Date();
 
-          $(this.$refs.keeplive).attr('title',title);
-          this.debugStr = `ended:${ended} time:${time},paused:${this.players[this.activeIndex].paused()},readyState:${this.players[this.activeIndex].readyState()}`;
+          $(this.$refs.keeplive).attr('title', title);
 
-          if(time<timeout/1000)
-               return;
-        }else{
-          try{
+          if (time < timeout / 1000)
+            return;
+        } else {
+          try {
             this.players[this.activeIndex].play();
-          }catch(error){
+          } catch (error) {
             console.error(error);
           }
-        
+
           return;
         }
-        this.$refs.keeplive.tryTime=0;
+        this.$refs.keeplive.tryTime = 0;
       }
 
 
-      this.nextIndex = this.players.map((e,i)=>[i,e.idx]).sort((a,b)=>a[1]-b[1])[1][0];
-      console.log(' this.nextIndex:'+ this.nextIndex);
+      let sort = this.players.map((e, i) => [i, e.idx]).sort((a, b) => a[1] - b[1]);
+      this.nextIndex = sort[sort.length>1?1:0][0];
+
       [this.nextIndex, this.activeIndex] = [this.activeIndex, this.nextIndex];
-      console.log(' this.nextIndex:'+ this.nextIndex, "this.activeIndex:"+this.activeIndex);
 
       this.players[this.nextIndex].actived = false;
       this.players[this.activeIndex].actived = true;
@@ -383,23 +381,7 @@ export default {
       p.play();
 
       this.$emit("initPlayer", p);
-      bus.$emit("end", 0, 0, this.nextIndex);
-
-    },
-    async startBufferNext() {
-
-      for (let i = 0, bfs = this.players.filter(e => !e.actived); i < bfs.length; i++) {
-        let bufferPlayer = bfs[i];
-
-        bufferPlayer.startBufferTime = 0;
-        if (bufferPlayer.paused() && bufferPlayer.startBufferTime < 0) {
-
-
-          bufferPlayer.preload('auto');
-          bufferPlayer.paused() && bufferPlayer.play();
-        }
-
-      }
+      bus.$emit("end", 0, 0, this.players[this.activeIndex].idx-1);
 
     },
     init() {
@@ -505,12 +487,9 @@ export default {
               clearTimeout(player.timer);
             }
             if (!player.actived) {
-              if (!player.muted()) {
                 setTimeout(() => {
-                  !player.actived && player.muted(true);
-                }, 1000);
-
-              }
+                  !player.actived && player.pause();
+                }, 0);
               if (player.duration() === Infinity) {
                 player.pause();
                 return;
@@ -521,16 +500,16 @@ export default {
             player.checkTime = player.currentTime();
 
 
-              player.timer = setTimeout(() => {
-                if (this.toInt(player.checkTime) === this.toInt(player.currentTime())) {
-                  if (!player.paused()) {
-                    this.playNextVideo(1);
-                  }
-
+            player.timer = setTimeout(() => {
+              if (this.toInt(player.checkTime) === this.toInt(player.currentTime())) {
+                if (!player.paused()) {
+                  this.playNextVideo(1);
                 }
-                player.timer = 0;
-              }, timeout);
-           
+
+              }
+              player.timer = 0;
+            }, timeout);
+
 
 
             this.$emit("timeupdate", e, player);
@@ -548,20 +527,20 @@ export default {
             player.actived && this.config.isAudio && this.playNextVideo();
           });
           player.on('suspend', () => {
-            player.actived && this.config.isAudio&& this.playNextVideo();
+            player.actived && this.config.isAudio && this.playNextVideo();
           });
           player.on('waiting', () => {
-            player.actived && this.config.isAudio &&  setTimeout(()=>{
+            player.actived && this.config.isAudio && setTimeout(() => {
               this.playNextVideo();
-            },2000);
+            }, 2000);
           });
           player.on("ended", () => {
             if (!player.actived) {
               player.currentTime(0);
-              setTimeout(()=>player.pause(),10);
+              setTimeout(() => player.pause(), 10);
               return;
             }
-            if(player.endTimer)clearTimeout(player.endTimer);
+            if (player.endTimer) clearTimeout(player.endTimer);
             this.playNextVideo(1);
           });
           player.on("error", (err) => {
@@ -578,7 +557,7 @@ export default {
             this.$emit("pause");
             bus.$emit("pause");
             this.updateConfig2({ playingM: 0 })
-            if(player.endTimer)clearTimeout(player.endTimer);
+            if (player.endTimer) clearTimeout(player.endTimer);
 
           });
 
@@ -596,18 +575,18 @@ export default {
           player.on("playing", () => {
 
 
-if (!player.actived) return;
+            if (!player.actived) return;
 
-if(player.endTimer)clearTimeout(player.endTimer);
-if(this.config.isAudio&&player.duration()!=Infinity){
-  player.endTimer=setTimeout(()=>{
-    if(!player.paused()){
-        this.playNextVideo(1);
-    }
-  },(player.duration()-player.currentTime())*1000);
-}
+            if (player.endTimer) clearTimeout(player.endTimer);
+            if (this.config.isAudio && player.duration() != Infinity) {
+              player.endTimer = setTimeout(() => {
+                if (!player.paused()) {
+                  this.playNextVideo(1);
+                }
+              }, (player.duration() - player.currentTime()) * 1000);
+            }
 
-});
+          });
 
           player.on("ratechange", () => {
             console.log("change rate");
