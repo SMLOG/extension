@@ -1,12 +1,11 @@
 <template>
   <div>
-
     <video v-for="i in config.playerNum" ref="videoPlayer" x5-playsinline preload="auto" webkit-playsinline="true"
       playsinline="true" x-webkit-airplay="allow" airplay="allow" controls
       class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" poster="" autoplay="false"
       :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false" :id="i" :key="i"></video>
 
-    <audio ref="keeplive" @ended="keepOnLive()" controls
+    <audio v-show="false" ref="keeplive" @ended="keepOnLive()" controls
       src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV">
     </audio>
 
@@ -362,6 +361,11 @@ export default {
 
 
       let sort = this.players.map((e, i) => [i, e.idx]).sort((a, b) => a[1] - b[1]);
+
+      if(sort.length<=1){
+        bus.$emit("end", 0, 0, this.players[this.activeIndex].idx);
+        return;
+      }
       this.nextIndex = sort[sort.length>1?1:0][0];
 
       [this.nextIndex, this.activeIndex] = [this.activeIndex, this.nextIndex];
@@ -371,6 +375,7 @@ export default {
       let p = this.players[this.activeIndex];
       p.currentTime(0);
       p.muted(false);
+   
       this.players[this.nextIndex].muted(true);
 
 
@@ -499,20 +504,12 @@ export default {
             }
 
             player.checkTime = player.currentTime();
-
-
             player.timer = setTimeout(() => {
-              if (this.toInt(player.checkTime) === this.toInt(player.currentTime())) {
-                if (!player.paused()) {
+              if (!player.paused()&&this.toInt(player.checkTime) === this.toInt(player.currentTime())) {
                   this.playNextVideo(1);
-                }
-
               }
               player.timer = 0;
             }, timeout);
-
-
-
             this.$emit("timeupdate", e, player);
           });
 
@@ -537,8 +534,8 @@ export default {
           });
           player.on("ended", () => {
             if (!player.actived) {
-              player.currentTime(0);
-              setTimeout(() => player.pause(), 10);
+              //player.currentTime(0);
+              //setTimeout(() => player.pause(), 10);
               return;
             }
             if (player.endTimer) clearTimeout(player.endTimer);
@@ -606,9 +603,12 @@ export default {
   },
   mounted() {
 
-
+    
     this.$nextTick(() => {
-      this.init();
+      setTimeout(()=>{
+        this.init();
+      },1000);
+    
     });
     console.log('dev', this.config.dev);
 

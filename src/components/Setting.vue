@@ -229,7 +229,7 @@
         </div>
         <div>
           playerNum:
-          <input style="width: 40px" v-model.number="config.playerNum" min="1" />
+          <input style="width: 40px" v-model.number="config.playerNum" min="1" @change="upConfig()" />
         </div>
 
         <div>
