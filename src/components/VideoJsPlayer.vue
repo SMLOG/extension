@@ -30,7 +30,7 @@ import $ from 'jquery';
 import bus from "@/bus";
 Vue.prototype.$video = videojs;
 
-const timeout = 100000;
+const timeout = 10000;
 
 export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
