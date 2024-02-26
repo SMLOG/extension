@@ -325,6 +325,10 @@ export default {
     },
     playNextVideo(ended) {
 
+
+      if(!ended && this.players[this.activeIndex].paused()){
+        return;
+      }
       if (!ended && this.config.isAudio && !this.players[this.activeIndex].paused()) {
 
 
