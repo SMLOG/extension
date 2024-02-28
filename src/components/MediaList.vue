@@ -194,6 +194,7 @@ let mediaTypes = [
     del: 1,
   },
   { n: "TTS", data: [], a: 1 },
+  { n: "Custom", data: [], a: 1 },
 
 ];
 let myListSrcs = Array.from(
@@ -625,6 +626,7 @@ export default {
 
           break;
           case "Radio":
+          case "Custom":
           case "TTS":
           {
             if (this.loading) return;
@@ -632,12 +634,14 @@ export default {
             let radiotime = localStorage[this.mediaType+"time"]|| 0;
             let mediaType = this.mediaType;
             console.log(this);
+            let serverUrl =   "Custom"==mediaAlias?this.config.m3u8Repo:
+                      "https://smlog.github.io/data/"+mediaAlias.toLowerCase()+"s.json";
             (async () => {
               if (1 || new Date().getTime() - radiotime > 72 * 3600 * 1000) {
                 for (let t = 0; t < 10; t++) {
                   try {
                     let radios = await fetchRequest(
-                      "https://smlog.github.io/data/"+mediaAlias.toLowerCase()+"s.json"
+                      serverUrl
                     )
                       .then((r) => r.json())
                       .then((resp) => {
@@ -646,6 +650,8 @@ export default {
                         if (resp.content && resp.content.length) {
                           let data = resp.content.map((e) => {
                             e.vid = e.url;
+                              e.url = new URL( e.url, serverUrl).href
+  
                             return e;
                           });
                           return data;

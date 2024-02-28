@@ -28,6 +28,12 @@ export async function getAAduio(item) {
   parser.end();
 
   var parsedManifest = parser.manifest;
+
+  if(parsedManifest.segments&&parsedManifest.segments.length&&parsedManifest.segments.filter(e=>e.uri.indexOf('.aac')>-1)){
+    item.audio= item.url;
+    return item;
+  }
+
   console.log(parsedManifest);
   let audio = parsedManifest.mediaGroups.AUDIO;
   audio = JSON.stringify(audio).replace(/[{}]/g, "").trim();

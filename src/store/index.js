@@ -34,6 +34,7 @@ export default new Vuex.Store({
       mediaTypeText:''
     },
     config: {
+      m3u8Repo:'',
       maxBitRate:0,
       waitTimes:2,
       playerNum:3,

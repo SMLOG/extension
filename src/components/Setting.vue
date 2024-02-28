@@ -250,7 +250,8 @@
           </a>
         </div>
         <div>maxBitRate:<input type="checkbox" v-model="config.maxBitRate" @change="upConfig()" /></div>
-
+        <div>m3u8Repo:<input  v-model="config.m3u8Repo" @change="upConfig()" /></div>
+        
       </div>
     </div>
   </div>
