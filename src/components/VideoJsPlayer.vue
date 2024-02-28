@@ -6,7 +6,8 @@
       :title="hovering ? '' : title" @mouseover="hovering = true" @mouseout="hovering = false" :id="i" :key="i"></video>
 
     <audio v-show="false" ref="keeplive" @ended="keepOnLive()" controls
-      src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV">
+    :src="audio"
+      >
     </audio>
 
   </div>
@@ -25,6 +26,8 @@ import "@silvermine/videojs-airplay/dist/silvermine-videojs-airplay.css";
 import { getAndPrepareNextExtra } from "@/config";
 import { getAAduio } from "@/lib";
 require("@silvermine/videojs-airplay")(videojs);
+import audio from '@/assets/silence.mp3';
+//src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
 
 import $ from 'jquery';
 import bus from "@/bus";
@@ -36,6 +39,7 @@ export default {
   props: ["source", "cc", "title", "mediaItem", "timeupdate", "preloadNextUrl"],
   data() {
     return {
+      audio:audio,
       maxBitRate: false,
       curPlayIndex: 0,
       activeIndex: 0,
@@ -331,13 +335,16 @@ export default {
       }
       if (!ended && this.config.isAudio && !this.players[this.activeIndex].paused()) {
 
+        try{
+          this.$refs.keeplive.currentTime = 0;
+          this.$refs.keeplive.play();
+        }catch(eeee){
+          console.error(eeee);
+        }
 
         if (this.players[this.activeIndex].readyState() < 3) {
 
-
-          this.$refs.keeplive.currentTime = 0;
           try {
-            this.$refs.keeplive.play();
             this.players[this.activeIndex].play();
           } catch (error) {
             console.error(error);
