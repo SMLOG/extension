@@ -1,0 +1,39 @@
+<html>
+<head>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+canvas {
+  height: 100%;
+  width: 100%;
+  display: block;
+    box-sizing: border-box;
+}
+#bts{
+    position: fixed;
+    bottom: 0;
+    z-index: 1;}
+</style>
+</head>
+<body>
+<div id="container">
+<canvas id="canvas" ></canvas>
+</div>
+
+<div id="bts">
+<button id="recordBtn">Start Recording</button>
+<button id="playBtn">Play Animation</button>
+<button id="clearBtn">Clear</button>
+<label for="colorPicker">Color</label>
+<input type="color" id="colorPicker" name="colorPicker">
+</div>
+
+
+<script src="write.js" type="text/javascript"></script>
+
+</body>
+</html>
