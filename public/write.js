@@ -170,7 +170,7 @@ function drawGrid() {
   
   ctx.lineWidth = 1;
   
-  let cyh=30;
+  let cyh=lineSpacing;
   while(true){
   
   for (let i = 1; i <= 4; i++) {
@@ -183,7 +183,7 @@ function drawGrid() {
     ctxbg.stroke();
   
   }
-  cyh+=30;
+  cyh+=lineSpacing;
 }
 
 }
