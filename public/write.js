@@ -1,50 +1,45 @@
-const canvas = document.getElementById('canvas');
-const recordBtn = document.getElementById('recordBtn');
-const playBtn = document.getElementById('playBtn');
-const clearBtn = document.getElementById('clearBtn');
-const context = canvas.getContext('2d');
-const colorPicker = document.getElementById('colorPicker');
-context.lineWidth = 10;
+const canvas = document.getElementById("canvas");
+const canvasbg = document.getElementById("canvasbg");
+const playBtn = document.getElementById("playBtn");
+const clearBtn = document.getElementById("clearBtn");
+const ctx = canvas.getContext("2d");
+const ctxbg = canvasbg.getContext("2d");
+const colorPicker = document.getElementById("colorPicker");
 
 let isRecording = false;
 let isPlaying = false;
 let recordedData = [];
 let isDrawing = false;
 let lastDrawTime = 0;
-recordBtn.addEventListener('click', toggleRecording);
-playBtn.addEventListener('click', playAnimation);
-clearBtn.addEventListener('click', reset);
-canvas.addEventListener('touchstart', startDrawing);
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('touchend', stopDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('touchmove', draw);
-colorPicker.addEventListener('change', (e) => {
+playBtn.addEventListener("click", playAnimation);
+clearBtn.addEventListener("click", reset);
+canvas.addEventListener("touchstart", startDrawing);
+canvas.addEventListener("mousedown", startDrawing);
+canvas.addEventListener("mouseup", stopDrawing);
+canvas.addEventListener("touchend", stopDrawing);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("touchmove", draw);
+colorPicker.addEventListener("change", (e) => {
   const color = e.target.value;
-  context.strokeStyle = color;
+  ctx.strokeStyle = color;
 });
 
-
-const container = document.getElementById('container');
+const container = document.getElementById("container");
 
 function resizeCanvas() {
-  canvas.width = container.offsetWidth;
-  canvas.height = container.offsetHeight;
+  canvasbg.width = canvas.width = container.offsetWidth;
+  canvasbg.height= canvas.height = container.offsetHeight;
+  drawGrid();
 }
 
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 
 // Initial resizing
 resizeCanvas();
 
-function reset(){
-	  recordedData.length=0;
-	  clearCanvas();
-}
-function toggleRecording() {
-  isRecording = !isRecording;
-  recordBtn.textContent = isRecording ? 'Stop Recording' : 'Start Recording';
+function reset() {
+  recordedData.length = 0;
+  clearCanvas();
 }
 
 function playAnimation() {
@@ -56,7 +51,6 @@ function playAnimation() {
   animate();
 }
 
-
 function getOffset(e) {
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0] || e.changedTouches[0];
@@ -65,70 +59,105 @@ function getOffset(e) {
   return { offsetX, offsetY };
 }
 function startDrawing(event) {
-console.log('down')
-isRecording=true;
+  console.log("down");
+  isRecording = true;
   if (!isRecording) {
     return;
   }
   isDrawing = true;
   lastDrawTime = new Date();
-  
-  	 context.beginPath();
+
+  ctx.beginPath();
 
   let { offsetX, offsetY } = getOffset(event);
 
-	   context.moveTo(offsetX, offsetY);
-	     recordedData.push({ x: offsetX, y: offsetY,t:-1 });
+  ctx.moveTo(offsetX, offsetY);
+  recordedData.push({ x: offsetX, y: offsetY, t: -1 });
 }
 
 function stopDrawing() {
   isDrawing = false;
-  console.log('stop')
-
+  console.log("stop");
 }
 
-
 function draw(event) {
-  console.log('draw')
+  console.log("draw");
 
   if (!isRecording || !isDrawing) {
     return;
   }
   let { offsetX, offsetY } = getOffset(event);
-  recordedData.push({ x: offsetX, y: offsetY,t:new Date().getTime()-lastDrawTime.getTime() });
-  context.lineTo(offsetX, offsetY);
-  context.stroke();
+  recordedData.push({
+    x: offsetX,
+    y: offsetY,
+    t: new Date().getTime() - lastDrawTime.getTime(),
+    color: ctx.strokeStyle,
+    width: ctx.lineWidth,
+  });
+  ctx.lineTo(offsetX, offsetY);
+  ctx.stroke();
   lastDrawTime = new Date();
 }
 
 function clearCanvas() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 async function animate() {
   if (!isPlaying) {
     return;
   }
   clearCanvas();
-  context.beginPath();
-
+  ctx.beginPath();
 
   for (let i = 0; i < recordedData.length; i++) {
-    const { x, y,t } = recordedData[i];
-	console.log(x,y,t);
+    const { x, y, t, color, width } = recordedData[i];
+    console.log(x, y, t);
 
-	if(t<0) {
-		context.beginPath();
-			context.moveTo(x, y);
-		}else{
-	context.lineTo(x, y);
-    context.stroke();
-		}
+    if (t < 0) {
+      ctx.beginPath();
 
-	await sleep(t);
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineWidth = width;
+      ctx.strokeStyle = color;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    await sleep(t);
+  }
+}
+
+const slider = document.getElementById("lineWidthSlider");
+slider.addEventListener("input", handleLineWidthChange);
+
+function handleLineWidthChange() {
+  const lineWidth = slider.value;
+  ctx.lineWidth = lineWidth;
+}
+
+// Set default line width
+ctx.lineWidth = slider.value;
+
+
+
+// Function to draw the grid
+function drawGrid() {
+  ctxbg.strokeStyle = "lightgray";
+  ctxbg.lineWidth = 1;
+  const gridSize = 30; // Adjust the size of the grid cells
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+
+  // Horizontal lines
+  for (let y = 0; y <= canvasHeight; y += gridSize) {
+    ctxbg.beginPath();
+    ctxbg.moveTo(0, y);
+    ctxbg.lineTo(canvasWidth, y);
+    ctxbg.stroke();
   }
 }
