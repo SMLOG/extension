@@ -4,6 +4,7 @@ const playBtn = document.getElementById('playBtn');
 const clearBtn = document.getElementById('clearBtn');
 const context = canvas.getContext('2d');
 const colorPicker = document.getElementById('colorPicker');
+context.lineWidth = 10;
 
 let isRecording = false;
 let isPlaying = false;
@@ -13,10 +14,12 @@ let lastDrawTime = 0;
 recordBtn.addEventListener('click', toggleRecording);
 playBtn.addEventListener('click', playAnimation);
 clearBtn.addEventListener('click', reset);
+canvas.addEventListener('touchstart', startDrawing);
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('touchend', stopDrawing);
 canvas.addEventListener('mousemove', draw);
-
+canvas.addEventListener('touchmove', draw);
 colorPicker.addEventListener('change', (e) => {
   const color = e.target.value;
   context.strokeStyle = color;
@@ -53,8 +56,16 @@ function playAnimation() {
   animate();
 }
 
-function startDrawing(event) {
 
+function getOffset(e) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0] || e.changedTouches[0];
+  const offsetX = touch.clientX - rect.left;
+  const offsetY = touch.clientY - rect.top;
+  return { offsetX, offsetY };
+}
+function startDrawing(event) {
+console.log('down')
 isRecording=true;
   if (!isRecording) {
     return;
@@ -63,22 +74,27 @@ isRecording=true;
   lastDrawTime = new Date();
   
   	 context.beginPath();
-  const { offsetX, offsetY } = event;
+
+  let { offsetX, offsetY } = getOffset(event);
+
 	   context.moveTo(offsetX, offsetY);
 	     recordedData.push({ x: offsetX, y: offsetY,t:-1 });
 }
 
 function stopDrawing() {
   isDrawing = false;
- 
+  console.log('stop')
+
 }
 
 
 function draw(event) {
+  console.log('draw')
+
   if (!isRecording || !isDrawing) {
     return;
   }
-  const { offsetX, offsetY } = event;
+  let { offsetX, offsetY } = getOffset(event);
   recordedData.push({ x: offsetX, y: offsetY,t:new Date().getTime()-lastDrawTime.getTime() });
   context.lineTo(offsetX, offsetY);
   context.stroke();
