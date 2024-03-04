@@ -52,11 +52,17 @@ function playAnimation() {
 }
 
 function getOffset(e) {
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0] || e.changedTouches[0];
-  const offsetX = touch.clientX - rect.left;
-  const offsetY = touch.clientY - rect.top;
-  return { offsetX, offsetY };
+  if(e.touches){
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    return { offsetX, offsetY };
+  }else {
+    let {offsetX,offsetY} = e;
+    return {offsetX,offsetY};
+  } ;
+
 }
 function startDrawing(event) {
   console.log("down");
@@ -143,21 +149,41 @@ function handleLineWidthChange() {
 // Set default line width
 ctx.lineWidth = slider.value;
 
+const gridBtn = document.getElementById("grid");
+
+gridBtn.addEventListener("click", toggleGrid);
 
 
+let enableGrid=true;
+function toggleGrid(){
+  console.log(enableGrid)
+  enableGrid=!enableGrid;
+  canvasbg.style.display=enableGrid?'':'none';
+}
 // Function to draw the grid
 function drawGrid() {
-  ctxbg.strokeStyle = "lightgray";
-  ctxbg.lineWidth = 1;
-  const gridSize = 30; // Adjust the size of the grid cells
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
 
-  // Horizontal lines
-  for (let y = 0; y <= canvasHeight; y += gridSize) {
+  ctxbg.strokeStyle = "#aaa";
+  ctxbg.lineWidth = 1;
+  const lineSpacing = 40; // 调整每行的间距
+
+  
+  ctx.lineWidth = 1;
+  
+  let cyh=30;
+  while(true){
+  
+  for (let i = 1; i <= 4; i++) {
+  
+    cyh +=  lineSpacing;
+    if(cyh>canvasbg.height)return;
     ctxbg.beginPath();
-    ctxbg.moveTo(0, y);
-    ctxbg.lineTo(canvasWidth, y);
+    ctxbg.moveTo(0, cyh);
+    ctxbg.lineTo(canvasbg.width, cyh);
     ctxbg.stroke();
+  
   }
+  cyh+=30;
+}
+
 }
