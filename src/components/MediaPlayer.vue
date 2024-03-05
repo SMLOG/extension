@@ -717,16 +717,17 @@ console.log('ajustTextHeight');
         if (tracks[d].label == "new word")
           player.removeRemoteTextTrack(tracks[d]);
       }
-
+console.log('loadTTV')
       if (text.trim()) {
         // console.error(raw);
 
         var subBlob = new Blob([raw]);
         var subURL = URL.createObjectURL(subBlob);
-
+//self.config.custCue ? "metadata" :
+console.log(self.config.custCue);
         player.addRemoteTextTrack(
           {
-            kind: self.config.custCue ? "metadata" : "captions",
+            kind:  "captions",
             label: "new word",
             mode: "showing",
             srclang: "zh",
@@ -789,7 +790,7 @@ console.log('ajustTextHeight');
         if (this.config.custCue) {
           console.log(self.config.custCue);
           setTimeout(() => {
-            $("video track").attr("kind", "metadata");
+           // $("video track").attr("kind", "metadata");
             console.log("change kind to metadata");
           }, 3000);
         }
