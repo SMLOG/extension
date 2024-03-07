@@ -790,7 +790,7 @@ console.log(self.config.custCue);
         if (this.config.custCue) {
           console.log(self.config.custCue);
           setTimeout(() => {
-           // $("video track").attr("kind", "metadata");
+            $("video track").attr("kind", "metadata");
             console.log("change kind to metadata");
           }, 3000);
         }
