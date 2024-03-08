@@ -117,6 +117,7 @@ export default {
         if (nextUrl) {
           player.idx = idx;
           this.setMediaUrl(nextUrl, player);
+          player.muted(true);
           player.play();
         }
 
@@ -248,7 +249,7 @@ export default {
 
       await getAndPrepareNextExtra(item, this.config2.mediaType);
       console.log('getItemUrl', this.config2.mediaType, item);
-      if (this.config.isAudio != 0) {
+      if (this.config.isAudio !== 0) {
         try {
           if (item.audio == undefined) {
             try {
