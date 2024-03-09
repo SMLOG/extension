@@ -212,7 +212,9 @@ export default {
               this.players[i].idx = nidx;
               console.error(i, '=>next nidx:' + nidx);
               console.error('next nidx:' + nidx);
+              this.players[i].muted(true);
               await this.setMediaUrl(nextUrl, this.players[i]);
+              this.players[i].muted(true);
               this.players[i].actived = false;
               this.players[i].play();
             }
