@@ -291,11 +291,11 @@ export default {
     const that = this;
     let reqId = +new Date();
 
-    let exitFullscreenHandler = () => {
+    let exitFullscreenHandler = (event) => {
       setTimeout(()=>{
-        if(!this.isFullscreen()) this.updateConfig({ viewMode: -1 });
-
-      },500);
+        if(!this.isFullscreen() && that.config.viewMode===0) this.updateConfig({ viewMode: -1 });
+      },1000);
+        event.stopPropagation();
     };
     if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
       // Add event listener for fullscreenchange event
