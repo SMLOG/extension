@@ -5,12 +5,15 @@ const clearBtn = document.getElementById("clearBtn");
 const ctx = canvas.getContext("2d");
 const ctxbg = canvasbg.getContext("2d");
 const colorPicker = document.getElementById("colorPicker");
+const container = document.getElementById("container");
+
 
 let isRecording = false;
 let isPlaying = false;
 let recordedData = [];
 let isDrawing = false;
 let lastDrawTime = 0;
+
 playBtn.addEventListener("click", playAnimation);
 clearBtn.addEventListener("click", reset);
 canvas.addEventListener("touchstart", startDrawing);
@@ -24,7 +27,6 @@ colorPicker.addEventListener("change", (e) => {
   ctx.strokeStyle = color;
 });
 
-const container = document.getElementById("container");
 
 function resizeCanvas() {
   canvasbg.width = canvas.width = container.offsetWidth;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <div style="font-size: 0.8em; color: white">
       <div class="t_1">
         <span><input type="checkbox" @click="toggleHl()" />HL</span>
@@ -291,11 +291,11 @@ export default {
     const that = this;
     let reqId = +new Date();
 
-    let exitFullscreenHandler = (event) => {
+    let exitFullscreenHandler = () => {
       setTimeout(()=>{
         if(!this.isFullscreen() && that.config.viewMode===0) this.updateConfig({ viewMode: -1 });
       },1000);
-        event.stopPropagation();
+       // event.stopPropagation();
     };
     if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
       // Add event listener for fullscreenchange event
@@ -626,4 +626,5 @@ ul li:not(:last-child) {
 .rss input {
   width: 100%;
 }
+
 </style>

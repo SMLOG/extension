@@ -599,10 +599,9 @@ let serviceMap = {
   getConfig: (request, sendResponse) => {
     (async () => {
       let config = getConf();
+      let rconfig = {};
 
       if (!updateconfig) {
-        updateconfig = 1;
-        let rconfig = {};
 
         let rhost = "https://smlog.github.io/data/config.";
         try {
@@ -620,10 +619,17 @@ let serviceMap = {
             updateconfig = 0;
           }
         }
-        let map = Object.values(config.urls).flat().reduce((m,i)=>{m[i.url]=i.enable;return m},{});
-        config = Object.assign(config, rconfig);
-        if(config.urls)Object.values(config.urls).flat().map(e=>e.enable=map[e.url]);
+        updateconfig = rconfig;
+
+      }else{
+        rconfig=updateconfig;
       }
+
+      
+      let map = Object.values(config.urls).flat().reduce((m,i)=>{m[i.url]=i.enable;return m},{});
+      config = Object.assign(config, rconfig);
+      if(config.urls)Object.values(config.urls).flat().map(e=>e.enable=map[e.url]);
+
 
       sendResponse(config);
     })();
