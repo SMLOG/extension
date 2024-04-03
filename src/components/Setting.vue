@@ -564,7 +564,15 @@ export default {
   computed: {
     ...mapState(["curTab", "showApp", "curItem"]),
   },
-  watch: {},
+  watch: {
+    "$store.state.config.showvideos": {
+      handler(n) {
+        if(n&&!Object.keys(this.config.urls).length){
+          window.location.reload();
+        }
+      }
+  },
+}
 };
 </script>
 <style lang="scss" scoped>
