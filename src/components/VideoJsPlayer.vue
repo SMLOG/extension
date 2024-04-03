@@ -394,6 +394,7 @@ export default {
 
 
       document.querySelectorAll('.video-js')[this.nextIndex].style.display = '';
+      document.querySelectorAll('.video-js')[this.nextIndex].querySelector('video').style.display = '';
       document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
 
       this.$refs.keeplive.style.display = this.config.dev ? '' : 'none';
