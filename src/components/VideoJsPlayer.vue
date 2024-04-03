@@ -393,9 +393,9 @@ export default {
       this.players[this.nextIndex].muted(true);
 
 
-      document.querySelectorAll('.video-js')[this.nextIndex].style.display = '';
-      document.querySelectorAll('.video-js')[this.nextIndex].querySelector('video').style.display = '';
-      document.querySelectorAll('.video-js')[this.activeIndex].style.display = this.config.dev ? '' : 'none';
+      document.querySelectorAll('.video-js')[this.nextIndex].style.display = this.config.dev ? '' : 'none';
+      document.querySelectorAll('.video-js')[this.activeIndex].style.display = '';
+      document.querySelectorAll('.video-js video').forEach(e=>e.style.display = '');
 
       this.$refs.keeplive.style.display = this.config.dev ? '' : 'none';
 
@@ -654,7 +654,8 @@ export default {
     },
     "$store.state.config.dev": {
       handler(n) {
-        document.querySelectorAll('.video-js')[this.nextIndex].style.display = n ? '' : 'none';
+        document.querySelectorAll('.video-js').forEach(e=>e.style.display = n ? '' : 'none')
+
         this.$refs.keeplive.style.display = n ? '' : 'none';
         setTimeout(() => {
           $(window).resize();
