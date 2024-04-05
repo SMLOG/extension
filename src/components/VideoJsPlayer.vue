@@ -496,7 +496,7 @@ export default {
               }
             }, 100);
 
-            if (!player.actived) return;
+            // if (!player.actived) return;
             player.playbackRate(self.config.playbackrate);
 
           });
@@ -606,6 +606,10 @@ export default {
             if (!player.actived) return;
             if (player.currentTime() > 1) {
               this.updateConfig({ playbackrate: player.playbackRate() })
+
+              this.players.map(p=>{
+                !p.actived&&p.playbackRate(player.playbackRate());
+              })
             }
           });
           return player;
@@ -654,9 +658,11 @@ export default {
     },
     "$store.state.config.dev": {
       handler(n) {
-        document.querySelectorAll('.video-js').forEach(e=>e.style.display = n ? '' : 'none')
+        setTimeout(()=>{
+          this.ref.videoPlayer.filter(e=>!e.actived).forEach(e=>e.style.display = n ? '' : 'none');
+          this.$refs.keeplive.style.display = n ? '' : 'none';
+        },100);
 
-        this.$refs.keeplive.style.display = n ? '' : 'none';
         setTimeout(() => {
           $(window).resize();
         }, 100);
