@@ -154,7 +154,7 @@ export default {
 .viewMode .vb_1.is-fixed-bottom::before {
   content: "";
   position: absolute;
-  top: -1em;
+  top: -0.4em;
   height: 1em;
   left: 0;
   right: 0;

@@ -604,13 +604,13 @@ export default {
           player.on("ratechange", () => {
             console.log("change rate");
             if (!player.actived) return;
-            if (player.currentTime() > 1) {
-              this.updateConfig({ playbackrate: player.playbackRate() })
+            setTimeout(()=>{
+                if (player.currentTime() > 1 && ""+player.playbackRate() != ""+this.config.playbackrate ) {
+                this.updateConfig({ playbackrate: player.playbackRate() })
 
-              this.players.map(p=>{
-                !p.actived&&p.playbackRate(player.playbackRate());
-              })
-            }
+              }
+            },500);
+
           });
           return player;
         });
@@ -652,8 +652,10 @@ export default {
     },
     "$store.state.config.playbackrate": {
       handler(n) {
-        this.player && this.player.playbackRate(n)
-
+       // this.player && this.player.playbackRate(n)
+        this.players&& this.players.length&& this.players.map(p=>{
+                  p.playbackRate(n);
+                })
       }
     },
     "$store.state.config.dev": {
