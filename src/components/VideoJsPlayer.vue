@@ -499,6 +499,15 @@ export default {
             // if (!player.actived) return;
             player.playbackRate(self.config.playbackrate);
 
+
+            if (self.config.custCue) {
+              console.log(self.config.custCue);
+              setTimeout(() => {
+                $("video track").attr("kind", "metadata");
+                console.log("change kind to metadata");
+              }, 3000);
+            }
+
           });
 
 
