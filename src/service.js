@@ -9,7 +9,7 @@ import { playAudio, SILENT } from "@/tts";
 //import fetchJSONP from "fetch-jsonp";
 
 //const audio = new Audio();
-import { translate, isBackground } from "./translator";
+import { translate,translateG, isBackground } from "./translator";
 import { getVideoPromiseList } from "@/config";
 import { encode, decode } from "@/compress";
 
@@ -126,7 +126,9 @@ const translators = [
   async (content) => {
     return await translate(content.q);
   },
-
+  async (content) => {
+    return await translateG(content.q);
+  },
   async (content) => {
     let ret = {};
     ret.src = "Dict";

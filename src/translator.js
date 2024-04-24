@@ -25,15 +25,8 @@ if (gittoken) {
 export function isBackground() {
   return chrome && chrome.runtime && chrome.runtime.sendMessage;
 }
-
-export async function translate(q, opts) {
+export async function translateG(q) {
   let ret = {};
-  console.log(q);
-  let ok = 0;
-  try {
-    if (chrome.tabs) {
-      ret = await translate2(q, opts);
-    } else {
       await fetch(
         "https://smlog.github.io/data/BDa/" +
           q.toLowerCase().substr(0, 3).trim() +
@@ -60,19 +53,18 @@ export async function translate(q, opts) {
             ret.to = dictData.trans_result.data[0].dst;
           }
           ret._raw = dictData;
-          ok = 1;
           return ret;
         });
       console.log(ret);
-    }
-    ok = 1;
 
-    // else ret = await proxyServerTranslate(q);
-  } catch (ee) {
-    console.error(ee);
-    ret.error = ee;
-    ok = 0;
-  }
+  ret.src = "G";
+  return ret;
+}
+
+export async function translate(q) {
+  let ret = {};
+  console.log(q);
+  let ok = 0;
   if (!ok) {
     let ret2 = await tranApi(q, 0);
     if (ret2) ret = Object.assign(ret, ret2);

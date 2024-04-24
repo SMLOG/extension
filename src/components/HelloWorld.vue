@@ -140,7 +140,7 @@ export default {
       }
       console.log("viewmod");
       if (this.config.viewMode) {
-        root.css({ top: 0 });
+        root.css({ top: 0,  position: "absolute" });
       }
       //this.clearSelect();
     },
