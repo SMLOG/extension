@@ -161,7 +161,11 @@ export async function playAudio(autoSound, sendResp, request, audio) {
             }
           }, 1000);
           audio.load();
-          // audio.play();
+          try{
+            audio.play();
+          } catch(error){
+            console.log(error);
+          }
           isBlock = 0;
         }),
         sleep(3000),

@@ -159,6 +159,28 @@ const translators = [
     console.log(ret);
     return ret;
   },
+    async (content) => {
+    let ret = {};
+    ret.src = "Local";
+    ret.q = content.q;
+
+      let r = await json2jsonpProxy(
+        isBackground() ? 0 : 1,
+        `http://localhost:3000/phonetics?q=${encodeURIComponent(
+          content.q
+        )}`
+      );
+
+      console.log(r);
+      if (r) {
+        ret.to =r.trans;
+        ret.am =r.uk;
+        ret.en =r.us;
+        ret._raw = r;
+      }
+    
+    return ret;
+  },
 ];
 
 export function GetSelectedText() {
