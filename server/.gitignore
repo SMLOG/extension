@@ -1,0 +1,8 @@
+build
+dist
+*.egg-info
+*.pyc
+output
+.vscode
+*.code-workspace
+node_modules
