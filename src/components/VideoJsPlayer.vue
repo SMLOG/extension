@@ -382,6 +382,7 @@ export default {
       }
       this.nextIndex = sort[sort.length>1?1:0][0];
 
+      if(this.config.isLoop!=4)
       [this.nextIndex, this.activeIndex] = [this.activeIndex, this.nextIndex];
 
       this.players[this.nextIndex].actived = false;
