@@ -670,9 +670,14 @@ let serviceMap = {
   },
 };
 function getConf() {
-  let r = (storejs.get("config") && decode(storejs.get("config"))) || {};
-  console.log(r);
-  return r;
+let r =storejs.get("config");
+try{
+r=( r&& decode(storejs.get("config"))) || {};
+}catch(error){
+console.error(error);
+}
+console.log(r);
+return r;
 }
 export function callService(tab, request, sendResp) {
   let sendResponse = (resp) => {

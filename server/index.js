@@ -29,6 +29,40 @@ app.get("/", (req, res) => {
     );
 });
 
+
+app.get("/playtime", (req, res) => {
+  const { type } = req.query;
+  const appdir = process.cwd();
+  let filePath = appdir + "/playtime.txt";
+
+  if (type==1) {
+	  if(!fs.existsSync(filePath))
+		return res.type('text/plain').send("pass");
+	
+		const fileContent = fs.readFileSync(filePath, 'utf-8');
+		return res.type('text/plain').send(fileContent);
+  }
+  
+  fs.writeFileSync(filePath,"pass" );
+
+});
+
+
+setInterval(() => {
+	let filePath = appdir + "/playtime.txt";
+    const fileContent = 'no';
+
+    fs.writeFile(filePath, fileContent, 'utf-8', (err) => {
+      if (err) {
+        console.error('Error writing file:', err);
+        res.status(500).send('Error writing file.');
+      } else {
+        console.log('File written successfully.');
+        res.send('File written successfully.');
+      }
+    });
+  }, 1000*1800); 
+
 const downloadMap = {};
 app.get("/v", (req, res) => {
   const { typeId, bvid, p } = req.query;
