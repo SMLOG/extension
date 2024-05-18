@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
 
 
 app.get("/playtime", (req, res) => {
+	console.log("playtime");
   const { type } = req.query;
   const appdir = process.cwd();
   let filePath = appdir + "/playtime.txt";
@@ -44,7 +45,7 @@ app.get("/playtime", (req, res) => {
   }
   
   fs.writeFileSync(filePath,"pass" );
-
+  res.type('text/plain').send("updated");
 });
 
 

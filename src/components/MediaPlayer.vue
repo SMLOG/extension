@@ -46,6 +46,7 @@
             :mediaItem="item"
             @timeupdate="LseqNext"
             @error="error"
+            ref="jsplayer"
           ></VideoJsPlayer>
         </div>
         <div v-if="isAliPlayer" class="ali">
@@ -305,8 +306,9 @@ export default {
     initPlayer(player) {
       this.player = player;
     },
-    clickUrl(url) {
-      open(url);
+    clickUrl() {
+     let mediaUrl =  this.$refs.jsplayer.getCurrentPlayerUrl();
+      open(mediaUrl);
     },
 
     tryCaption2TTV() {

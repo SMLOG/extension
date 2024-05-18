@@ -106,7 +106,11 @@ export default {
     });
   },*/
   methods: {
-
+    getCurrentPlayerUrl(){
+      let activePlayer = this.players.filter(e=>e.actived);
+      console.log(activePlayer);
+      if(activePlayer.length>0)return activePlayer[0].src();
+    },
     keepOnLive() {
       if (this.config.isAudio)
         this.playNextVideo();
@@ -601,13 +605,13 @@ export default {
             if (!player.actived) return;
 
             if (player.endTimer) clearTimeout(player.endTimer);
-            if (this.config.isAudio && player.duration() != Infinity) {
+          /*  if (this.config.isAudio && player.duration() != Infinity) {
               player.endTimer = setTimeout(() => {
                 if (!player.paused()) {
                   this.playNextVideo(1);
                 }
               }, (player.duration() - player.currentTime()) * 1000);
-            }
+            }*/
 
           });
 
