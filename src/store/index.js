@@ -31,9 +31,10 @@ export default new Vuex.Store({
       playList:[],
       playIndex:-1,
       mediaType:0,
-      mediaTypeText:''
+      mediaTypeText:'',
     },
     config: {
+      fontSize:100,
       m3u8Repo:'',
       maxBitRate:0,
       waitTimes:2,

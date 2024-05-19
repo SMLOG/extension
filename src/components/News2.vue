@@ -1,7 +1,8 @@
 <template>
   <div class="new2" style="    position: fixed;top: 0;    bottom: 0;
-    overflow: auto;">
-    <div class="newbar">
+    overflow: auto;" :style="{fontSize:this.config.fontSize+'%'}">
+    <div class="newbar" style="display: flex;">
+      <a class="btn" @click="fontScale(-0.1)">-</a>
       <input
         placeholder="http:// or https:// url"
         class="urlinput"
@@ -9,7 +10,10 @@
         @blur="fetchUrl"
         @focus="url = ''"
       />
+      <a class="btn" @click="fontScale(0.1)">+</a>
     </div>
+   
+
     <div
       v-infinite-scroll="loadMore"
       infinite-scroll-disabled="busy"
@@ -83,6 +87,7 @@ import { encode, decode } from "@/compress";
 export default {
   data() {
     return {
+      fontSize:100,
       url: "",
       pageSize: 20,
       page: 1,
@@ -116,6 +121,9 @@ export default {
     ...mapState(["words"]),
   },
   methods: {
+    fontScale(point){
+      this.updateConfig({fontSize:this.config.fontSize+100*point});
+    },
     async getNewsItems(url){
       return await fetch(url)
         .then(response => response.text())
@@ -148,7 +156,7 @@ export default {
     },
     close(item) {
       setTimeout(() => {
-        $("html, body").animate(
+        $("body .new2").animate(
           {
             scrollTop: item.scrollTop,
           },
@@ -185,7 +193,7 @@ export default {
       if (GetSelectedText().toString() != "") return;
       this.curIndex = i;
       this.loading = 1;
-      item.scrollTop = $("html, body").scrollTop();
+      item.scrollTop = $("body .new2").scrollTop();
       this.$set(item, "show", !item.show);
 
       setTimeout(() => {
@@ -387,6 +395,9 @@ table tr:nth-child(even) {
   line-height: 1.4em;
   padding: 5px;
   user-select: text;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .desc >>> * {
@@ -498,5 +509,9 @@ table tr:nth-child(even) {
 }
 .readed {
   color: gray;
+}
+.btn{
+  padding: 5px 10px;
+  cursor: pointer;
 }
 </style>
