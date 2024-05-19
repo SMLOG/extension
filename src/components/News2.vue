@@ -1,5 +1,6 @@
 <template>
-  <div class="new2" style="    position: fixed;top: 0;">
+  <div class="new2" style="    position: fixed;top: 0;    bottom: 0;
+    overflow: auto;">
     <div class="newbar">
       <input
         placeholder="http:// or https:// url"
@@ -115,6 +116,36 @@ export default {
     ...mapState(["words"]),
   },
   methods: {
+    async getNewsItems(url){
+      return await fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          // Parse the HTML content
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          parser.baseURI = url;
+          // Find all the news links
+          const newsLinks = doc.querySelectorAll('a[href^="/"]');
+
+          // Extract the link URLs and text
+          const newsData = Array.from(newsLinks) .filter(link => {
+        const url2 = link.getAttribute('href');
+        const dateRegex = /\d{4}\/\d{2}\/\d{2}/;
+        return dateRegex.test(url2);
+      }).map(link => ({
+            link: url+link.getAttribute('href'),
+            title: link.textContent.trim(),
+            pubDate: link.href.match(/\d{4}\/\d{2}\/\d{2}/)[0],
+          }));
+
+          // Log the news data
+          console.log(newsData);
+          return newsData;
+        })
+        .catch(error => {
+          console.error('Error fetching CNN homepage:', error);
+        });
+    },
     close(item) {
       setTimeout(() => {
         $("html, body").animate(
@@ -270,7 +301,10 @@ export default {
 
       (async () => {
         let news = [];
+
+
         let rss = this.config.rsss.filter((e) => e.enable);
+        if(rss==null)
         for (let k = 0; k < rss.length; k++) {
           try {
             let items = await fetch(
@@ -300,6 +334,10 @@ export default {
             console.error(ee);
           }
         }
+
+        
+
+        news = news.concat(await this.getNewsItems('https://edition.cnn.com'));
 
         let pick = [];
         let map = {};
