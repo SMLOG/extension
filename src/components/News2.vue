@@ -1,5 +1,5 @@
 <template>
-  <div class="new2">
+  <div class="new2" style="    position: fixed;top: 0;">
     <div class="newbar">
       <input
         placeholder="http:// or https:// url"
