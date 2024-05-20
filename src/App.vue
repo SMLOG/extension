@@ -17,7 +17,8 @@
         cueBotton: config.custCue == 1,
         pause: !config2.playingM,
         videoUrl: config2.videoUrl || config.shownews,
-        dockList:config.dockList
+        dockList:config.dockList,
+        showPlay:config2.showPlay
       }"
       :data="config.viewMode"
     >
@@ -48,7 +49,7 @@
             <div>{{ curPlay.to }}</div>
           </div>
         </div>
-        <div class="videoview" style="z-index: 2;" ><MediaPlayer /></div>
+        <div class="videoview"   ><MediaPlayer /></div>
 
         <news2 v-if="shownews" />
         <cur-words />
@@ -664,4 +665,5 @@ export default {
 >>> .vjs-control-bar, >>>.vjs-big-play-button{
   transform: translateZ(1px);
 }
+
 </style>

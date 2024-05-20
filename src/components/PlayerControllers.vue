@@ -21,7 +21,7 @@
       style="user-select: none"
     >
       <div class="column is-marginless" v-if="shownews">
-        <span @click="showPlayer">Read</span>
+        <span @click="updateConfig2({showPlay:!config2.showPlay})">Read</span>
       </div>
 
       <div class="column is-marginless" ref="mediaListText">

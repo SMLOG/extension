@@ -21,6 +21,7 @@ export default new Vuex.Store({
     nextUrl: "",
     config2: {
       dev:0,
+      showPlay:false,
       mask: 0,
       showList: 0,
       touchstart: 0,
