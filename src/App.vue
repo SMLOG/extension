@@ -51,7 +51,7 @@
         </div>
         <div class="videoview"   ><MediaPlayer /></div>
 
-        <news2 v-if="shownews" />
+        <news2 v-if="shownews&&!config2.showPlay" />
         <cur-words />
       </div>
       <div class="sidebarsetting" :class="{ open: showSidebar }">

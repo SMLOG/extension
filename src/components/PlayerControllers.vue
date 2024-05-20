@@ -14,7 +14,7 @@
     ref="listContainer"
   >
     <div ref="mediaList" class="listCon">
-      <Video v-show="showList" @selectItem="showList = 0" />
+      <Video v-show="showList" @selectItem="showList = 0;updateConfig2({showPlay:true})" />
     </div>
     <div
       class="columns has-text-centered is-mobile is-size-7 is-marginless is-paddingless"

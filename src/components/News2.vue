@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!config2.showPlay" class="new2" style=" position: fixed;top: 0;    bottom: 0;
+  <div  class="new2" style=" position: fixed;top: 0;    bottom: 0;
     overflow: auto;" :style="{fontSize:this.config.fontSize+'%'}">
     <div class="newbar" style="display: flex;">
       <a class="btn" @click="fontScale(-0.1)">-</a>
