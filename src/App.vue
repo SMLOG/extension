@@ -48,7 +48,7 @@
             <div>{{ curPlay.to }}</div>
           </div>
         </div>
-        <div class="videoview"><MediaPlayer /></div>
+        <div class="videoview" style="z-index: 2;" ><MediaPlayer /></div>
 
         <news2 v-if="shownews" />
         <cur-words />
