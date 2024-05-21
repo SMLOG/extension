@@ -415,6 +415,9 @@ table tr:nth-child(even) {
   font-size: 1.4em;
   display: inline-block;
   cursor: pointer;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .src {
   color: gray;
