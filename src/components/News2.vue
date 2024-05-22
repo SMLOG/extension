@@ -478,7 +478,7 @@ table tr:nth-child(even) {
 
 .new2 {
   user-select: none;
-  z-index: 10001;
+  z-index: 11111;
 }
 
 .desc >>> * {

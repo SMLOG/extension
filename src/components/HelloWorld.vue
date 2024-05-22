@@ -25,7 +25,8 @@
         >
         <span
           class="src"
-          @click="playSound(to, 1, to.src)"
+          @mouseup.prevent.stop="playSound(to, 1, to.src)"
+          @click.prevent.stop="playSound(to, 1, to.src)"
           style="color: #ccc"
           >{{ to.src }}</span
         >

@@ -174,7 +174,7 @@ export default {
             for (let d = 0; d < chars.length; d++)
               await this.tts("en", chars[d], true, 6);
           }
-          if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
+          //if (this.playMode >= 3) await this.playSound(list[i], true, "zh");
           await this.sleep(1000);
         }
 

@@ -133,6 +133,7 @@ export default new Vuex.Store({
       //Object.assign(state.curItem, item);
     },
     words(state, words) {
+      console.log('set words',words)
       state.words = words;
     },
     nextUrl(state, nextUrl) {

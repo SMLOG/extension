@@ -121,6 +121,7 @@ export default {
         this.page++;
         await this.sleep(1);
       }
+      this.page--;
       this.playing = 0;
     },
   },
