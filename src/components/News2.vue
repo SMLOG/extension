@@ -343,17 +343,25 @@ export default {
           }
         }
 
-        
+        let urls=['https://edition.cnn.com/business','https://edition.cnn.com']
 
-        news = news.concat(await this.getNewsItems('https://edition.cnn.com'));
+        for(let ui=0;ui<urls.length;ui++){
+          news = news.concat(await this.getNewsItems(urls[ui]));
+        }
 
         let pick = [];
         let map = {};
         for (let n of this.news.concat(news)) {
-          if (n && !map[n.link]) {
-            n.dt = new Date(n.pubDate).getTime();
-            pick.push(n);
-            map[n.link] = 1;
+          if (n) {
+            if( !map[n.link]){
+              n.dt = new Date(n.pubDate).getTime();
+              pick.push(n);
+              map[n.link] = n;
+            }else{
+              map[n.link].title=n.title;
+            }
+           
+
           }
         }
 
