@@ -142,7 +142,7 @@ export const config = {
 
               conv: function (resp, src) {
                 let t = new Date().getTime();
-                return resp.subCards
+                return (resp.subCards||resp[0].subCards)
                   .filter(
                     (e) => e.type == "video" && e.provider.name != "BuzzVideos"
                   )
