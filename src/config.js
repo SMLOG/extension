@@ -152,7 +152,7 @@ export const config = {
                       vid: e.id,
                       duration:e.videoMetadata.playTime,
                       url: e.externalVideoFiles.sort((a) =>
-                        a.url.indexOf(".m3u8") > -1 ? -1 : 0
+                        a.url.indexOf("m3u8") > -1 ? -1 : 0
                       )[0].url,
                       title: e.title,
                       cc:
