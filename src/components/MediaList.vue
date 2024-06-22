@@ -256,14 +256,12 @@ export default {
     pageList() {
       let list = this.searchList();
 
-      if (list.length > 0) list = list.slice(0, this.page * this.pageSize);
       return list;
     },
 
     pages() {
-      let list = this.searchList();
 
-      return Math.floor((list.length + this.pageSize - 1) / this.pageSize);
+      return 1;
     },
     ...mapState(["videos"]),
   },

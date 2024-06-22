@@ -148,7 +148,7 @@ export default {
   overflow: hidden;
 }
 .viewMode.showList .vb_1.is-fixed-bottom .listCon {
-  max-height: calc(100vw - 40px);
+ /* max-height: calc(100vw - 40px);*/
   overflow: auto;
 }
 .viewMode .vb_1.is-fixed-bottom::before {
