@@ -215,7 +215,18 @@ export default {
         let xml = await crossOrigs(url, "xml");
         let description = xml.rss.channel.item.description;
 
+        if(description.indexOf('unable to retrieve full-text')>-1){
+          const getTag = (html, tagName) => {document.createElement('div').innerHTML = html;return document.querySelector(tagName);}
+          try{
+            description =  await crossOrigs(item.link).then(r=>r.text()).then(t=>getTag(t,'.article__content').innerHTML);
+          }catch(error){
+            console.log(error);
+          }
+        }
+
         content = description.replace(/(<\/?a.*?>)|(<\/?span.*?>)/g, "");
+
+
 
         let el = $("<div>" + content + "</div>");
         let as = ["title", "src", "srcset", "class"];
