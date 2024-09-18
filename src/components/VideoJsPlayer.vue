@@ -125,6 +125,7 @@ export default {
   methods: {
     loopPlay() {
       this.players[this.activeIndex].currentTime(0);
+      this.players[this.activeIndex].play();
     },
     getCurrentPlayerUrl() {
       let activePlayer = this.players.filter((e) => e.actived);
