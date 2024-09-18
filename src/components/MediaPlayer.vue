@@ -20,19 +20,18 @@
         <font-awesome-icon
           class="pbtn"
           :icon="['fas', 'arrow-left']"
-          @click.stop.prevent="emit('PRE');"
+          @click.stop.prevent="emit('PRE')"
           style="left: 0"
-          @mouseenter=" updateConfig2({ touchstart: 1 });"
-          @mouseleave=" updateConfig2({ touchstart: 0 });"
+          @mouseenter="updateConfig2({ touchstart: 1 })"
+          @mouseleave="updateConfig2({ touchstart: 0 })"
         />
         <font-awesome-icon
           :icon="['fas', 'arrow-right']"
           @click.stop.prevent="emit('NEXT')"
           class="pbtn"
           style="right: 0"
-          @mouseenter=" updateConfig2({ touchstart: 1 });"
-          @mouseleave=" updateConfig2({ touchstart: 0 });"
-          
+          @mouseenter="updateConfig2({ touchstart: 1 })"
+          @mouseleave="updateConfig2({ touchstart: 0 })"
         />
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
@@ -61,7 +60,7 @@
 
       <div
         style="position: relative; z-index: 10000"
-        v-show="config.viewMode<0 && (isMask < 2 || isTouch)"
+        v-show="config.viewMode < 0 && (isMask < 2 || isTouch)"
       >
         <div :class="{ preload: preload }" id="bts" ref="bts">
           <a
@@ -148,7 +147,7 @@
           </a>
         </div>
       </div>
-      <div ref="text" class="text" v-show="isMask < 2 && config.viewMode!==0">
+      <div ref="text" class="text" v-show="isMask < 2 && config.viewMode !== 0">
         <a @click="clickUrl(videoUrl)" style="color: blue; cursor: pointer">{{
           title
         }}</a>
@@ -196,7 +195,7 @@ export default {
       isCc: 0,
       mediaType: 1,
       videoUrl: "",
-      preloadNextUrl:'',
+      preloadNextUrl: "",
       show: 0,
       url: "",
       top: "0%",
@@ -233,7 +232,7 @@ export default {
     ResizeMask,
   },
   methods: {
-    selectVideo(mediaType, item, click, index, index2)  {
+    selectVideo(mediaType, item, click, index, index2) {
       if (click) this.show = 1;
       if (location.search.indexOf("hidePlayer=1") > -1) {
         this.show = 0;
@@ -261,7 +260,6 @@ export default {
           }
         })();
       }
-    
     },
     touchstartCustCue() {
       this.player && this.player.pause();
@@ -307,7 +305,7 @@ export default {
       this.player = player;
     },
     clickUrl() {
-     let mediaUrl =  this.$refs.jsplayer.getCurrentPlayerUrl();
+      let mediaUrl = this.$refs.jsplayer.getCurrentPlayerUrl();
       open(mediaUrl);
     },
 
@@ -510,7 +508,7 @@ export default {
     },
     ajustTextHeight() {
       var topDom = this.$refs.text;
-console.log('ajustTextHeight');
+      console.log("ajustTextHeight");
       topDom.style.top =
         ($(this.$refs.videoCon).is(":hidden")
           ? 0
@@ -719,17 +717,17 @@ console.log('ajustTextHeight');
         if (tracks[d].label == "new word")
           player.removeRemoteTextTrack(tracks[d]);
       }
-console.log('loadTTV')
+      console.log("loadTTV");
       if (text.trim()) {
         // console.error(raw);
 
         var subBlob = new Blob([raw]);
         var subURL = URL.createObjectURL(subBlob);
-//self.config.custCue ? "metadata" :
-console.log(self.config.custCue);
+        //self.config.custCue ? "metadata" :
+        console.log(self.config.custCue);
         player.addRemoteTextTrack(
           {
-            kind:  "captions",
+            kind: "captions",
             label: "new word",
             mode: "showing",
             srclang: "zh",
@@ -773,9 +771,8 @@ console.log(self.config.custCue);
       console.log("loadV");
       if (!item.vid) return;
 
-
       await getAndPrepareNextExtra(item, mediaType, nextItem);
-        console.log(item,nextItem);
+      console.log(item, nextItem);
       if (this.show && this.config.isAudio < 2) {
         try {
           if (!this.isAliPlayer) await this.loadTTV(item.cc);
@@ -863,7 +860,6 @@ console.log(self.config.custCue);
     $(window).on("resize", function () {
       self.ajustTextHeight();
     });
-
   },
 
   watch: {
@@ -871,12 +867,12 @@ console.log(self.config.custCue);
       handler(n) {
         let item = this.config2.playList[n];
         //mediaType, item, click, index, index2
-        this.show=1;
-        this.selectVideo(this.config2.mediaType,item,0,n);
-        console.log(n)
+        this.show = 1;
+        this.selectVideo(this.config2.mediaType, item, 0, n);
+        console.log(n);
       },
     },
-  
+
     videoUrl(videoUrl) {
       this.updateConfig2({ videoUrl: videoUrl });
     },
@@ -925,12 +921,11 @@ console.log(self.config.custCue);
         this.resize();
       },
     },
-    "$store.state.config.isLoop": {
+    /*  "$store.state.config.isLoop": {
       handler(b) {
         document.querySelector("video").loop = b ? true : false;
       },
-    },
-
+    },*/
   },
 };
 </script>
