@@ -206,9 +206,7 @@ export default {
     TopTool,
   },
   mounted() {
-    if (this.$refs.app.parentElement.tagName == "BODY") {
-      this.$refs.app.parentElement.classList.add(this.config.theme);
-    }
+    this.setTheme(this.config.theme);
     const documentHeight = () => {
       const doc = document.documentElement;
       doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
@@ -294,6 +292,19 @@ export default {
     });
   },
   methods: {
+    setTheme(n) {
+      if (this.$refs.app.parentElement.tagName == "BODY") {
+        this.$refs.app.parentElement.classList.add(n);
+        this.$refs.app.parentElement.classList.remove(
+          n == "dark" ? "light" : "dark"
+        );
+        document.querySelector("meta[name=theme-color]").content =
+          n == "dark" ? "#000000" : "#BFD9FF";
+        document.querySelector(
+          "meta[name=theme-color]"
+        ).media = `(prefers-color-scheme: ${n})`;
+      }
+    },
     touchMask() {
       this.$store.commit("setShowSetting", 0);
       this.$store.commit("setShowApp", 0);
@@ -378,17 +389,7 @@ export default {
   watch: {
     "$store.state.config.theme": {
       handler(n) {
-        if (this.$refs.app.parentElement.tagName == "BODY") {
-          this.$refs.app.parentElement.classList.add(n);
-          this.$refs.app.parentElement.classList.remove(
-            n == "dark" ? "light" : "dark"
-          );
-          document.querySelector("meta[name=theme-color]").content =
-            n == "dark" ? "#000000" : "#BFD9FF";
-          document.querySelector(
-            "meta[name=theme-color]"
-          ).media = `(prefers-color-scheme: ${n})`;
-        }
+        this.setTheme(n);
       },
     },
     showApp(n) {
