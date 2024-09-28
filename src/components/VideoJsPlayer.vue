@@ -816,7 +816,6 @@ video::cue(i),
   color: #333;
   word-break: break-word;
   word-wrap: break-word;
-  border: 1px solid #ccc;
   border-radius: 4px;
 
   padding: 10px 20px 10px 10px;

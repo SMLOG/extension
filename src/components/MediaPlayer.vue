@@ -148,9 +148,7 @@
         </div>
       </div>
       <div ref="text" class="text" v-show="isMask < 2 && config.viewMode !== 0">
-        <a @click="clickUrl(videoUrl)" style="color: blue; cursor: pointer">{{
-          title
-        }}</a>
+        <a @click="clickUrl(videoUrl)" style="cursor: pointer">{{ title }}</a>
 
         <div v-if="item.src">
           source:<a target="_blank" :href="item.src">{{ item.src }}</a>
@@ -1025,7 +1023,6 @@ video::cue(i),
   color: #333;
   word-break: break-word;
   word-wrap: break-word;
-  border: 1px solid #ccc;
   border-radius: 4px;
 
   padding: 8px;

@@ -63,3 +63,10 @@
   .light table tr:nth-child(even) {
     background-color: #eee;
   }
+  .hi .videoview{
+    max-width: 100% !important;
+  }
+
+  .dark .play{
+    border-color: transparent transparent transparent #999;
+  }

@@ -3,7 +3,7 @@
     id="app"
     ref="app"
     class="mytranslate-extension"
-    :class="'fs-' + config.fs + ' ' + config.theme"
+    :class="'fs-' + config.fs + ' ' + config.theme + (config.hi ? ' hi' : '')"
   >
     <Editor />
     <div
