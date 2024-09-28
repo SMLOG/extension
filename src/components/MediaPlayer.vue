@@ -60,7 +60,7 @@
 
       <div
         style="position: relative; z-index: 10000"
-        v-show="config.viewMode < 0 && (isMask < 2 || isTouch)"
+        v-show="(config.viewMode < 0 || config.hi) && (isMask < 2 || isTouch)"
       >
         <div :class="{ preload: preload }" id="bts" ref="bts">
           <a
@@ -147,7 +147,11 @@
           </a>
         </div>
       </div>
-      <div ref="text" class="text" v-show="isMask < 2 && config.viewMode !== 0">
+      <div
+        ref="text"
+        class="text"
+        v-show="isMask < 2 && (config.hi || config.viewMode !== 0)"
+      >
         <a @click="clickUrl(videoUrl)" style="cursor: pointer">{{ title }}</a>
 
         <div v-if="item.src">
