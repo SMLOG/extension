@@ -784,7 +784,6 @@ video::cue(i),
 
 .top {
   position: fixed;
-  background-color: white;
   overflow: scroll;
   width: 100%;
   top: 0;
@@ -817,7 +816,6 @@ video::cue(i),
   color: #333;
   word-break: break-word;
   word-wrap: break-word;
-  background-color: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 4px;
 

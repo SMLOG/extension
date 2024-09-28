@@ -1,7 +1,10 @@
 <template>
-  <div  class="new2" style=" position: fixed;top: 0;    bottom: 0;
-    overflow: auto;" :style="{fontSize:this.config.fontSize+'%'}">
-    <div class="newbar" style="display: flex;">
+  <div
+    class="new2"
+    style="position: fixed; top: 0; bottom: 0; overflow: auto"
+    :style="{ fontSize: this.config.fontSize + '%' }"
+  >
+    <div class="newbar" style="display: flex">
       <a class="btn" @click="fontScale(-0.1)">-</a>
       <input
         placeholder="http:// or https:// url"
@@ -12,7 +15,6 @@
       />
       <a class="btn" @click="fontScale(0.1)">+</a>
     </div>
-   
 
     <div
       v-infinite-scroll="loadMore"
@@ -20,7 +22,7 @@
       infinite-scroll-distance="20"
       ref="container"
     >
-      <div style="padding: 5px; background: white; user-select: none">
+      <div style="padding: 5px; user-select: none">
         <table style="text-align: left; width: 100%" class="row">
           <tr
             v-for="(item, i) in pageList"
@@ -87,7 +89,7 @@ import { encode, decode } from "@/compress";
 export default {
   data() {
     return {
-      fontSize:100,
+      fontSize: 100,
       url: "",
       pageSize: 20,
       page: 1,
@@ -121,37 +123,39 @@ export default {
     ...mapState(["words"]),
   },
   methods: {
-    fontScale(point){
-      this.updateConfig({fontSize:this.config.fontSize+100*point});
+    fontScale(point) {
+      this.updateConfig({ fontSize: this.config.fontSize + 100 * point });
     },
-    async getNewsItems(url){
+    async getNewsItems(url) {
       return await fetch(url)
-        .then(response => response.text())
-        .then(html => {
+        .then((response) => response.text())
+        .then((html) => {
           // Parse the HTML content
           const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
+          const doc = parser.parseFromString(html, "text/html");
           parser.baseURI = url;
           // Find all the news links
           const newsLinks = doc.querySelectorAll('a[href^="/"]');
 
           // Extract the link URLs and text
-          const newsData = Array.from(newsLinks) .filter(link => {
-        const url2 = link.getAttribute('href');
-        const dateRegex = /\d{4}\/\d{2}\/\d{2}/;
-        return dateRegex.test(url2);
-      }).map(link => ({
-            link: url+link.getAttribute('href'),
-            title: link.textContent.trim(),
-            pubDate: link.href.match(/\d{4}\/\d{2}\/\d{2}/)[0],
-          }));
+          const newsData = Array.from(newsLinks)
+            .filter((link) => {
+              const url2 = link.getAttribute("href");
+              const dateRegex = /\d{4}\/\d{2}\/\d{2}/;
+              return dateRegex.test(url2);
+            })
+            .map((link) => ({
+              link: url + link.getAttribute("href"),
+              title: link.textContent.trim(),
+              pubDate: link.href.match(/\d{4}\/\d{2}\/\d{2}/)[0],
+            }));
 
           // Log the news data
           console.log(newsData);
           return newsData;
         })
-        .catch(error => {
-          console.error('Error fetching CNN homepage:', error);
+        .catch((error) => {
+          console.error("Error fetching CNN homepage:", error);
         });
     },
     close(item) {
@@ -310,42 +314,46 @@ export default {
       (async () => {
         let news = [];
 
-
         let rss = this.config.rsss.filter((e) => e.enable);
-        if(rss==null)
-        for (let k = 0; k < rss.length; k++) {
-          try {
-            let items = await fetch(
-              // "https://api.factmaven.com/xml-to-json/?xml=" +
-              "https://api.rss2json.com/v1/api.json?rss_url=" +
-                encodeURIComponent(rss[k].url)
-            )
-              .then((r) => r.json())
-              .then((data) => {
-                return data.items
-                  .filter((e) => e.pubDate)
-                  .map((e) => {
-                    return {
-                      title: e.title,
-                      link: e.link,
-                      pubDate: e.pubDate,
-                      thumb: this.getImage(e),
-                      name: rss[k].name,
-                    };
-                  });
-              });
+        if (rss == null)
+          for (let k = 0; k < rss.length; k++) {
+            try {
+              let items = await fetch(
+                // "https://api.factmaven.com/xml-to-json/?xml=" +
+                "https://api.rss2json.com/v1/api.json?rss_url=" +
+                  encodeURIComponent(rss[k].url)
+              )
+                .then((r) => r.json())
+                .then((data) => {
+                  return data.items
+                    .filter((e) => e.pubDate)
+                    .map((e) => {
+                      return {
+                        title: e.title,
+                        link: e.link,
+                        pubDate: e.pubDate,
+                        thumb: this.getImage(e),
+                        name: rss[k].name,
+                      };
+                    });
+                });
 
-            news.push(
-              ...items.filter((n) => n.link && n.link.indexOf("/videos/") == -1)
-            );
-          } catch (ee) {
-            console.error(ee);
+              news.push(
+                ...items.filter(
+                  (n) => n.link && n.link.indexOf("/videos/") == -1
+                )
+              );
+            } catch (ee) {
+              console.error(ee);
+            }
           }
-        }
 
-        let urls=['https://edition.cnn.com/business','https://edition.cnn.com']
+        let urls = [
+          "https://edition.cnn.com/business",
+          "https://edition.cnn.com",
+        ];
 
-        for(let ui=0;ui<urls.length;ui++){
+        for (let ui = 0; ui < urls.length; ui++) {
           news = news.concat(await this.getNewsItems(urls[ui]));
         }
 
@@ -353,15 +361,13 @@ export default {
         let map = {};
         for (let n of this.news.concat(news)) {
           if (n) {
-            if( !map[n.link]){
+            if (!map[n.link]) {
               n.dt = new Date(n.pubDate).getTime();
               pick.push(n);
               map[n.link] = n;
-            }else{
-              map[n.link].title=n.title;
+            } else {
+              map[n.link].title = n.title;
             }
-           
-
           }
         }
 
@@ -383,12 +389,7 @@ export default {
 p {
   font-size: 20px;
 }
-table tr:nth-child(odd) {
-  background-color: #f5f5f5;
-}
-table tr:nth-child(even) {
-  background-color: #fff;
-}
+
 .ctrl {
   user-select: none;
   cursor: pointer;
@@ -462,7 +463,6 @@ table tr:nth-child(even) {
   top: 0;
   display: flex;
   padding: 0 6px;
-  background: white;
   z-index: 1;
 }
 .item {
@@ -523,7 +523,7 @@ table tr:nth-child(even) {
 .readed {
   color: gray;
 }
-.btn{
+.btn {
   padding: 5px 10px;
   cursor: pointer;
 }

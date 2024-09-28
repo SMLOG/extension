@@ -98,7 +98,7 @@
         </table>
       </div>
     </div>
-    <div style="text-align: right; background: gray; padding-right: 5px">
+    <div style="text-align: right; background: #444; padding-right: 5px">
       <select v-show="opts1.length" v-model="curOpt1" @change="page = 1">
         <option value="">All</option>
         <option v-for="src in opts1" :key="src" :value="src">
@@ -903,12 +903,7 @@ export default {
 p {
   font-size: 20px;
 }
-table tr:nth-child(odd) {
-  background-color: #f5f5f5;
-}
-table tr:nth-child(even) {
-  background-color: #fff;
-}
+
 .ctrl {
   user-select: none;
   cursor: pointer;
@@ -942,7 +937,6 @@ table tr:nth-child(even) {
 }
 .result {
   padding: 5px;
-  background: white;
 }
 .del {
   color: red;

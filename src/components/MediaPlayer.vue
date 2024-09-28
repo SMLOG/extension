@@ -246,7 +246,7 @@ export default {
       this.$store.commit("add2CurWords", [[], 1]);
       this.onCuesChangeSync2 = 0;
       this.text = "";
-
+      this.updateConfig2({ title: item.title });
       if (this.mediaType == 0) {
         this.videoUrl = this.url = item.url;
         this.av = 0;
@@ -986,7 +986,6 @@ video::cue(i),
 }
 
 .top {
-  background-color: white;
   overflow: scroll;
   width: 100%;
   top: 0;
@@ -1026,7 +1025,6 @@ video::cue(i),
   color: #333;
   word-break: break-word;
   word-wrap: break-word;
-  background-color: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 4px;
 
@@ -1040,7 +1038,6 @@ video::cue(i),
 }
 #bts {
   text-align: right;
-  background: white;
   display: flex;
   justify-content: space-around;
   padding: 0;
@@ -1057,8 +1054,6 @@ video::cue(i),
   outline: none;
   text-align: center;
   cursor: pointer;
-  color: white;
-  background-color: rgba(0, 64, 156, 0.8);
   user-select: none;
   line-height: 1.2em;
   flex-grow: 1;

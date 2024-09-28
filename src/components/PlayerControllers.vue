@@ -4,7 +4,7 @@
       hover: dockList || isM() || isHover,
       isActivedTran: config.activeTran,
     }"
-    :style="{ opacity:config.viewMode!=0 || isHover?1:0.01}"
+    :style="{ opacity: config.viewMode != 0 || isHover ? 1 : 0.01 }"
     class="vb_1 is-fixed-bottom is-hidden-desktop"
     @mouseenter="(isHover = 1), updateConfig2({ showList: 1 })"
     @mouseleave="isHover = 0"
@@ -14,14 +14,23 @@
     ref="listContainer"
   >
     <div ref="mediaList" class="listCon">
-      <Video v-show="showList" @selectItem="showList = 0;updateConfig2({showPlay:true})" />
+      <Video
+        v-show="showList"
+        @selectItem="
+          showList = 0;
+          updateConfig2({ showPlay: true });
+        "
+      />
     </div>
     <div
+      id="player_ctrl"
       class="columns has-text-centered is-mobile is-size-7 is-marginless is-paddingless"
       style="user-select: none"
     >
-      <div class="column is-marginless" v-if="shownews">
-        <span @click="updateConfig2({showPlay:!config2.showPlay})">Read</span>
+      <div class="column is-marginless" v-if="shownews" style="flex-grow: 0.1">
+        <span @click="updateConfig2({ showPlay: !config2.showPlay })"
+          >Read</span
+        >
       </div>
 
       <div class="column is-marginless" ref="mediaListText">
@@ -35,8 +44,9 @@
           @click="showList = !showList"
           style="flex-grow: 1"
           ref="showListBt"
-          ><font-awesome-icon :icon="['fas', 'ellipsis']"
-        /></span>
+          ><font-awesome-icon :icon="['fas', 'ellipsis']" />
+          {{ config2.title }}
+        </span>
       </div>
     </div>
   </div>
@@ -109,15 +119,14 @@ export default {
 
 <style scoped>
 .vb_1 {
-  background-color: #fff;
   position: relative;
   z-index: 10001;
 }
-.viewMode .vb_1{
-  background: rgba(255,255,255,0.7);
+.viewMode .vb_1 {
+  background: rgba(255, 255, 255, 0.7);
 }
 .vb_1.is-fixed-bottom {
-  box-shadow: 0 -3px 15px #999;
+  box-shadow: 0 -1px 5px #999;
   min-height: 40px;
 }
 .vb_1.is-fixed-bottom {
@@ -201,8 +210,5 @@ button {
   border-color: #202020;
   display: inline-block;
   height: 70%;
-}
-.isActivedTran {
-  border: 1px solid green !important;
 }
 </style>

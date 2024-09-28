@@ -20,8 +20,9 @@ export default new Vuex.Store({
     hkdcny: { now: "", p: "" },
     nextUrl: "",
     config2: {
-      dev:0,
-      showPlay:false,
+      title: "",
+      dev: 0,
+      showPlay: false,
       mask: 0,
       showList: 0,
       touchstart: 0,
@@ -29,17 +30,18 @@ export default new Vuex.Store({
       touchCustCue: 0,
       playingM: 0,
       videoUrl: "",
-      playList:[],
-      playIndex:-1,
-      mediaType:0,
-      mediaTypeText:'',
+      playList: [],
+      playIndex: -1,
+      mediaType: 0,
+      mediaTypeText: "",
     },
     config: {
-      fontSize:100,
-      m3u8Repo:'',
-      maxBitRate:0,
-      waitTimes:2,
-      playerNum:3,
+      theme: "dark",
+      fontSize: 100,
+      m3u8Repo: "",
+      maxBitRate: 0,
+      waitTimes: 2,
+      playerNum: 3,
       backplay: 0,
       editor: 0,
       playbackrate: 1,
@@ -133,7 +135,7 @@ export default new Vuex.Store({
       //Object.assign(state.curItem, item);
     },
     words(state, words) {
-      console.log('set words',words)
+      console.log("set words", words);
       state.words = words;
     },
     nextUrl(state, nextUrl) {

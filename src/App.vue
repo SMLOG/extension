@@ -3,12 +3,12 @@
     id="app"
     ref="app"
     class="mytranslate-extension"
-    :class="'fs-' + config.fs"
+    :class="'fs-' + config.fs + ' ' + config.theme"
   >
     <Editor />
     <div
       :class="{
-        viewMode: config.viewMode>0,
+        viewMode: config.viewMode > 0,
         viewMode2: config.viewMode == 2,
         touchstart: config2.touchstart,
         showList: config2.showList,
@@ -17,8 +17,8 @@
         cueBotton: config.custCue == 1,
         pause: !config2.playingM,
         videoUrl: config2.videoUrl || config.shownews,
-        dockList:config.dockList,
-        showPlay:config2.showPlay
+        dockList: config.dockList,
+        showPlay: config2.showPlay,
       }"
       :data="config.viewMode"
     >
@@ -49,9 +49,9 @@
             <div>{{ curPlay.to }}</div>
           </div>
         </div>
-        <div class="videoview"   ><MediaPlayer /></div>
+        <div class="videoview"><MediaPlayer /></div>
 
-        <news2 v-if="shownews&&!config2.showPlay" />
+        <news2 v-if="shownews && !config2.showPlay" />
         <cur-words />
       </div>
       <div class="sidebarsetting" :class="{ open: showSidebar }">
@@ -143,7 +143,6 @@
           </keep-alive>
         </div>
       </div>
-
     </div>
     <top-tool />
   </div>
@@ -207,6 +206,9 @@ export default {
     TopTool,
   },
   mounted() {
+    if (this.$refs.app.parentElement.tagName == "BODY") {
+      this.$refs.app.parentElement.classList.add(this.config.theme);
+    }
     const documentHeight = () => {
       const doc = document.documentElement;
       doc.style.setProperty("--doc-height", `${window.innerHeight}px`);
@@ -374,6 +376,16 @@ export default {
     ]),
   },
   watch: {
+    "$store.state.config.theme": {
+      handler(n) {
+        if (this.$refs.app.parentElement.tagName == "BODY") {
+          this.$refs.app.parentElement.classList.add(n);
+          this.$refs.app.parentElement.classList.remove(
+            n == "dark" ? "light" : "dark"
+          );
+        }
+      },
+    },
     showApp(n) {
       if (n) {
         this.zIndex = new Date().getTime();
@@ -659,11 +671,11 @@ export default {
   z-index: 11110;
   color: white;
 }
-.sidebarsetting{
+.sidebarsetting {
   margin-bottom: 40px;
 }
->>> .vjs-control-bar, >>>.vjs-big-play-button{
+>>> .vjs-control-bar,
+>>> .vjs-big-play-button {
   transform: translateZ(1px);
 }
-
 </style>

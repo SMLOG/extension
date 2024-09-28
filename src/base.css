@@ -1,3 +1,65 @@
 .fs-1{
     font-size:1em;
 }
+.dark{
+    background-color: black;
+    color-scheme: dark;
+}
+.light {
+    background: white;
+    color-scheme: light;
+}
+.dark *{
+    color-scheme: dark;
+}
+.dark .listCon{
+    background-color: black;
+}
+.dark .pause{
+    border-color: #505050;
+}
+.dark .op_tool{
+ color: #aaa;
+}
+.dark .text .cur{
+    color: #999;
+   }
+   .dark #bts a{
+    color:white;
+   }
+   .dark #player_ctrl{
+    background-color: black;
+    color: #999;
+}
+.dark .new2{
+    background-color: black;
+    color:#999;
+}
+.light .text{
+    background-color: #f5f5f5;
+    color-scheme: light;
+}
+.light #player_ctrl{
+    background-color: white;
+}
+.light .listCon{
+    background-color: white;
+}
+.light .new2{
+    background-color: white;
+    color:black;
+}
+
+.dark table tr:nth-child(odd) {
+    background-color: black;
+  }
+  .dark table tr:nth-child(even) {
+    background-color: #222;
+  }
+
+  .light table tr:nth-child(odd) {
+    background-color: white;
+  }
+  .light table tr:nth-child(even) {
+    background-color: #eee;
+  }
