@@ -383,6 +383,11 @@ export default {
           this.$refs.app.parentElement.classList.remove(
             n == "dark" ? "light" : "dark"
           );
+          document.querySelector("meta[name=theme-color]").content =
+            n == "dark" ? "#000000" : "#BFD9FF";
+          document.querySelector(
+            "meta[name=theme-color]"
+          ).media = `(prefers-color-scheme: ${n})`;
         }
       },
     },
