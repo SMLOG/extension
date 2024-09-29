@@ -93,13 +93,14 @@
       <font-awesome-icon
         :icon="['fas', 'closed-captioning']"
         @click="
-          updateConfig({ custCue: ++config.custCue > 2 ? 0 : config.custCue })
+          updateConfig({ custCue: ++config.custCue > 3 ? 0 : config.custCue })
         "
         fixed-width
         size="lg"
         :class="{
           active: config.custCue,
           borderTop: config.custCue == 2,
+          hideCue: config.custCue == 3,
           borderBottom: config.custCue == 1,
         }"
       />
@@ -284,7 +285,9 @@ table tr:nth-child(even) {
 .borderBottom {
   border-bottom: 2px solid green;
 }
-
+.hideCue {
+  border-bottom: 2px solid gray;
+}
 .left {
   border-left: 2px solid green;
 }

@@ -7,7 +7,10 @@
         style="position: relative"
         v-show="!config.hi"
       >
-        <div class="custCue" v-show="!config.hi && config.custCue && custCue">
+        <div
+          class="custCue"
+          v-show="!config.hi && config.custCue && config.custCue < 3 && custCue"
+        >
           <div style="display: flex; justify-content: center">
             <div
               style="background: rgba(0, 0, 0, 0.5)"
