@@ -722,34 +722,38 @@ export default {
         });
       }
 
-      let player = this.player;
-      let tracks = player.textTracks();
-      for (var d = 0; d < tracks.length; d++) {
-        console.error(tracks[d].label);
+      setTimeout(() => {
+        let player = this.player;
 
-        if (tracks[d].label == "new word")
-          player.removeRemoteTextTrack(tracks[d]);
-      }
-      console.log("loadTTV");
-      if (text.trim()) {
-        // console.error(raw);
+        let tracks = player.textTracks();
+        for (var d = 0; d < tracks.length; d++) {
+          console.error(tracks[d].label);
 
-        var subBlob = new Blob([raw]);
-        var subURL = URL.createObjectURL(subBlob);
-        //self.config.custCue ? "metadata" :
-        console.log(self.config.custCue);
-        player.addRemoteTextTrack(
-          {
-            kind: "captions",
-            label: "new word",
-            mode: "showing",
-            srclang: "zh",
-            default: "true",
-            src: subURL,
-          },
-          true
-        );
-      }
+          if (tracks[d].label == "new word")
+            player.removeRemoteTextTrack(tracks[d]);
+        }
+        console.error("loadTTV");
+        if (text.trim()) {
+          // console.error(raw);
+
+          var subBlob = new Blob([raw]);
+          var subURL = URL.createObjectURL(subBlob);
+          //self.config.custCue ? "metadata" :
+          console.error(self.config.custCue, subURL);
+          player.addRemoteTextTrack(
+            {
+              kind: "captions",
+              label: "new word",
+              mode: "showing",
+              srclang: "zh",
+              default: "true",
+              src: subURL,
+            },
+            true
+          );
+        }
+      }, 100);
+
       return 0;
     },
     caption2Text(raw) {
