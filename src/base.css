@@ -78,3 +78,7 @@
   .dark .op_tool::before{
     border-color: #333;
   }
+  .dark .nav{
+    background: #333;
+    color: #aaa;
+  }

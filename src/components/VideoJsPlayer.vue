@@ -463,27 +463,26 @@ export default {
                 console.error("tts", tts);
                 for (let i = 0; i < tts.length; i++) {
                   let track = tts[i];
-                  if (track.mode == "showing" && track.kind == "captions") {
+                  if (track.mode == "showing") {
                     //track.removeEventListener(this.cuechange);
                     if (!track.cuechange) {
                       track.addEventListener("cuechange", () => {
-                        console.error("cuechange");
-                        track.activeCues[0] &&
-                          console.error(
-                            track.activeCues[0].text,
-                            "track.activeCues[0]"
-                          );
                         if (!player.actived) return;
 
-                        track.activeCues[0] &&
+                        track.kind == "captions" &&
+                          track.activeCues &&
+                          track.activeCues[0] &&
                           self.$emit("cuechange", track.activeCues[0], track);
                         // self.cuechange(track.activeCues[0], track);
                       });
                       track.cuechange = 1;
                     }
-                    track.activeCues[0] &&
-                      self.$emit("cuechange", track.activeCues[0], track);
-                    break;
+                    if (track.kind == "captions") {
+                      track.activeCues &&
+                        track.activeCues[0] &&
+                        self.$emit("cuechange", track.activeCues[0], track);
+                      break;
+                    }
                   }
                 }
               };
