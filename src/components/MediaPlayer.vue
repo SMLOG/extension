@@ -414,6 +414,7 @@ export default {
             if (this.cueIndex >= sp.length) {
               this.cueIndex = 0;
               $text.find("span.cur").removeClass("cur");
+              if (sp.length == 0) this.setTimeout(this.setUpScroll, 100);
             }
 
             if (this.cueIndex > 0) {
@@ -707,15 +708,18 @@ export default {
           text = this.trans(raw);
 
           this.text = "";
-          setTimeout(() => {
-            this.text = this.caption2Text(raw);
-          }, 0);
+          //setTimeout(() => {
+          this.text = this.caption2Text(raw);
+          console.error(this.text);
+          // }, 0);
         } else {
           r = r.replace(/\.[\s]+/g, ".\n");
           this.markNewWords(r);
         }
-        console.error("this.setUpScroll()");
-        setTimeout(() => this.setUpScroll(), 100);
+        this.$nextTick(() => {
+          console.error("this.setUpScroll()", $(this.$refs.text).find("span"));
+          setTimeout(() => this.setUpScroll(), 100);
+        });
       }
 
       let player = this.player;
