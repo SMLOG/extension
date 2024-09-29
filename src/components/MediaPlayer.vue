@@ -152,9 +152,11 @@
         class="text"
         v-show="isMask < 2 && (config.hi || config.viewMode !== 0)"
       >
-        <a @click="clickUrl(videoUrl)" style="cursor: pointer">{{ title }}</a>
+        <a v-if="false" @click="clickUrl(videoUrl)" style="cursor: pointer">{{
+          title
+        }}</a>
 
-        <div v-if="item.src">
+        <div v-if="false && item.src">
           source:<a target="_blank" :href="item.src">{{ item.src }}</a>
           <a v-if="item.org" style="padding-left: 5px">{{ item.org }}</a>
         </div>
@@ -382,7 +384,7 @@ export default {
         }, (player.duration() - player.currentTime()) * 1000);
       }
     },
-    scroll(clear) {
+    setUpScroll(clear) {
       clearInterval(this.scrollTimer);
       this.onCuesChangeSync = 0;
 
@@ -402,6 +404,7 @@ export default {
           $text.find("span").each(function () {
             if (!$(this).text().trim()) $(this).attr("skip", 1);
           });
+          console.error("cues", this.cues);
           this.onCuesChangeSync = () => {
             let sp = this.cues;
             //  console.log("scroll " + new Date().getSeconds());
@@ -415,7 +418,8 @@ export default {
             if (this.cueIndex > 0) {
               let t = sp.eq(this.cueIndex);
               t.addClass("cur");
-
+              //a bug , just simple fix
+              this.cueIndex < 4 && sp.eq(1).addClass("cur");
               if (this.dict) {
                 let title = t.find(".newWord").text().trim();
                 title && (this.title = title);
@@ -543,7 +547,7 @@ export default {
     },
     end(reverse) {
       this.cueIndex = 0;
-      this.scroll(true);
+      this.setUpScroll(true);
       this.$store.commit("nextUrl", "");
 
       bus.$emit(
@@ -557,6 +561,8 @@ export default {
     },
 
     cuechange(cue, track) {
+      console.error(cue.text, "oncue");
+
       if (this.onCuesChangeSync2) {
         this.onCuesChangeSync2(cue, track);
       }
@@ -702,13 +708,13 @@ export default {
           this.text = "";
           setTimeout(() => {
             this.text = this.caption2Text(raw);
-          }, 500);
+          }, 0);
         } else {
           r = r.replace(/\.[\s]+/g, ".\n");
           this.markNewWords(r);
         }
-
-        setTimeout(() => this.scroll(), 1000);
+        console.error("this.setUpScroll()");
+        setTimeout(() => this.setUpScroll(), 100);
       }
 
       let player = this.player;
@@ -742,12 +748,14 @@ export default {
       return 0;
     },
     caption2Text(raw) {
+      console.error("caption2");
       return (
         "<span>" +
         raw
-          .split(/\n/)
-          .map((e) => e.replace(/^(\s*[A-Z][^A-Z]+)/g, "<br />$1"))
-          .join("\n")
+          .replace(/^WEBVTT[\s\n]*/, "")
+          //.split(/\n/)
+          //.map((e) => e.replace(/^(\s*[A-Z][^A-Z]+)/g, "<br />$1"))
+          //.join("\n")
           .replace(
             /(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})/g,
             (a, a1, a2, a3, a4, a5, a6, a7) =>
@@ -909,7 +917,7 @@ export default {
       }, 0);
     },
     isAutoScroll() {
-      this.scroll();
+      this.setUpScroll();
     },
     show(n) {
       if (n) {

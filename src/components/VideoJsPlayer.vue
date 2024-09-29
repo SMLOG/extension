@@ -466,7 +466,13 @@ export default {
                     //track.removeEventListener(this.cuechange);
                     if (!track.cuechange) {
                       track.addEventListener("cuechange", () => {
+                        console.error("cuechange");
                         if (!player.actived) return;
+                        track.activeCues[0] &&
+                          console.error(
+                            track.activeCues[0].text,
+                            "track.activeCues[0]"
+                          );
                         track.activeCues[0] &&
                           self.$emit("cuechange", track.activeCues[0], track);
                         // self.cuechange(track.activeCues[0], track);
