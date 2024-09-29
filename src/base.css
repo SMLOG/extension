@@ -22,7 +22,7 @@
  color: #aaa;
 }
 .dark .text .cur{
-    color: #999;
+    color: #aaa;
    }
    .dark #bts a{
     color:white;
@@ -33,7 +33,7 @@
 }
 .dark .new2{
     background-color: black;
-    color:#999;
+    color:#aaa;
 }
 .light .text{
     background-color: #f5f5f5;
@@ -71,4 +71,10 @@
 
   .dark .play{
     border-color: transparent transparent transparent white;
+  }
+  .videoview .text{
+    margin-bottom: 40px;
+  }
+  .dark .op_tool::before{
+    border-color: #333;
   }

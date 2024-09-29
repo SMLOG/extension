@@ -106,6 +106,7 @@
             class="up"
             :class="{ selected: isAliPlayer }"
             @click="isAliPlayer = !isAliPlayer"
+            v-if="false"
           >
             <font-awesome-icon
               v-show="isAliPlayer"
@@ -1032,7 +1033,7 @@ video::cue(i),
   display: block;
   font-size: 24px;
   line-height: 1.5em;
-  color: #333;
+  color: #555;
   word-break: break-word;
   word-wrap: break-word;
   border-radius: 4px;
