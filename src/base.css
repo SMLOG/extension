@@ -52,17 +52,19 @@
 .light #bts{
     background-color: white;
 }
-.dark table tr:nth-child(odd) {
+.dark table tr:nth-child(odd), .dark .row:nth-child(odd) {
     background-color: black;
   }
-  .dark table tr:nth-child(even) {
+  .dark table tr:nth-child(even), .dark .row:nth-child(even) {
     background-color: #222;
   }
 
-  .light table tr:nth-child(odd) {
+
+  
+  .light table tr:nth-child(odd) , .light .row:nth-child(odd){
     background-color: white;
   }
-  .light table tr:nth-child(even) {
+  .light table tr:nth-child(even), .light .row:nth-child(even)  {
     background-color: #eee;
   }
   .hi .videoview{
@@ -78,7 +80,22 @@
   .dark .op_tool::before{
     border-color: #333;
   }
-  .dark .nav{
+  .dark #root_1{
+    color:#aaa;
+    background: black;
+    border: 1px solid #555;
+  }
+  .dark #nav{
     background: #333;
+    color: #aaa;
+  }
+
+  .light #root_1{
+    color: #222;
+    background: white;
+    border: 1px solid #ccc;
+  }
+  .light #nav{
+    background: #efefef;
     color: #aaa;
   }

@@ -1,5 +1,5 @@
 <template>
-  <div ref="hello" style="padding: 5px; background: white">
+  <div ref="hello" style="padding: 5px">
     <div class="wrap">
       <div class="row" style="display: inline-block">
         {{ curItem.q }}
@@ -88,8 +88,8 @@ export default {
           ? 0
           : (s.left + s.right) / 2 + $(window).scrollLeft() - 20;
         let top = s.bottom + $(window).scrollTop() + 8;
-        left = Math.max(0,left);
-        top = Math.max(0,top);
+        left = Math.max(0, left);
+        top = Math.max(0, top);
         root.css({
           position: "absolute",
           top: 0,
@@ -127,7 +127,7 @@ export default {
               right: "auto",
             });
           }
-          if (this.config.viewMode>-1) {
+          if (this.config.viewMode > -1) {
             root.css({ top: 0 });
           }
         }, 100);
@@ -141,7 +141,7 @@ export default {
       }
       console.log("viewmod");
       if (this.config.viewMode) {
-        root.css({ top: 0,  position: "absolute" });
+        root.css({ top: 0, position: "absolute" });
       }
       //this.clearSelect();
     },
@@ -352,7 +352,7 @@ export default {
     }
 
     document.addEventListener("mouseup", () => {
-      console.log('mouseup')
+      console.log("mouseup");
       setTimeout(() => {
         if (this.config.activeTran) this.tran();
       }, 10);
@@ -410,21 +410,14 @@ export default {
 p {
   font-size: 20px;
 }
-table tr:nth-child(odd) {
-  background-color: #f5f5f5;
-}
-table tr:nth-child(even) {
-  background-color: #fff;
-}
+
 .floatTop2 {
   cursor: pointer;
   position: absolute;
   top: 0;
   left: 0;
   display: inline-block;
-  background: gray;
   padding: 1px;
-  color: white;
   padding-left: 3px;
 }
 .newword {
@@ -449,9 +442,7 @@ table tr:nth-child(even) {
   display: flex;
   justify-content: space-between;
 }
-.wrap .row:nth-child(even) {
-  background-color: #f4f4f4;
-}
+
 b {
   font-weight: bold;
 }

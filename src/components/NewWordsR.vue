@@ -1,12 +1,7 @@
 <template>
   <div>
     <div
-      style="
-        padding: 5px;
-        background: white;
-        max-height: calc(100vh - 180px);
-        overflow: auto;
-      "
+      style="padding: 5px; max-height: calc(100vh - 180px); overflow: auto"
       ref="words"
       class="witems"
     >
@@ -166,9 +161,7 @@ p {
 .bottom {
   text-align: left;
   font-size: 0.8em;
-  color: white;
   user-select: none;
-  background-color: gray;
 }
 .bottom input[type="text"] {
   user-select: auto;

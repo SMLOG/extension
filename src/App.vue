@@ -431,14 +431,12 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
-  color: #2c3e50;
   position: absolute;
   top: 70px;
   right: 0;
   z-index: 100000;
   max-width: 500px;
   padding: 2px;
-  background: gray;
   max-width: 400px;
   max-height: calc(100vh - 70px);
   overflow: auto;
