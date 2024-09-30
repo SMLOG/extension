@@ -894,6 +894,19 @@ export default {
         console.log(n);
       },
     },
+    "$store.state.config.isAudio": {
+      handler() {
+        this.show = 1;
+        if (this.config2.playIndex < 0) return;
+        let item = this.config2.playList[this.config2.playIndex];
+        this.selectVideo(
+          this.config2.mediaType,
+          item,
+          0,
+          this.config2.playIndex
+        );
+      },
+    },
 
     videoUrl(videoUrl) {
       this.updateConfig2({ videoUrl: videoUrl });

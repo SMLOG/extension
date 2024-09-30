@@ -182,11 +182,11 @@ export default {
       }
     },
 
-    async playListVideo(n) {
-      if (n < 0) return;
+    async playListVideo(index) {
+      if (index < 0) return;
       let players = this.players;
       let playList = this.config2.playList;
-      let item = playList[n];
+      let item = playList[index];
       if (!item) return;
       console.log(this.config2.mediaTypeText);
       let url = "";
@@ -209,9 +209,9 @@ export default {
       console.log(this.activeIndex);
       if (this.activeIndex == -1) {
         this.activeIndex = 0;
-        this.curPlayIndex = n;
+        this.curPlayIndex = index;
         players.map((e) => (e.idx = -1));
-        players[this.activeIndex].idx = n;
+        players[this.activeIndex].idx = index;
       }
       let actviePlayer = players[this.activeIndex];
       window.players = this.players;
@@ -221,10 +221,10 @@ export default {
         if (i != this.activeIndex) {
           if (
             this.players[i].idx &&
-            this.players[i].idx - n > 0 &&
-            this.players[i].idx - n < this.players.length
+            this.players[i].idx - index > 0 &&
+            this.players[i].idx - index < this.players.length
           ) {
-            console.log(i, "=>", this.players[i].idx, n, "skip");
+            console.log(i, "=>", this.players[i].idx, index, "skip");
             continue;
           }
 
@@ -250,6 +250,7 @@ export default {
 
       this.$emit("initPlayer", actviePlayer);
       window.player = actviePlayer;
+      bus.$emit("end", 0, 0, actviePlayer.idx - 1);
 
       actviePlayer.muted(false);
       actviePlayer.actived = true;
@@ -703,9 +704,10 @@ export default {
     "$store.state.config.dev": {
       handler(n) {
         setTimeout(() => {
-          this.ref.videoPlayer
-            .filter((e) => !e.actived)
-            .forEach((e) => (e.style.display = n ? "" : "none"));
+          this.$refs.videoPlayer &&
+            this.$refs.videoPlayer
+              .filter((e) => !e.actived)
+              .forEach((e) => (e.style.display = n ? "" : "none"));
           this.$refs.keeplive.style.display = n ? "" : "none";
         }, 100);
 
