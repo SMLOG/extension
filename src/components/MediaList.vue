@@ -849,7 +849,7 @@ export default {
         let add = reverse ? -1 : 1;
         let findit = -1;
         //search back or forward
-        console.log("end");
+        console.error("end");
         for (let j = i + add; j >= 0 && j < list.length; j += add) {
           if (this.config.isAudio && this.mediaType == 1) {
             if (list[j].audio === 0 || list[j].src == "cnn") continue;

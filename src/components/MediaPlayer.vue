@@ -755,7 +755,7 @@ export default {
             true
           );
         }
-      }, 100);
+      }, 0);
 
       return 0;
     },
@@ -892,19 +892,6 @@ export default {
         this.show = 1;
         this.selectVideo(this.config2.mediaType, item, 0, n);
         console.log(n);
-      },
-    },
-    "$store.state.config.isAudio": {
-      handler() {
-        this.show = 1;
-        if (this.config2.playIndex < 0) return;
-        let item = this.config2.playList[this.config2.playIndex];
-        this.selectVideo(
-          this.config2.mediaType,
-          item,
-          0,
-          this.config2.playIndex
-        );
       },
     },
 
