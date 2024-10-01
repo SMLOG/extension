@@ -55,7 +55,7 @@ export default new Vuex.Store({
       fs: 2,
       hi: 0,
       keepNewsCount: 50,
-      autoRefresh: 0,
+      autoRefresh: 1,
       tranUrl: "",
       cacheMode: 0,
 
@@ -63,7 +63,7 @@ export default new Vuex.Store({
       retains: 200,
       activeTran: 1,
       shownews: 0,
-      showvideos: 0,
+      showvideos: 1,
       showwords: 0,
       autoSound: "",
       mj: 0,

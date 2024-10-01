@@ -77,7 +77,7 @@
               size="xs"
               icon="fa-solid fa-check"
             />
-            {{ top }}</a
+            Scroll</a
           >
 
           <a
@@ -96,7 +96,7 @@
               resize();
             "
           >
-            Hi</a
+            Hide</a
           >
           <a
             class="up"
@@ -296,7 +296,7 @@ export default {
         case 2:
           return "LSeq";
         case 3:
-          return "LSeq" + this.loopCount;
+          return "Loop " + this.config.loopCount + "&Seq";
         case 4:
           return "Loop";
       }

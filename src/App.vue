@@ -51,7 +51,6 @@
         </div>
         <div class="videoview"><MediaPlayer /></div>
 
-        <news2 v-if="shownews && !config2.showPlay" />
         <cur-words />
       </div>
       <div class="sidebarsetting" :class="{ open: showSidebar }">
@@ -153,8 +152,6 @@ import Editor from "./components/Editor.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import NewWordsR from "./components/NewWordsR.vue";
 import MediaPlayer from "./components/MediaPlayer.vue";
-import News from "./components/News.vue";
-import News2 from "./components/News2.vue";
 import CurWords from "./components/CurWords.vue";
 import TopTool from "./components/TopTool.vue";
 import Setting from "./components/Setting.vue";
@@ -200,8 +197,6 @@ export default {
     NewWordsR,
     MediaPlayer,
     Setting,
-    News,
-    News2,
     CurWords,
     TopTool,
   },

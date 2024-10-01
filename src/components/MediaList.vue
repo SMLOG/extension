@@ -44,11 +44,13 @@
                     }"
                     v-if="refresh"
                   >
-                    <i
-                      class="num"
+                    <font-awesome-icon
                       @click.stop="onFav($event, item, mediaType)"
-                      >{{ i + 1 }}</i
-                    >
+                      :icon="['fas', 'star']"
+                      size="xs"
+                      :class="{ active: favMap[item.vid] }"
+                    />
+                    <i class="num">{{ i + 1 }}</i>
                     <span v-if="item.d">{{ item.d }}:</span>
                     <span>
                       {{
@@ -73,8 +75,6 @@
                     >
 
                     <span v-if="item.rate"> rate:{{ item.rate }} </span>
-
-                    <span v-if="favMap[item.vid]">*</span>
                   </div>
 
                   <div
@@ -98,7 +98,7 @@
         </table>
       </div>
     </div>
-    <div style="text-align: right; background: #444; padding-right: 5px">
+    <div style="text-align: right; background: #444; padding-right: 20px">
       <select v-show="opts1.length" v-model="curOpt1" @change="page = 1">
         <option value="">All</option>
         <option v-for="src in opts1" :key="src" :value="src">
@@ -131,9 +131,6 @@
         v-model="search"
         @focus="focusSearch()"
       />
-      (<input style="width: 25px" v-model="page" />/{{ pages }})
-      <a class="ctrl" @click="toPage(page - 1)"> Prev </a>
-      <a class="ctrl" @click="toPage(page + 1)"> Next </a>
     </div>
   </div>
 </template>
@@ -167,7 +164,6 @@ let mediaTypes = [
       return this.videos;
     },
   },
-  { n: "Fav", data: myList, c: [] },
   {
     n: "TV",
     data: [],
@@ -188,21 +184,7 @@ let mediaTypes = [
     },
     cnt: {},
   },
-  {
-    n: "MJ",
-    data: [],
-    c: [],
-    disabled: 1,
-  },
-  {
-    n: "Local",
-    data: [],
-    c: [],
-    disabled: 0,
-    del: 1,
-  },
-  { n: "TTS", data: [], a: 1 },
-  { n: "Custom", data: [], a: 1 },
+  { n: "*", data: myList, c: [] },
 ];
 let myListSrcs = Array.from(
   new Set(myList.map((e) => mediaTypes[e.mediaType].n))
@@ -973,5 +955,8 @@ p {
   background: #eee;
   border-color: #ccc;
   text-decoration: none;
+}
+.active {
+  color: yellow;
 }
 </style>

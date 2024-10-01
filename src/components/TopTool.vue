@@ -111,7 +111,10 @@
         size="lg"
       />
       <div>
-        <a @click="changeRate()">{{ config.playbackrate }}</a>
+        <a @click="changeRate()">
+          <font-awesome-icon :icon="['fas', 'gauge']" size="lg" />
+          {{ config.playbackrate }}</a
+        >
       </div>
       <div>
         <a

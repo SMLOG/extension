@@ -27,12 +27,6 @@
       class="columns has-text-centered is-mobile is-size-7 is-marginless is-paddingless"
       style="user-select: none"
     >
-      <div class="column is-marginless" v-if="shownews" style="flex-grow: 0.1">
-        <span @click="updateConfig2({ showPlay: !config2.showPlay })"
-          >Read</span
-        >
-      </div>
-
       <div class="column is-marginless" ref="mediaListText">
         <span
           class="button"

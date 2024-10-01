@@ -1,18 +1,12 @@
 <template>
-  <div>
+  <div style="user-select: none">
     <div style="font-size: 0.8em; color: white">
       <div class="t_1">
-        <span><input type="checkbox" @click="toggleHl()" />HL</span>
-        <span @click="showSetting = !showSetting"> Setting </span>
+        <span><input type="checkbox" @click="toggleHl()" />Hight Light</span>
         <span @click="refresh(true)"
-          >Refresh<span v-if="refreshIndicator">...</span></span
+          >Auto Refresh<span v-if="refreshIndicator">...</span></span
         >
         <input type="checkbox" v-model="config.autoRefresh" />
-
-        <span> Editor</span>
-        <input type="checkbox" v-model="config.editor" @change="upConfig()" />
-        <span> Dev</span>
-        <input type="checkbox" v-model="config.dev" @change="upConfig()" />
       </div>
     </div>
     <div
@@ -25,32 +19,9 @@
       "
       v-show="showSetting"
     >
-      <div>
-        <div>
-          Translate Url:<input v-model="config.tranUrl" @blur="upConfig()" />
-        </div>
-      </div>
-      <div>
-        <div>
-          Back ground Audio keep live
-          <label>
-            <input
-              type="checkbox"
-              v-model="config.bgkeeplive"
-              @change="upConfig()"
-          /></label>
-        </div>
-        <audio
-          @click.stop
-          v-show="config.bgkeeplive"
-          id="bgAudio"
-          controls
-        ></audio>
-      </div>
-
       <div style="display: flex; flex-wrap: wrap">
         <div>
-          <span> Retain:</span>
+          <span> Max retain list:</span>
 
           <label>
             <input
@@ -62,7 +33,7 @@
           </label>
         </div>
         <div>
-          <span> Loop Count:</span>
+          <span> Loop&Seq Count:</span>
 
           <label>
             <input
@@ -73,72 +44,18 @@
             />
           </label>
         </div>
-        <div>
-          <span> Timeout Next:</span>
 
+        <div style="text-align: left">
+          Auto stop play after
           <label>
             <input
-              type="checkbox"
-              v-model="config.timeoutnext"
-              @change="upConfig()"
+              v-model.number="pauseTimer"
+              @blur="submitTimer"
+              min="0"
+              style="width: 40px"
           /></label>
-        </div>
-        <div style="text-align: left">
-          Stop after
-          <input
-            v-model.number="pauseTimer"
-            @blur="submitTimer"
-            min="0"
-            style="width: 40px"
-          />
           minus
           <span v-if="endTime">at {{ endTime | fmtDate }}</span>
-        </div>
-      </div>
-
-      <div style="text-align: left">
-        Token:
-        <div>
-          <input
-            v-model="token"
-            style="width: 100%; box-sizing: border-box"
-            @blur="submitToken()"
-          />
-        </div>
-        <div style="color: red; font-weight: bold">{{ tokenMessage }}</div>
-      </div>
-      <div v-if="token">
-        <div>
-          Word upload:
-          <a @click="mUpload()" style="cursor: pointer; color: red"
-            >upload {{ uploadDate }}</a
-          >
-        </div>
-        <div>
-          Upload
-          <div>
-            only when new word reach
-            <select v-model="config.fzWords" @change="upConfig()">
-              <option value="0">Disable</option>
-              <option
-                v-for="i in [1, 3, 5, 10, 20, 50, 100]"
-                :value="i"
-                :key="i"
-              >
-                {{ i }}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            only when new video reach
-            <select v-model="config.fzVideos" @change="upConfig()">
-              <option value="0">Disable</option>
-              <option v-for="i in [1, 5, 10, 20, 50, 100]" :value="i" :key="i">
-                {{ i }}
-              </option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -150,141 +67,12 @@
             <input type="checkbox" v-model="config.radio" @change="upConfig()"
           /></label>
           <label>
-            Words
+            Vidoes
             <input
               type="checkbox"
-              v-model="config.showwords"
+              v-model="config.showvideos"
               @change="upConfig()"
           /></label>
-
-          <label>
-            MJ
-            <input type="checkbox" v-model="config.mj" @change="upConfig()"
-          /></label>
-
-          <label>
-            Dict
-            <input type="checkbox" v-model="config.dict" @change="upConfig()"
-          /></label>
-
-          <label>
-            Rel Words
-            <input
-              type="checkbox"
-              v-model="config.relwords"
-              @change="upConfig()"
-          /></label>
-        </div>
-      </div>
-      <div>
-        <label>
-          Vidoes
-          <input
-            type="checkbox"
-            v-model="config.showvideos"
-            @change="upConfig()"
-        /></label>
-        <div style="max-height: 50vh; overflow: auto" v-if="config.showvideos">
-          <ul style="border: 1px solid #ccc; padding: 5px">
-            <li v-for="(arr, name) in config.urls" :key="name">
-              <div
-                style="
-                  font-weight: bold;
-                  font-size: 120%;
-                  display: flex;
-                  justify-content: space-between;
-                "
-              >
-                <span>{{ name }}</span
-                ><input
-                  type="checkbox"
-                  @click="arr.forEach((e) => (e.enable = !e.enable))"
-                  @change="upConfig()"
-                />
-              </div>
-              <div v-for="g in arr" :key="g.url" style="display: flex">
-                <div
-                  style="
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    flex-grow: 1;
-                  "
-                >
-                  ... {{ g.url.substr(-40) }}
-                </div>
-                <input
-                  type="checkbox"
-                  v-model="g.enable"
-                  @change="upConfig()"
-                />
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div style="user-select: none">
-        <div
-          style="
-            text-align: left;
-            margin: 5px 0px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            color: black;
-            font-size: 120%;
-          "
-        >
-          <span>
-            Rss:
-            <input
-              type="checkbox"
-              v-model="config.shownews"
-              @change="upConfig()"
-          /></span>
-          <div>
-            <span>Keep:</span>
-            <input
-              type="input"
-              style="max-width: 40px"
-              min="0"
-              max="200"
-              v-model.number="config.keepNewsCount"
-              @change="upConfig()"
-            />
-          </div>
-        </div>
-        <div style="max-height: 50vh; overflow: auto" v-if="config.shownews">
-          <ul style="border: 1px solid #ccc; padding: 5px">
-            <li
-              v-for="(rss, i) in config.rsss"
-              :key="rss.url"
-              @click="rssIndex = i"
-            >
-              <div>
-                <div>
-                  <div style="display: flex">
-                    <a style="flex-grow: 1">{{ i }} {{ rss.name }}</a>
-                    <input
-                      type="checkbox"
-                      v-model="rss.enable"
-                      @change="upConfig()"
-                    />
-                  </div>
-
-                  <div
-                    style="
-                      text-overflow: ellipsis;
-                      white-space: nowrap;
-                      overflow: hidden;
-                    "
-                  >
-                    <span>{{ rss.url }}</span>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
         </div>
       </div>
 
@@ -317,25 +105,8 @@
             min="0"
           />
         </div>
-
         <div>
-          Back play:
-          <input
-            style="width: 40px"
-            v-model.number="config.backplay"
-            min="0"
-          />s
-        </div>
-        <div>
-          waitTimes:
-          <input
-            style="width: 40px"
-            v-model.number="config.waitTimes"
-            min="0"
-          />
-        </div>
-        <div>
-          playerNum:
+          Cache Video Number:
           <input
             style="width: 40px"
             v-model.number="config.playerNum"
@@ -352,7 +123,7 @@
           />
         </div>
         <div>
-          custCue:<a
+          Subtitle display postion:<a
             @click="
               config.custCue = ++config.custCue > 3 ? 0 : config.custCue;
               upConfig();
@@ -366,18 +137,14 @@
                 ? "Top"
                 : "Disable"
             }}
-            {{ config.custCue }}
           </a>
         </div>
         <div>
-          maxBitRate:<input
+          Play with Max bit rate:<input
             type="checkbox"
             v-model="config.maxBitRate"
             @change="upConfig()"
           />
-        </div>
-        <div>
-          m3u8Repo:<input v-model="config.m3u8Repo" @change="upConfig()" />
         </div>
       </div>
     </div>
