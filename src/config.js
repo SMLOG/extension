@@ -63,9 +63,8 @@ export async function getVideos() {
   return ret;
 }
 
-export async function getSourceMediaList(request) {
-  console.error(request);
-  let resp = await config.crossOrigs(1, request.sourceUrl, "json");
+export async function getSourceMediaList(sourceUrl) {
+  let resp = await config.crossOrigs(1, sourceUrl, "json");
   return resp;
 }
 export async function getVideoPromiseList() {}

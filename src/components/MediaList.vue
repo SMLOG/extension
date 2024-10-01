@@ -138,7 +138,6 @@
 <script>
 import bus from "@/bus";
 import { mapState } from "vuex";
-import { service } from "@/service";
 import { fetchRequest } from "@/lib";
 import { cacheWordTts } from "@/tts";
 
@@ -155,39 +154,17 @@ const myFavKey = "my";
 let myList = storejs.get(myFavKey) || [];
 
 let mediaTypes = [
-  { n: "Radio", data: [], a: 1 },
+  { n: "*", data: myList, c: [] },
+
   {
     n: "Video",
     data: function () {
       return this.videos;
     },
-  },
-  {
-    n: "TV",
-    data: [],
     c: [],
-    s: function (e, v) {
-      let content =
-        e["group-title"] + e["tvg-language"] + e["tvg-country"] + e.title;
-      return content.toLowerCase().indexOf(v) > -1;
-    },
-    c2: [],
-    c2f: function (e, v) {
-      let lang = e["tvg-language"];
-      return lang && lang.indexOf(v) > -1;
-    },
-    title: function (item) {
-      // let c = item["tvg-country"];
-      return item.title;
-    },
-    cnt: {},
   },
-  { n: "*", data: myList, c: [] },
 ];
-let myListSrcs = Array.from(
-  new Set(myList.map((e) => mediaTypes[e.mediaType].n))
-);
-mediaTypes[2].c = myListSrcs;
+
 export default {
   data() {
     return {
@@ -471,12 +448,6 @@ export default {
       item.fav = this.favMap[item.vid] = index > -1 ? 0 : 1;
       this.$set(this.favMap, item.vid, item.fav);
 
-      let newSrcs = Array.from(
-        new Set(myList.map((e) => mediaTypes[e.mediaType].n))
-      );
-      this.mediaTypes[2].c.length = 0;
-      this.mediaTypes[2].c.push(...newSrcs);
-
       this.refresh++;
       storejs.set(myFavKey, myList);
     },
@@ -485,215 +456,6 @@ export default {
     },
     changeMediaType() {
       console.log(this.mediaType);
-      let mediaAlias = this.mediaTypes[this.mediaType].n;
-      let storage = sessionStorage;
-      switch (mediaAlias) {
-        case "TV":
-          {
-            (async () => {
-              const groupTitle = "group-title";
-              this.loading = 1;
-              for (let t = 0; t < 10; t++) {
-                try {
-                  /*var con = await fetchRequest(
-                      "https://iptv-org.github.io/iptv/index.m3u?cache=1296000000"
-                    ).then((r) => r.text());*/
-                  let allChannels = await fetchRequest(
-                    "https://iptv-org.github.io/api/channels.json"
-                  ).then((r) => r.json());
-                  let streams = await fetchRequest(
-                    "https://iptv-org.github.io/api/streams.json"
-                  ).then((r) => r.json());
-                  //let lines = con.split(/\n+/);
-
-                  //let reg = /([^\s=]+)="(.*?)"/g;
-                  //  let allChannels = [];
-                  let types = [];
-                  let mapCount = {};
-
-                  let streamsMap = {};
-                  for (let i = 0; i < streams.length; i++) {
-                    streamsMap[streams[i].channel] = streams[i];
-                  }
-                  allChannels = allChannels
-                    .filter((ch) => streamsMap[ch.id])
-                    .map((ch) => {
-                      ch["url"] = streamsMap[ch.id].url;
-                      //  console.log(ch);
-                      ch["vid"] = ch.id;
-                      ch[groupTitle] = ch.categories.join(",");
-                      ch.fav = 0;
-                      ch.title = ch.name + "/" + ch.languages;
-                      return ch;
-                    });
-                  /*for (let i = 0; i < lines.length; i++) {
-                      let ch = {};
-                      if (lines[i].indexOf("#EXTINF") == 0) {
-                        let m;
-                        while ((m = reg.exec(lines[i]))) {
-                          ch[m[1]] = m[2];
-                        }
-                        ch["title"] = lines[i].split(",").pop();
-                        i++;
-                        if (lines[i].indexOf("http") == 0) {
-                          ch["url"] = lines[i];
-                          //  console.log(ch);
-                          ch["vid"] = "ch" + i;
-                          ch.src = ch[groupTitle];
-                          ch.fav = 0;
-                          allChannels.push(ch);
-
-                          ch.src &&
-                            ch.src.split(/;/).forEach((e) => {
-                              types.indexOf(e) == -1 && types.push(e);
-                            });
-                        }
-                      }
-                    }*/
-                  allChannels.sort((a, b) =>
-                    a[groupTitle].localeCompare(b[groupTitle])
-                  );
-                  types.sort();
-                  allChannels.forEach((e) => {
-                    if (e[groupTitle]) {
-                      e[groupTitle].split(";").forEach((g) => {
-                        let k = g;
-                        mapCount[k] = mapCount[k] ? mapCount[k] + 1 : 1;
-                        mapCount[g] = mapCount[g] ? mapCount[g] + 1 : 1;
-                      });
-                    }
-                  });
-                  let allChannels2 = this.mediaTypes[this.mediaType].data;
-                  let types2 = this.mediaTypes[this.mediaType].c;
-                  let mapCount2 = this.mediaTypes[this.mediaType].cnt;
-                  types2.length = allChannels2.length = 0;
-                  allChannels2.push(...allChannels);
-                  types2.push(...types);
-                  Object.assign(mapCount2, mapCount);
-                  storage.tvtime = new Date().getTime();
-                  break;
-                } catch (e) {
-                  console.error(e);
-                  await this.sleep(2000);
-                  t++;
-                }
-              }
-              this.loading = 0;
-            })();
-          }
-          break;
-        case "MJ":
-          if (this.mediaTypes[this.mediaType].data.length == 0) {
-            if (this.loading) return;
-            this.loading = 1;
-
-            service(
-              null,
-              { cmd: "urls", content: { p: "mj.json", cache: 86400000 } },
-              (resp) => {
-                this.loading = 0;
-
-                if (resp.content && resp.content.length) {
-                  this.mediaTypes[this.mediaType].data.push(
-                    ...resp.content.map((e) => {
-                      return {
-                        vid: e[0],
-                        title: e[1],
-                        urls: [],
-                        rate: e[2],
-                        date: e[4],
-                      };
-                    })
-                  );
-                }
-              }
-            );
-          }
-
-          break;
-        case "Radio":
-        case "Custom":
-        case "TTS":
-          {
-            if (this.loading) return;
-            this.loading = 1;
-            let radiotime = localStorage[this.mediaType + "time"] || 0;
-            let mediaType = this.mediaType;
-            console.log(this);
-            let serverUrl =
-              "Custom" == mediaAlias
-                ? this.config.m3u8Repo
-                : "https://smlog.github.io/data/" +
-                  mediaAlias.toLowerCase() +
-                  "s.json";
-            (async () => {
-              if (1 || new Date().getTime() - radiotime > 72 * 3600 * 1000) {
-                for (let t = 0; t < 10; t++) {
-                  try {
-                    let radios = await fetchRequest(serverUrl)
-                      .then((r) => r.json())
-                      .then((resp) => {
-                        this.loading = 0;
-
-                        if (resp.content && resp.content.length) {
-                          let data = resp.content.map((e) => {
-                            e.vid = e.url;
-                            e.url = new URL(e.url, serverUrl).href;
-
-                            return e;
-                          });
-                          return data;
-                        }
-                      });
-
-                    console.log(radios);
-                    if (radios) {
-                      this.mediaTypes[mediaType].data.length = 0;
-
-                      console.log(radios);
-                      this.mediaTypes[this.mediaType].data.push(...radios);
-                      await this.saveCache(mediaAlias, radios);
-                      localStorage[this.mediaType + "time"] =
-                        new Date().getTime();
-                    }
-                    break;
-                  } catch (eee) {
-                    console.error(eee);
-                    await this.sleep(2000);
-                    t++;
-                  }
-                }
-              }
-
-              this.loadCache(mediaAlias)
-                .catch(() => {
-                  localStorage[mediaAlias + "time"] = 0;
-                })
-                .then((radios) => {
-                  if (!radios.length) localStorage[mediaAlias + "time"] = 0;
-                  else {
-                    this.mediaTypes[this.mediaType].data.length = 0;
-                    console.log(radios);
-                    this.mediaTypes[this.mediaType].data.push(...radios);
-                  }
-                });
-
-              this.loading = 0;
-            })();
-          }
-
-          break;
-
-        case "lo":
-          if (prompt("confirm:") != "12345") {
-            this.mediaType = 0;
-          }
-          break;
-        case "Local":
-          this.loadLocal();
-
-          break;
-      }
     },
     loadMore() {
       this.busy = true;
@@ -753,27 +515,6 @@ export default {
         this.subIndex = index2;
 
         if (item.urls.length) item.url = item.urls[index2];
-        else {
-          run = 0;
-          service(
-            null,
-            { cmd: "urls", content: { p: "mj/" + item.vid, cache: 86400000 } },
-            (resp) => {
-              if (resp.content && resp.content.length) {
-                item.urls.push(...resp.content);
-                item.url = item.urls[index2];
-                bus.$emit(
-                  "videoId",
-                  parseInt(this.mediaType),
-                  item,
-                  click,
-                  index,
-                  index2
-                );
-              }
-            }
-          );
-        }
       }
       if (run) {
         console.log(this.config2.playList);

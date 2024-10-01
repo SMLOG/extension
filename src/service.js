@@ -3,7 +3,7 @@ import { htmlTrans } from "./HtmlTrans";
 import $ from "jquery";
 import storejs from "storejs";
 import bus from "@/bus";
-import { fetchRequest, loadpkoData } from "@/lib";
+import { loadpkoData } from "@/lib";
 import { playAudio, SILENT } from "@/tts";
 
 //import fetchJSONP from "fetch-jsonp";
@@ -676,36 +676,10 @@ async function canRefresh(type, force, fn) {
     storejs.set(key, ct);
   }
 }
-
-export async function getBlobContent(name, rep, path, sha, cacheTime) {
-  let token = storejs.get("token");
-  var auth = "token " + token;
-
-  let headers = {
-    accept: "application/vnd.github.v3+json",
-  };
-  if (token) headers["Authorization"] = auth;
-  let url =
-    `https://api.github.com/repos/${name}/${rep}/contents/${path}` +
-    (sha ? `?ref=${sha}` : "");
-
-  url += cacheTime
-    ? (url.indexOf("?") > -1 ? "&" : "?") + `cache=${cacheTime}`
-    : "";
-  let json = await fetchRequest(
-    url,
-    {
-      method: "get",
-      headers: headers,
-      // cache: "force-cache",
-    },
-    10000
-  ).then((r) => r.json());
-
-  return json.content;
+export async function fetchvideos(plist = []) {
+  console.log(plist);
 }
-
-async function fetchvideos() {
+export async function removeDuplicate(rVideos = []) {
   //let videos = loadUnGZipStore("videos") || [];
   let videos = [];
 
@@ -730,28 +704,23 @@ async function fetchvideos() {
   let config = getConf();
 
   //let rVideos = await getVideos();
-  let plist = [];
 
-  for (let p = 0; p < plist.length; p++) {
-    try {
-      let rVideos = await plist[p]();
+  try {
+    for (let i = 0; i < rVideos.length; i++) {
+      let item = rVideos[i];
 
-      for (let i = 0; i < rVideos.length; i++) {
-        let item = rVideos[i];
+      if (item.title)
+        if (exitMap[item.title.replace(/[^0-9a-z]/gi, "")]) continue;
 
-        if (item.title)
-          if (exitMap[item.title.replace(/[^0-9a-z]/gi, "")]) continue;
-
-        if (item.title) exitMap[item.title.replace(/[^0-9a-z]/gi, "")] = 1;
-        videos.unshift(item);
-      }
-      // videos.sort((a, b) => b.dt - a.dt);
-      // sendResp({ contents: videos });
-    } catch (eee) {
-      console.error(eee);
-      // alert(eee);
-      bus.$emit("error", eee);
+      if (item.title) exitMap[item.title.replace(/[^0-9a-z]/gi, "")] = 1;
+      videos.unshift(item);
     }
+    // videos.sort((a, b) => b.dt - a.dt);
+    // sendResp({ contents: videos });
+  } catch (eee) {
+    console.error(eee);
+    // alert(eee);
+    bus.$emit("error", eee);
   }
 
   videos.sort((a, b) => b.dt - a.dt);
@@ -764,7 +733,7 @@ async function fetchvideos() {
 
 const LOADERS = {
   videos: async (reqeust, sendResp) => {
-    let videos = await fetchvideos(sendResp);
+    let videos = await fetchvideos();
 
     sendResp({ contents: videos, done: 1 });
   },

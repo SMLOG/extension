@@ -63,10 +63,6 @@
         Enable:
         <div>
           <label>
-            Radio
-            <input type="checkbox" v-model="config.radio" @change="upConfig()"
-          /></label>
-          <label>
             Vidoes
             <input
               type="checkbox"
@@ -162,8 +158,7 @@
             "
           >
             <input data-v-2d80735a="" type="checkbox" />
-            <span data-v-2d80735a="">{{ source.type }}</span>
-            <span data-v-2d80735a="">{{ source.url }}</span>
+            <span data-v-2d80735a="">{{ source }}</span>
           </div>
         </div>
       </div>
@@ -173,7 +168,8 @@
 <script>
 import { mapState } from "vuex";
 import $ from "jquery";
-import { service } from "@/service";
+import { service, removeDuplicate } from "@/service";
+import { getSourceMediaList } from "@/config";
 
 import bus from "@/bus";
 export default {
@@ -251,32 +247,20 @@ export default {
   },
 
   methods: {
-    addSource(type, sourceUrl) {
-      var reqId = +new Date();
-      service(null, { cmd: "getSource", reqId: ++reqId, sourceUrl }, (resp) => {
-        if (resp) {
-          console.log(resp);
-        }
-      });
-
-      window.alert(type + "." + sourceUrl);
+    async addSource(type, sourceUrl) {
+      let list = await getSourceMediaList(sourceUrl);
+      let mod = "videos";
+      let ulist = await removeDuplicate(list);
+      this.$store.commit(mod, ulist);
+      this.saveCache(mod, ulist);
+      if (list.length)
+        this.updateConfig({ sources: this.config.sources.concat(sourceUrl) });
+      alert("success add source " + list.length);
     },
     focus(event) {
       setTimeout(() => {
         event.target.focus();
       }, 1000);
-    },
-
-    mUpload() {
-      this.$store.commit("setLoading", 1);
-
-      if (this.loading) return;
-      this.loading = 1;
-      service(null, { cmd: "mUpload" }, (resp) => {
-        if (resp) this.refresh();
-        this.$store.commit("setLoading", 0);
-        this.loading = 0;
-      });
     },
 
     async loadmodsdata() {

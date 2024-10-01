@@ -48,7 +48,7 @@ export default new Vuex.Store({
       custCue: 0,
       seeCurWords: 0,
       maxTranLen: 300,
-      viewMode: 0,
+      viewMode: -1,
       loopCount: 3,
       isLoop: 0,
       isAudio: 1,
@@ -75,16 +75,7 @@ export default new Vuex.Store({
       dockList: 1,
       rsss: [],
       urls: {},
-      sources: [
-        {
-          type: "video",
-          url: "http://https://smlog.github.io/data/config.json",
-        },
-        {
-          type: "Radio",
-          url: "http://https://smlog.github.io/data/config.json",
-        },
-      ],
+      sources: [],
     },
     curItem: {
       q: "",
