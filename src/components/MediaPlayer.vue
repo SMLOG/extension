@@ -182,8 +182,6 @@ import { toogleBg } from "@/tts";
 import PlayerControllers from "../components/PlayerControllers";
 import ResizeMask from "../components/ResizeMask";
 
-import { getAndPrepareNextExtra } from "@/config";
-
 import "video.js/dist/video-js.css";
 
 import VideoJsPlayer from "./VideoJsPlayer.vue";
@@ -793,7 +791,6 @@ export default {
       console.log("loadV");
       if (!item.vid) return;
 
-      await getAndPrepareNextExtra(item, mediaType, nextItem);
       console.log(item, nextItem);
       if (this.show && this.config.isAudio < 2) {
         try {

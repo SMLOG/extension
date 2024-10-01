@@ -233,6 +233,15 @@ export default {
         this.refresh(true);
       }
     }, 1000);
+
+    const currentUrl = window.location.href;
+    const url = new URL(currentUrl);
+    const type = url.searchParams.get("type");
+    const sourceUrl = url.searchParams.get("sourceUrl");
+    if (type && sourceUrl) {
+      this.addSource(type, sourceUrl);
+    }
+
     var reqId = +new Date();
     service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
       if (resp) {
@@ -242,6 +251,16 @@ export default {
   },
 
   methods: {
+    addSource(type, sourceUrl) {
+      var reqId = +new Date();
+      service(null, { cmd: "getSource", reqId: ++reqId, sourceUrl }, (resp) => {
+        if (resp) {
+          console.log(resp);
+        }
+      });
+
+      window.alert(type + "." + sourceUrl);
+    },
     focus(event) {
       setTimeout(() => {
         event.target.focus();

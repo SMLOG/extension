@@ -149,7 +149,6 @@ import { htmlTrans2 } from "@/HtmlTrans";
 
 //import iptv from "@/../public/iptv.json";
 import storejs from "storejs";
-import { sources } from "@/config";
 
 const myFavKey = "my";
 
@@ -159,7 +158,6 @@ let mediaTypes = [
   { n: "Radio", data: [], a: 1 },
   {
     n: "Video",
-    c: sources,
     data: function () {
       return this.videos;
     },

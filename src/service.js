@@ -9,13 +9,10 @@ import { playAudio, SILENT } from "@/tts";
 //import fetchJSONP from "fetch-jsonp";
 
 //const audio = new Audio();
-import { translate,translateG, isBackground } from "./translator";
-import { getVideoPromiseList } from "@/config";
+import { translate, translateG, isBackground } from "./translator";
+import { getSourceMediaList } from "@/config";
 import { encode, decode } from "@/compress";
 
-const pako = require("pako");
-
-let updateconfig = 0;
 //window.pako = pako;
 const RWORD = "words";
 const NWORD = "nwords";
@@ -159,26 +156,24 @@ const translators = [
     console.log(ret);
     return ret;
   },
-    async (content) => {
+  async (content) => {
     let ret = {};
     ret.src = "Local";
     ret.q = content.q;
 
-      let r = await json2jsonpProxy(
-        isBackground() ? 0 : 1,
-        `http://localhost:3000/phonetics?q=${encodeURIComponent(
-          content.q
-        )}`
-      );
+    let r = await json2jsonpProxy(
+      isBackground() ? 0 : 1,
+      `http://localhost:3000/phonetics?q=${encodeURIComponent(content.q)}`
+    );
 
-      console.log(r);
-      if (r) {
-        ret.to =r.trans;
-        ret.am =r.uk;
-        ret.en =r.us;
-        ret._raw = r;
-      }
-    
+    console.log(r);
+    if (r) {
+      ret.to = r.trans;
+      ret.am = r.uk;
+      ret.en = r.us;
+      ret._raw = r;
+    }
+
     return ret;
   },
 ];
@@ -317,6 +312,10 @@ export function service(tab, request, sendResponse) {
   }
 }
 let serviceMap = {
+  getSource: async (request, sendResponse) => {
+    let items = await getSourceMediaList(request);
+    sendResponse(items);
+  },
   post: (request, sendResponse) => {
     sendResponse();
   },
@@ -623,61 +622,20 @@ let serviceMap = {
   getConfig: (request, sendResponse) => {
     (async () => {
       let config = getConf();
-      let rconfig = {};
-
-      if (!updateconfig) {
-
-        let rhost = "https://smlog.github.io/data/config.";
-        try {
-          rconfig = await $.ajax({
-            url: rhost + "js",
-            dataType: "jsonp",
-            jsonpCallback: "applyConfig",
-          });
-        } catch (ee) {
-          console.error(ee);
-          try {
-            rconfig = await fetch(rhost + "json").then((r) => r.json());
-          } catch (error) {
-            console.error(error);
-            updateconfig = 0;
-          }
-        }
-        updateconfig = rconfig;
-
-      }else{
-        rconfig=updateconfig;
-      }
-
-      
-      let map = Object.values(config.urls).flat().reduce((m,i)=>{m[i.url]=i.enable;return m},{});
-      config = Object.assign(config, rconfig);
-      if(config.urls)Object.values(config.urls).flat().map(e=>e.enable=map[e.url]);
-
 
       sendResponse(config);
     })();
   },
-
-  urls: (request, sendResponse) => {
-    loadMjUrls(request, sendResponse);
-  },
-  mUpload: (request, sendResponse) => {
-    (async () => {
-      let resp = await uploadCache();
-      sendResponse(resp);
-    })();
-  },
 };
 function getConf() {
-let r =storejs.get("config");
-try{
-r=( r&& decode(storejs.get("config"))) || {};
-}catch(error){
-console.error(error);
-}
-console.log(r);
-return r;
+  let r = storejs.get("config");
+  try {
+    r = (r && decode(storejs.get("config"))) || {};
+  } catch (error) {
+    console.error(error);
+  }
+  console.log(r);
+  return r;
 }
 export function callService(tab, request, sendResp) {
   let sendResponse = (resp) => {
@@ -747,120 +705,6 @@ export async function getBlobContent(name, rep, path, sha, cacheTime) {
   return json.content;
 }
 
-async function forEachCommitsAsc(
-  { name, rep, path, since },
-  cb,
-  decode = true
-) {
-  var commitsUrl = `https://api.github.com/repos/${name}/${rep}/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=100`;
-  if (since) commitsUrl += "&since=" + encodeURIComponent(since);
-
-  let token = storejs.get("token");
-  var auth = "token " + token;
-
-  let headers = {
-    accept: "application/vnd.github.v3+json",
-  };
-  if (token) headers["Authorization"] = auth;
-  let curPage = 1;
-  let commits = [];
-  for (;;) {
-    let req = await fetch(commitsUrl + "&page=" + curPage, {
-      method: "get",
-      headers: headers,
-    });
-    if (req.status != 200) {
-      throw await req.json();
-    }
-    let pageCommits = await req.json();
-    commits.unshift(...pageCommits.reverse());
-    if (pageCommits.length < 100) break;
-    curPage++;
-  }
-
-  for (let i = 0; i < commits.length; i++) {
-    let commit = commits[i];
-    let content = await getBlobContent(name, rep, path, commit.sha);
-
-    if (await cb(commit, decode ? b64_to_utf8(content) : content, i)) return;
-  }
-  return commits;
-}
-/*
-async function forEachCommits({ name, rep, path, since }, cb, decode = true) {
-  var commitsUrl = `https://api.github.com/repos/${name}/${rep}/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=100`;
-  if (since) commitsUrl += "&since=" + encodeURIComponent(since);
-
-  let token = storejs.get("token");
-  var auth = "token " + token;
-
-  let headers = {
-    accept: "application/vnd.github.v3+json",
-  };
-  if (token) headers["Authorization"] = auth;
-  let curPage = 1;
-  let commits = [];
-  for (;;) {
-    let pageCommits = await fetch(commitsUrl + "&page=" + curPage, {
-      method: "get",
-      headers: headers,
-    }).then((response) => {
-      return response.json();
-    });
-    commits.push(...pageCommits);
-    if (pageCommits.length < 100) break;
-    curPage++;
-  }
-
-  for (let i = 0; i < commits.length; i++) {
-    let commit = commits[i];
-    let content = await getBlobContent(name, rep, path, commit.sha);
-
-    if (await cb(commit, decode ? b64_to_utf8(content) : content, i)) return;
-  }
-  return commits;
-}
-*/
-
-async function updateRepFile(name, rep, path, content, gzip) {
-  let token = storejs.get("token");
-  var auth = "token " + token;
-  var url = `https://api.github.com/repos/${name}/${rep}/contents/${path}`;
-
-  if (!token)
-    return {
-      error: "token?",
-    };
-  let json = await fetch(url, {
-    method: "get",
-    headers: {
-      accept: "application/vnd.github.v3+json",
-    },
-  }).then((r) => r.json());
-  let sha = json.sha;
-  json = await fetch(url, {
-    method: "put",
-    body: JSON.stringify({
-      message: "update" + new Date(),
-      branch: "main",
-      content: utf8_to_b64(gzip ? gZip(content) : content),
-      sha: sha,
-    }),
-    headers: {
-      accept: "application/vnd.github.v3+json",
-      Authorization: auth,
-    },
-  }).then((response) => {
-    return response.json();
-  });
-
-  return json;
-}
-
 async function fetchvideos() {
   //let videos = loadUnGZipStore("videos") || [];
   let videos = [];
@@ -886,7 +730,7 @@ async function fetchvideos() {
   let config = getConf();
 
   //let rVideos = await getVideos();
-  let plist = await getVideoPromiseList(config);
+  let plist = [];
 
   for (let p = 0; p < plist.length; p++) {
     try {
@@ -895,11 +739,9 @@ async function fetchvideos() {
       for (let i = 0; i < rVideos.length; i++) {
         let item = rVideos[i];
 
-        if (exitMap[item.vid]) continue;
         if (item.title)
           if (exitMap[item.title.replace(/[^0-9a-z]/gi, "")]) continue;
 
-        exitMap[item.vid] = 1;
         if (item.title) exitMap[item.title.replace(/[^0-9a-z]/gi, "")] = 1;
         videos.unshift(item);
       }
@@ -920,182 +762,7 @@ async function fetchvideos() {
   return videos;
 }
 
-function utf8_to_b64(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
-
-function b64_to_utf8(base64) {
-  return decodeURIComponent(escape(atob(base64)));
-
-  // return atob(str);
-}
-
 const LOADERS = {
-  words: async (request, sendResponse) => {
-    let config = getConf();
-
-    console.log("syn with remote");
-
-    let DataRep = storejs.get("user");
-
-    let name = DataRep;
-    let rep = "data";
-
-    let httpsRep = "https://" + name + ".github.io/" + rep + "/";
-    let path = "update.json";
-    let sinceName = request.type + "Since";
-
-    let words = loadUnGZipStore(RWORD) || [];
-    let nwords = loadUnGZipStore(NWORD, 1) || [];
-    let lastSyncDate = storejs.get(sinceName);
-
-    let ts = +new Date();
-
-    if (DataRep)
-      try {
-        let updateIndex = await fetch(
-          httpsRep + "updateIndex.json?t=" + ts
-        ).then((r) => r.json());
-
-        storejs.set("uploadDate", updateIndex.date);
-
-        if (updateIndex.date > lastSyncDate) {
-          let updateData = await fetch(
-            httpsRep + "updateData.json?t=" + ts
-          ).then((r) => r.json());
-
-          if (updateIndex.gz) {
-            updateData.words = jsonparse(
-              pako.ungzip(atob(updateData.words), {
-                to: "string",
-              })
-            );
-          }
-          words = updateData.words;
-          lastSyncDate = updateIndex.date;
-        } else if (
-          new Date(lastSyncDate).getTime() -
-            new Date(updateIndex.date).getTime() >
-          1000 * 3600 * 24 * 10
-        ) {
-          await uploadCache();
-
-          updateIndex = await fetch(httpsRep + "updateIndex.json?t=" + ts).then(
-            (r) => r.json()
-          );
-
-          lastSyncDate = updateIndex.date;
-        }
-      } catch (e) {
-        console.error("error:" + e);
-      }
-
-    let since = lastSyncDate;
-    let newList = nwords
-      .filter((e) => (!e.i && e.n) || (e.i && !e.n))
-      .map((e) => {
-        for (let p in e) p[0] == "_" && delete e[p];
-        return e;
-      });
-
-    let temps = [];
-    let ret = {};
-
-    let sinceTime = since;
-    if (DataRep)
-      try {
-        await forEachCommitsAsc(
-          { name: name, rep: rep, path: path, since: sinceTime },
-          (commit, content) => {
-            console.log(commit);
-            lastSyncDate = commit.commit.committer.date;
-
-            let data = jsonparse(content);
-            sinceTime = commit.commit.committer.date;
-            temps.push(...data);
-          }
-        );
-      } catch (e) {
-        console.error(e);
-        ret.error = e;
-      }
-
-    words.unshift(...temps.reverse());
-    //words.unshift(...newList);
-
-    let tm = {};
-
-    let arr = [nwords, words];
-    for (let d = 0; d < arr.length; d++) {
-      let items = arr[d];
-      for (let j = 0, len = items.length; j < len; j++) {
-        let w = items[j];
-        if (!w.q || tm[w.q] || !w.n) {
-          items.splice(j, 1);
-          len--;
-          j--;
-        }
-
-        tm[w.q] = (tm[w.q] || 0) + 1;
-      }
-    }
-
-    if (window.debug) window.debug("gzipAndStore RWORD");
-    gzipAndStore(RWORD, words);
-    if (window.debug) window.debug("NWORD nwords");
-
-    gzipAndStore(NWORD, nwords, 1);
-
-    let allWords = nwords.concat(words);
-
-    if (lastSyncDate)
-      storejs.set(
-        sinceName,
-        new Date(new Date(lastSyncDate).getTime() + 1000).toISOString()
-      );
-    if (window.debug)
-      window.debug("config.fzWords " + config.fzWords + " " + newList.length);
-
-    if (config.fzWords > 0 && newList.length > config.fzWords) {
-      console.log(newList);
-      let rnewList = newList.map((e) => {
-        let obj = Object.assign({}, e, { i: 1 });
-        delete obj["errorUrl"];
-        // delete obj["n"];
-        return obj;
-      });
-
-      if (DataRep)
-        if (rnewList.length > 0) {
-          let content = JSON.stringify(rnewList);
-          console.log(content);
-          let json = await updateRepFile(name, rep, path, content);
-          console.log(json);
-          if (window.debug) window.debug(json);
-
-          ret.error = json.error;
-
-          if (json.commit) {
-            lastSyncDate = new Date(
-              new Date(json.commit.committer.date).getTime() + 1000
-            ).toISOString();
-            storejs.set(sinceName, lastSyncDate);
-
-            words.unshift(...rnewList.filter((e) => e.n));
-            gzipAndStore(RWORD, words);
-
-            nwords.length = 0;
-            if (window.debug) window.debug("save NWORD nwords");
-
-            gzipAndStore(NWORD, nwords, 1);
-            allWords = words;
-          }
-        }
-    }
-
-    ret.contents = allWords;
-    sendResponse(ret);
-  },
   videos: async (reqeust, sendResp) => {
     let videos = await fetchvideos(sendResp);
 
@@ -1104,40 +771,6 @@ const LOADERS = {
 };
 
 window.fetchvideos = fetchvideos;
-
-async function loadMjUrls(request, sendResponse) {
-  let DataRep = "smlog";
-  if (DataRep)
-    await getBlobContent(
-      DataRep,
-      "data",
-      request.content.p,
-      0,
-      request.content.cache
-    )
-      //return fetch("https://smlog.github.io/data/mj.json?" + request.content.cache)
-      //.then(r=>r.text())
-      .then((content) => {
-        // let compressed = atob(content);
-        let compressed = pako.ungzip(window.atob(content), {
-          to: "string",
-        });
-        sendResponse({ content: jsonparse(compressed) });
-      })
-      .catch(() => {
-        sendResponse({ content: 0 });
-      });
-  //else sendResponse({ content: 0 });
-}
-/*
-function unGzip(content) {
-  return pako.ungzip(content, {
-    to: "string",
-  });
-}*/
-function gZip(content) {
-  return pako.gzip(content, { to: "string" });
-}
 
 function gzipAndStore(key, obj, notzip) {
   localStorage.setItem(
@@ -1152,54 +785,4 @@ function loadUnGZipStore(key) {
     return raw[0] == "[" ? jsonparse(raw) : decode(localStorage.getItem(key));
   }
   return [];
-}
-
-async function uploadCache() {
-  let words = loadUnGZipStore(RWORD) || [];
-  let nwords = loadUnGZipStore(NWORD, 1) || [];
-
-  let newList = nwords
-    .filter((e) => (!e.i && e.n) || (e.i && !e.n))
-    .map((e) => {
-      for (let p in e) p[0] == "_" && delete e[p];
-      return e;
-    });
-  let rnewList = newList.map((e) => {
-    return Object.assign({}, e, { i: 1 });
-  });
-
-  words.unshift(...rnewList);
-  let allWords = nwords.concat(words);
-  nwords.length = 0;
-
-  let name = "smlog";
-  let rep = "data";
-  let json = await updateRepFile(
-    name,
-    rep,
-    "updateData.json",
-    JSON.stringify({
-      words: allWords,
-    })
-  );
-  let date = new Date(new Date().getTime() + 1000).toISOString();
-  if (json.commit)
-    json = await updateRepFile(
-      name,
-      rep,
-      "updateIndex.json",
-      JSON.stringify({
-        date: date,
-      })
-    );
-  if (json.commit) {
-    gzipAndStore(RWORD, allWords);
-
-    gzipAndStore(NWORD, nwords, 1);
-    console.info("merge ok");
-    storejs.set("uploadDate", date);
-
-    return allWords;
-  }
-  return 0;
 }
