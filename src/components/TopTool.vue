@@ -23,69 +23,62 @@
       v-show="opacity < 1"
     ></div>
     <div class="icons">
-      <span
-        @click="togglePlayAndMode()"
-        :class="{ playing: config2.playing }"
-        >{{ playMode }}</span
-      >
-      <font-awesome-icon
-        icon="volume-high"
-        fixed-width
+      <a @click="toggleSetting()">
+        <font-awesome-icon :icon="['fas', 'gear']" fixed-width size="lg" />
+      </a>
+
+      <a
+        @click="updateConfig2({ playing: !config2.playing })"
         v-show="config.seeCurWords && config2.playing"
+      >
+        <font-awesome-icon
+          icon="volume-high"
+          fixed-width
+          size="lg"
+        ></font-awesome-icon>
+      </a>
+      <a
         @click="updateConfig2({ playing: !config2.playing })"
-        size="lg"
-      ></font-awesome-icon>
-      <font-awesome-icon
-        @click="updateConfig2({ playing: !config2.playing })"
-        icon="volume-xmark"
-        fixed-width
         v-show="config.seeCurWords && !config2.playing"
-        size="lg"
-      ></font-awesome-icon>
-      <font-awesome-icon
+      >
+        <font-awesome-icon
+          icon="volume-xmark"
+          fixed-width
+          size="lg"
+        ></font-awesome-icon>
+      </a>
+      <a
         @click="
           updateConfig({
             viewMode: ++config.viewMode > 2 ? -1 : config.viewMode,
           })
         "
-        icon="fa-solid fa-maximize"
-        fixed-width
-        size="lg"
-        :class="{
-          active: config.viewMode > -1,
-          vmode0: config.viewMode == 0,
-          left: config.viewMode == 2,
-        }"
-      />
-      <font-awesome-icon
-        @click="setShowCurWords(!config.seeCurWords)"
-        :icon="['fas', 'list']"
-        fixed-width
-        size="lg"
-        :class="{ active: config.seeCurWords }"
-      />
-
-      <font-awesome-icon
-        v-if="config.isAudio == 1"
-        @click="clickAudio"
-        :icon="['fas', 'headphones']"
-        fixed-width
-        size="lg"
-      />
-      <font-awesome-icon
-        v-else-if="config.isAudio == 2"
-        :icon="['fas', 'headphones-simple']"
-        @click="clickAudio"
-        fixed-width
-        size="lg"
-      />
-      <font-awesome-icon
-        v-else
-        :icon="['fas', 'tv']"
-        @click="clickAudio"
-        fixed-width
-        size="lg"
-      />
+      >
+        <font-awesome-icon
+          icon="fa-solid fa-maximize"
+          fixed-width
+          size="lg"
+          :class="{
+            active: config.viewMode > -1,
+            vmode0: config.viewMode == 0,
+            left: config.viewMode == 2,
+          }"
+      /></a>
+      <a @click="clickAudio">
+        <font-awesome-icon
+          v-if="config.isAudio == 1"
+          :icon="['fas', 'headphones']"
+          fixed-width
+          size="lg"
+        />
+        <font-awesome-icon
+          v-else-if="config.isAudio == 2"
+          :icon="['fas', 'headphones-simple']"
+          fixed-width
+          size="lg"
+        />
+        <font-awesome-icon v-else :icon="['fas', 'tv']" fixed-width size="lg" />
+      </a>
       <a @click="updateConfig({ fs: config.fs >= 8 ? 1 : config.fs + 1 })">
         <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
         <span>{{ config.fs }}</span>
@@ -104,12 +97,7 @@
           borderBottom: config.custCue == 1,
         }"
       />
-      <font-awesome-icon
-        @click="toggleSetting()"
-        icon="eye"
-        fixed-width
-        size="lg"
-      />
+
       <div>
         <a @click="changeRate()">
           <font-awesome-icon :icon="['fas', 'gauge']" size="lg" />
@@ -296,5 +284,8 @@ table tr:nth-child(even) {
 }
 .vmode0 {
   background: green;
+}
+.icons a {
+  display: inline-block;
 }
 </style>

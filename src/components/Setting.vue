@@ -183,7 +183,6 @@ export default {
   },
   created() {
     const that = this;
-    let reqId = +new Date();
 
     let exitFullscreenHandler = () => {
       setTimeout(() => {
@@ -207,92 +206,6 @@ export default {
       document.addEventListener("mozfullscreenchange", exitFullscreenHandler);
       document.addEventListener("MSFullscreenChange", exitFullscreenHandler);
     }
-
-    service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
-      if (resp) {
-        this.$store.commit("config", resp);
-        setTimeout(() => {
-          try {
-            console.log("isFullscreen");
-            exitFullscreenHandler();
-          } catch (error) {
-            console.error(error);
-          }
-        }, 0);
-      }
-    });
-
-    (async () => {
-      let rconfig = {};
-
-      that.timer = setInterval(() => {
-        if (document.readyState === "complete") {
-          window.clearInterval(that.timer);
-
-          service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
-            if (!resp) return;
-            let config = Object.assign(this.config, resp, rconfig);
-
-            let rss = config.rsss;
-
-            let rssmap = !resp.rsss
-              ? {}
-              : resp.rsss.reduce((map, item) => {
-                  map[item.name] = item.enable;
-                  return map;
-                }, {});
-            rss.forEach((element) => {
-              element.enable = rssmap[element.name] ? 1 : 0;
-            });
-
-            let urls = config.urls;
-
-            let map = {};
-            if (resp.urls) {
-              for (let k of Object.keys(resp.urls)) {
-                for (let j of resp.urls[k]) {
-                  map[j.url] = j.enable;
-                }
-              }
-            }
-            for (let k of Object.keys(urls)) {
-              for (let j of urls[k]) {
-                j.enable = map[j.url] ? 1 : 0;
-              }
-            }
-
-            console.log(urls);
-            Object.assign(config, resp);
-            if (rss && rss.length) {
-              Object.assign(config, { rsss: rss, urls: urls });
-            }
-
-            this.$store.commit("config", config);
-            console.log(resp);
-            this.loadmodsdata().then(() => {
-              this.refresh();
-            });
-          });
-
-          service(
-            null,
-            { cmd: "get", name: "user", reqId: ++reqId },
-            (resp) => {
-              console.error("usr");
-              this.tokenMessage = resp;
-            }
-          );
-
-          service(
-            null,
-            { cmd: "get", name: "uploadDate", reqId: ++reqId },
-            (resp) => {
-              this.uploadDate = resp;
-            }
-          );
-        }
-      }, 1000);
-    })();
   },
   mounted() {
     setTimeout(() => {

@@ -72,7 +72,7 @@ export default new Vuex.Store({
       relwords: 0,
       timeoutnext: 0,
       audioCacheNum: 1,
-      dockList: 0,
+      dockList: 1,
       rsss: [],
       urls: {},
     },
