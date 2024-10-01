@@ -147,6 +147,26 @@
           />
         </div>
       </div>
+      <div>
+        <div>Media Source List:</div>
+
+        <div style="border: 1px solid rgb(204, 204, 204); padding: 5px">
+          <div
+            v-for="(source, index) in config.sources"
+            :key="index"
+            style="
+              font-weight: bold;
+              font-size: 120%;
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <input data-v-2d80735a="" type="checkbox" />
+            <span data-v-2d80735a="">{{ source.type }}</span>
+            <span data-v-2d80735a="">{{ source.url }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -213,6 +233,12 @@ export default {
         this.refresh(true);
       }
     }, 1000);
+    var reqId = +new Date();
+    service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
+      if (resp) {
+        this.$store.commit("config", resp);
+      }
+    });
   },
 
   methods: {

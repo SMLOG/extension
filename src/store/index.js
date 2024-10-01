@@ -75,6 +75,16 @@ export default new Vuex.Store({
       dockList: 1,
       rsss: [],
       urls: {},
+      sources: [
+        {
+          type: "video",
+          url: "http://https://smlog.github.io/data/config.json",
+        },
+        {
+          type: "Radio",
+          url: "http://https://smlog.github.io/data/config.json",
+        },
+      ],
     },
     curItem: {
       q: "",
