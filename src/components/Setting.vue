@@ -224,38 +224,45 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
-      if (this.config.autoRefresh) {
-        this.refresh(true);
-      }
-    }, 1000);
 
     const currentUrl = window.location.href;
     const url = new URL(currentUrl);
-    const type = url.searchParams.get("type");
     const sourceUrl = url.searchParams.get("sourceUrl");
-    if (type && sourceUrl) {
-      this.addSource(type, sourceUrl);
+    if (sourceUrl) {
+      (async()=>{
+      let list = await this.addSource(sourceUrl);
+      console.error(list)
+      if(list?.length){
+      this.updateConfig({ sources: this.config.sources.concat(sourceUrl) });
+      alert("success add source " + sourceUrl);
     }
 
+      })();
+  }
+ 
     var reqId = +new Date();
     service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
       if (resp) {
         this.$store.commit("config", resp);
       }
     });
+
+    setTimeout(() => {
+      if (this.config.autoRefresh) {
+        this.refresh(true);
+      }
+    }, 1000);
   },
 
   methods: {
-    async addSource(type, sourceUrl) {
+    async addSource(sourceUrl) {
       let list = await getSourceMediaList(sourceUrl);
       let mod = "videos";
       let ulist = await removeDuplicate(list);
       this.$store.commit(mod, ulist);
-      this.saveCache(mod, ulist);
-      if (list.length)
-        this.updateConfig({ sources: this.config.sources.concat(sourceUrl) });
-      alert("success add source " + list.length);
+      await this.saveCache(mod, ulist);
+      console.error(list);
+      return list;
     },
     focus(event) {
       setTimeout(() => {
@@ -288,47 +295,10 @@ export default {
       });
     },
     async refreshmode(mod, force) {
-      var self = this;
-
-      console.log(self.refreshIndicator);
-
-      bus.$emit("fresh" + mod, force);
-      console.log("fresh" + mod, force);
-
-      if (this.$store[mod] && this.$store[mod].length > 0)
-        await this.saveCache(mod, this.$store[mod]);
-
-      let cacheData = {};
-      await new Promise((resolve) => {
-        service(null, { cmd: "lists", force: force, type: mod }, (resp) => {
-          console.log(resp);
-          if (resp) {
-            if (resp.contents) {
-              if (resp.contents.length) {
-                console.error(resp.contents.length);
-                console.error(
-                  resp.contents.length,
-                  this.config.retains,
-                  resp.done
-                );
-
-                self.$store.commit(mod, resp.contents);
-                cacheData[mod] = resp.contents;
-              }
-            }
-            if (resp.done) {
-              resolve();
-            }
-          }
-        });
-      });
-      let ks = Object.keys(cacheData);
-      for (var i = 0; i < ks.length; i++) {
-        let mod = ks[i];
-        await this.saveCache(mod, cacheData[mod]).catch((e) => {
-          console.error(e);
-        });
+      for(let i=0;i<this.config.sources.length;i++){
+        await this.addSource(this.config.sources[i]); 
       }
+      bus.$emit("fresh" + mod, force);
     },
     async refresh(force) {
       var self = this;
