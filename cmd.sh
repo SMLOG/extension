@@ -11,7 +11,7 @@ fi
 
 mkdir -p ../${dest}/${VERSION}
 (node updateVersion.js && npm run build2 -- --dest="../${dest}/${VERSION}" --no-clean )&&echo 'build done'
-sed -E -i  "s|<base href=\"[^\"]*?\">|<base href=\"${VERSION}/\">|" ../testdemo/index.html
+sed -E -i  "s|<base href=\"[^\"]*?\">|<base href=\"${VERSION}/\">|" ../${dest}/index.html
 #cp -a ../my-extension3/dist/* .
 (cd ../${dest} && git add . && git commit -am 'update' && while ! git push ; do echo 'lll';done;)
 echo 'done';
