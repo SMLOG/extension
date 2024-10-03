@@ -20,7 +20,7 @@
             ></div>
           </div>
         </div>
-        <font-awesome-icon
+        <font-aesome-icon
           class="pbtn"
           :icon="['fas', 'arrow-left']"
           @click.stop.prevent="emit('PRE')"
@@ -156,6 +156,7 @@
         class="text"
         v-show="isMask < 2 && (config.hi || config.viewMode !== 0)"
       >
+      <div id="ad-container"></div>
         <a v-if="false" @click="clickUrl(videoUrl)" style="cursor: pointer">{{
           title
         }}</a>
@@ -238,6 +239,23 @@ export default {
     ResizeMask,
   },
   methods: {
+      loadAd() {
+        if(this.haveLoadAd)return ;
+        this.haveLoadAd=1;
+      let adContainer = document.getElementById('ad-container'); 
+
+      let ins = document.createElement('ins');
+      ins.className = 'adsbygoogle';
+      ins.style.display = 'block';
+      ins.setAttribute('data-ad-client', 'ca-pub-8176357303254013');
+      ins.setAttribute('data-ad-slot', '8015325699');
+      ins.setAttribute('data-ad-format', 'auto');
+      ins.setAttribute('data-full-width-responsive', 'true');
+      adContainer.appendChild(ins);
+
+
+      (window.adsbygoogle || []).push({});
+    },
     selectVideo(mediaType, item, click, index, index2) {
       if (click) this.show = 1;
       if (location.search.indexOf("hidePlayer=1") > -1) {
@@ -266,6 +284,7 @@ export default {
           }
         })();
       }
+      setTimeout(()=> this.loadAd(),1000);
     },
     touchstartCustCue() {
       this.player && this.player.pause();
@@ -844,7 +863,6 @@ export default {
   },
   mounted() {
     let self = this;
-
     this.init();
     document.body.addEventListener("click", () => {
       if (this.config.bgkeeplive) toogleBg(1);
