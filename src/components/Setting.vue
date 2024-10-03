@@ -1,10 +1,12 @@
 <template>
-  <div >
+  <div>
     <div style="font-size: 0.8em; color: white">
       <div class="t_1">
         <span><input type="checkbox" @click="toggleHl()" />HL</span>
         <span @click="showSetting = !showSetting"> Setting </span>
-        <span @click="refresh(true)">Refresh<span v-if="refreshIndicator">...</span></span>
+        <span @click="refresh(true)"
+          >Refresh<span v-if="refreshIndicator">...</span></span
+        >
         <input type="checkbox" v-model="config.autoRefresh" />
 
         <span> Editor</span>
@@ -13,13 +15,16 @@
         <input type="checkbox" v-model="config.dev" @change="upConfig()" />
       </div>
     </div>
-    <div style="
+    <div
+      style="
         font-size: 0.8em;
         color: white;
         text-align: left;
         border-top: 1px dashed white;
         padding: 5px;
-      " v-show="showSetting">
+      "
+      v-show="showSetting"
+    >
       <div>
         <div>
           Translate Url:<input v-model="config.tranUrl" @blur="upConfig()" />
@@ -29,9 +34,18 @@
         <div>
           Back ground Audio keep live
           <label>
-            <input type="checkbox" v-model="config.bgkeeplive" @change="upConfig()" /></label>
+            <input
+              type="checkbox"
+              v-model="config.bgkeeplive"
+              @change="upConfig()"
+          /></label>
         </div>
-        <audio @click.stop v-show="config.bgkeeplive" id="bgAudio" controls></audio>
+        <audio
+          @click.stop
+          v-show="config.bgkeeplive"
+          id="bgAudio"
+          controls
+        ></audio>
       </div>
 
       <div style="display: flex; flex-wrap: wrap">
@@ -39,25 +53,44 @@
           <span> Retain:</span>
 
           <label>
-            <input style="max-width: 30px" min="30" v-model.number="config.retains" @change="upConfig()" />
+            <input
+              style="max-width: 30px"
+              min="30"
+              v-model.number="config.retains"
+              @change="upConfig()"
+            />
           </label>
         </div>
         <div>
           <span> Loop Count:</span>
 
           <label>
-            <input style="max-width: 30px" min="1" v-model.number="config.loopCount" @change="upConfig()" />
+            <input
+              style="max-width: 30px"
+              min="1"
+              v-model.number="config.loopCount"
+              @change="upConfig()"
+            />
           </label>
         </div>
         <div>
           <span> Timeout Next:</span>
 
           <label>
-            <input type="checkbox" v-model="config.timeoutnext" @change="upConfig()" /></label>
+            <input
+              type="checkbox"
+              v-model="config.timeoutnext"
+              @change="upConfig()"
+          /></label>
         </div>
         <div style="text-align: left">
           Stop after
-          <input v-model.number="pauseTimer" @blur="submitTimer" min="0" style="width: 40px" />
+          <input
+            v-model.number="pauseTimer"
+            @blur="submitTimer"
+            min="0"
+            style="width: 40px"
+          />
           minus
           <span v-if="endTime">at {{ endTime | fmtDate }}</span>
         </div>
@@ -66,14 +99,20 @@
       <div style="text-align: left">
         Token:
         <div>
-          <input v-model="token" style="width: 100%; box-sizing: border-box" @blur="submitToken()" />
+          <input
+            v-model="token"
+            style="width: 100%; box-sizing: border-box"
+            @blur="submitToken()"
+          />
         </div>
         <div style="color: red; font-weight: bold">{{ tokenMessage }}</div>
       </div>
       <div v-if="token">
         <div>
           Word upload:
-          <a @click="mUpload()" style="cursor: pointer; color: red">upload {{ uploadDate }}</a>
+          <a @click="mUpload()" style="cursor: pointer; color: red"
+            >upload {{ uploadDate }}</a
+          >
         </div>
         <div>
           Upload
@@ -81,7 +120,11 @@
             only when new word reach
             <select v-model="config.fzWords" @change="upConfig()">
               <option value="0">Disable</option>
-              <option v-for="i in [1, 3, 5, 10, 20, 50, 100]" :value="i" :key="i">
+              <option
+                v-for="i in [1, 3, 5, 10, 20, 50, 100]"
+                :value="i"
+                :key="i"
+              >
                 {{ i }}
               </option>
             </select>
@@ -104,57 +147,85 @@
         <div>
           <label>
             Radio
-            <input type="checkbox" v-model="config.radio" @change="upConfig()" /></label>
+            <input type="checkbox" v-model="config.radio" @change="upConfig()"
+          /></label>
           <label>
             Words
-            <input type="checkbox" v-model="config.showwords" @change="upConfig()" /></label>
+            <input
+              type="checkbox"
+              v-model="config.showwords"
+              @change="upConfig()"
+          /></label>
 
           <label>
             MJ
-            <input type="checkbox" v-model="config.mj" @change="upConfig()" /></label>
+            <input type="checkbox" v-model="config.mj" @change="upConfig()"
+          /></label>
 
           <label>
             Dict
-            <input type="checkbox" v-model="config.dict" @change="upConfig()" /></label>
+            <input type="checkbox" v-model="config.dict" @change="upConfig()"
+          /></label>
 
           <label>
             Rel Words
-            <input type="checkbox" v-model="config.relwords" @change="upConfig()" /></label>
+            <input
+              type="checkbox"
+              v-model="config.relwords"
+              @change="upConfig()"
+          /></label>
         </div>
       </div>
       <div>
         <label>
           Vidoes
-          <input type="checkbox" v-model="config.showvideos" @change="upConfig()" /></label>
+          <input
+            type="checkbox"
+            v-model="config.showvideos"
+            @change="upConfig()"
+        /></label>
         <div style="max-height: 50vh; overflow: auto" v-if="config.showvideos">
           <ul style="border: 1px solid #ccc; padding: 5px">
             <li v-for="(arr, name) in config.urls" :key="name">
-              <div style="
+              <div
+                style="
                   font-weight: bold;
                   font-size: 120%;
                   display: flex;
                   justify-content: space-between;
-                ">
-                <span>{{ name }}</span><input type="checkbox" @click="arr.forEach((e) => (e.enable = !e.enable))"
-                  @change="upConfig()" />
+                "
+              >
+                <span>{{ name }}</span
+                ><input
+                  type="checkbox"
+                  @click="arr.forEach((e) => (e.enable = !e.enable))"
+                  @change="upConfig()"
+                />
               </div>
               <div v-for="g in arr" :key="g.url" style="display: flex">
-                <div style="
+                <div
+                  style="
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     overflow: hidden;
                     flex-grow: 1;
-                  ">
+                  "
+                >
                   ... {{ g.url.substr(-40) }}
                 </div>
-                <input type="checkbox" v-model="g.enable" @change="upConfig()" />
+                <input
+                  type="checkbox"
+                  v-model="g.enable"
+                  @change="upConfig()"
+                />
               </div>
             </li>
           </ul>
         </div>
       </div>
       <div style="user-select: none">
-        <div style="
+        <div
+          style="
             text-align: left;
             margin: 5px 0px;
             display: flex;
@@ -162,31 +233,52 @@
             font-weight: bold;
             color: black;
             font-size: 120%;
-          ">
+          "
+        >
           <span>
             Rss:
-            <input type="checkbox" v-model="config.shownews" @change="upConfig()" /></span>
+            <input
+              type="checkbox"
+              v-model="config.shownews"
+              @change="upConfig()"
+          /></span>
           <div>
             <span>Keep:</span>
-            <input type="input" style="max-width: 40px" min="0" max="200" v-model.number="config.keepNewsCount"
-              @change="upConfig()" />
+            <input
+              type="input"
+              style="max-width: 40px"
+              min="0"
+              max="200"
+              v-model.number="config.keepNewsCount"
+              @change="upConfig()"
+            />
           </div>
         </div>
         <div style="max-height: 50vh; overflow: auto" v-if="config.shownews">
           <ul style="border: 1px solid #ccc; padding: 5px">
-            <li v-for="(rss, i) in config.rsss" :key="rss.url" @click="rssIndex = i">
+            <li
+              v-for="(rss, i) in config.rsss"
+              :key="rss.url"
+              @click="rssIndex = i"
+            >
               <div>
                 <div>
                   <div style="display: flex">
                     <a style="flex-grow: 1">{{ i }} {{ rss.name }}</a>
-                    <input type="checkbox" v-model="rss.enable" @change="upConfig()" />
+                    <input
+                      type="checkbox"
+                      v-model="rss.enable"
+                      @change="upConfig()"
+                    />
                   </div>
 
-                  <div style="
+                  <div
+                    style="
                       text-overflow: ellipsis;
                       white-space: nowrap;
                       overflow: hidden;
-                    ">
+                    "
+                  >
                     <span>{{ rss.url }}</span>
                   </div>
                 </div>
@@ -196,13 +288,15 @@
         </div>
       </div>
 
-      <div style="
+      <div
+        style="
           text-align: left;
           margin: 5px 0;
           display: flex;
           justify-content: space-between;
           flex-wrap: wrap;
-        ">
+        "
+      >
         <div>
           Sound:
           <select v-model="config.autoSound" @change="upConfig()">
@@ -213,45 +307,78 @@
         </div>
 
         <div>
-          Translate Max Len:<input v-model="config.activeTran" type="checkbox" />
-          <input style="width: 40px" v-model.number="config.maxTranLen" min="0" />
-
-
+          Translate Max Len:<input
+            v-model="config.activeTran"
+            type="checkbox"
+          />
+          <input
+            style="width: 40px"
+            v-model.number="config.maxTranLen"
+            min="0"
+          />
         </div>
 
         <div>
           Back play:
-          <input style="width: 40px" v-model.number="config.backplay" min="0" />s
+          <input
+            style="width: 40px"
+            v-model.number="config.backplay"
+            min="0"
+          />s
         </div>
         <div>
           waitTimes:
-          <input style="width: 40px" v-model.number="config.waitTimes" min="0" />
+          <input
+            style="width: 40px"
+            v-model.number="config.waitTimes"
+            min="0"
+          />
         </div>
         <div>
           playerNum:
-          <input style="width: 40px" v-model.number="config.playerNum" min="1" @change="upConfig()" />
+          <input
+            style="width: 40px"
+            v-model.number="config.playerNum"
+            min="1"
+            @change="upConfig()"
+          />
         </div>
 
         <div>
-          Dock List:<input v-model="config.dockList" type="checkbox" @change="upConfig()" />
+          Dock List:<input
+            v-model="config.dockList"
+            type="checkbox"
+            @change="upConfig()"
+          />
         </div>
         <div>
-          custCue:<a @click="
-            config.custCue = ++config.custCue > 2 ? 0 : config.custCue;
-          upConfig();
-          ">{{
-  config.custCue == 0
-  ? "NO"
-  : config.custCue == 1
-    ? "Bottom"
-    : "Top"
-}}
+          custCue:<a
+            @click="
+              config.custCue = ++config.custCue > 3 ? 0 : config.custCue;
+              upConfig();
+            "
+            >{{
+              config.custCue == 0
+                ? "Default"
+                : config.custCue == 1
+                ? "Bottom"
+                : config.custCue == 2
+                ? "Top"
+                : "Disable"
+            }}
             {{ config.custCue }}
           </a>
         </div>
-        <div>maxBitRate:<input type="checkbox" v-model="config.maxBitRate" @change="upConfig()" /></div>
-        <div>m3u8Repo:<input  v-model="config.m3u8Repo" @change="upConfig()" /></div>
-        
+        <div>
+          maxBitRate:<input
+            type="checkbox"
+            v-model="config.maxBitRate"
+            @change="upConfig()"
+          />
+        </div>
+        <div>
+          m3u8Repo:<input v-model="config.m3u8Repo" @change="upConfig()" />
+        </div>
       </div>
     </div>
   </div>
@@ -292,17 +419,26 @@ export default {
     let reqId = +new Date();
 
     let exitFullscreenHandler = () => {
-      setTimeout(()=>{
-        if(!this.isFullscreen() && that.config.viewMode===0) this.updateConfig({ viewMode: -1 });
-      },1000);
-       // event.stopPropagation();
+      setTimeout(() => {
+        if (!this.isFullscreen() && that.config.viewMode === 0)
+          this.updateConfig({ viewMode: -1 });
+      }, 1000);
+      // event.stopPropagation();
     };
-    if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
+    if (
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+    ) {
       // Add event listener for fullscreenchange event
-      document.addEventListener('fullscreenchange', exitFullscreenHandler);
-      document.addEventListener('webkitfullscreenchange', exitFullscreenHandler);
-      document.addEventListener('mozfullscreenchange', exitFullscreenHandler);
-      document.addEventListener('MSFullscreenChange', exitFullscreenHandler);
+      document.addEventListener("fullscreenchange", exitFullscreenHandler);
+      document.addEventListener(
+        "webkitfullscreenchange",
+        exitFullscreenHandler
+      );
+      document.addEventListener("mozfullscreenchange", exitFullscreenHandler);
+      document.addEventListener("MSFullscreenChange", exitFullscreenHandler);
     }
 
     service(null, { cmd: "getConfig", reqId: ++reqId }, (resp) => {
@@ -310,7 +446,7 @@ export default {
         this.$store.commit("config", resp);
         setTimeout(() => {
           try {
-            console.log('isFullscreen');
+            console.log("isFullscreen");
             exitFullscreenHandler();
           } catch (error) {
             console.error(error);
@@ -318,7 +454,6 @@ export default {
         }, 0);
       }
     });
-
 
     (async () => {
       let rconfig = {};
@@ -336,9 +471,9 @@ export default {
             let rssmap = !resp.rsss
               ? {}
               : resp.rsss.reduce((map, item) => {
-                map[item.name] = item.enable;
-                return map;
-              }, {});
+                  map[item.name] = item.enable;
+                  return map;
+                }, {});
             rss.forEach((element) => {
               element.enable = rssmap[element.name] ? 1 : 0;
             });
@@ -388,8 +523,6 @@ export default {
               this.uploadDate = resp;
             }
           );
-
-
         }
       }, 1000);
     })();
@@ -567,12 +700,12 @@ export default {
   watch: {
     "$store.state.config.showvideos": {
       handler(n) {
-        if(n&&!Object.keys(this.config.urls).length){
+        if (n && !Object.keys(this.config.urls).length) {
           window.location.reload();
         }
-      }
+      },
+    },
   },
-}
 };
 </script>
 <style lang="scss" scoped>
@@ -581,12 +714,12 @@ export default {
   user-select: none;
 }
 
-.t_1>* {
+.t_1 > * {
   margin: 3px;
   color: white;
 }
 
-.t_1>span {
+.t_1 > span {
   display: inline-block;
   cursor: pointer;
 }
@@ -634,5 +767,4 @@ ul li:not(:last-child) {
 .rss input {
   width: 100%;
 }
-
 </style>

@@ -29,7 +29,12 @@
             :class="{ _d: item._d, _c: item._c }"
           >
             <td>
-              <div @click.stop="play(item, 1, i);updateConfig2({showList:0})" >
+              <div
+                @click.stop="
+                  play(item, 1, i);
+                  updateConfig2({ showList: 0 });
+                "
+              >
                 <template>
                   <div
                     :class="{
@@ -51,7 +56,11 @@
                         item.title
                       }}</span
                     >
-                    <span class="src" v-if="item.duration">{{ ("0"+parseInt(item.duration/60)).substr(-2) }}:{{ ("0"+item.duration%60).substr(-2) }}</span>
+                    <span class="src" v-if="item.duration"
+                      >{{ ("0" + parseInt(item.duration / 60)).substr(-2) }}:{{
+                        ("0" + (item.duration % 60)).substr(-2)
+                      }}</span
+                    >
 
                     <span class="src" v-if="item.src">{{ item.src }}</span>
 
@@ -89,8 +98,7 @@
         </table>
       </div>
     </div>
-    <div style="text-align: right; background: gray; padding-right: 5px">
-
+    <div style="text-align: right; background: #444; padding-right: 5px">
       <select v-show="opts1.length" v-model="curOpt1" @change="page = 1">
         <option value="">All</option>
         <option v-for="src in opts1" :key="src" :value="src">
@@ -195,7 +203,6 @@ let mediaTypes = [
   },
   { n: "TTS", data: [], a: 1 },
   { n: "Custom", data: [], a: 1 },
-
 ];
 let myListSrcs = Array.from(
   new Set(myList.map((e) => mediaTypes[e.mediaType].n))
@@ -254,6 +261,7 @@ export default {
       return r;
     },
     pageList() {
+      console.log("pageList");
       let list = this.searchList();
 
       return list;
@@ -373,7 +381,7 @@ export default {
         reader.onerror = (error) => reject(error);
       });
     },
- 
+
     del(item) {
       if (confirm("delete?"))
         fetch("cache/local", {
@@ -496,48 +504,47 @@ export default {
     changeMediaType() {
       console.log(this.mediaType);
       let mediaAlias = this.mediaTypes[this.mediaType].n;
-      let storage= sessionStorage;
+      let storage = sessionStorage;
       switch (mediaAlias) {
         case "TV":
           {
-
             (async () => {
-                const groupTitle = "group-title";
-                this.loading = 1;
-                for (let t = 0; t < 10; t++) {
-                  try {
-                    /*var con = await fetchRequest(
+              const groupTitle = "group-title";
+              this.loading = 1;
+              for (let t = 0; t < 10; t++) {
+                try {
+                  /*var con = await fetchRequest(
                       "https://iptv-org.github.io/iptv/index.m3u?cache=1296000000"
                     ).then((r) => r.text());*/
-                    let allChannels = await fetchRequest(
-                      "https://iptv-org.github.io/api/channels.json"
-                    ).then((r) => r.json());
-                    let streams = await fetchRequest(
-                      "https://iptv-org.github.io/api/streams.json"
-                    ).then((r) => r.json());
-                    //let lines = con.split(/\n+/);
+                  let allChannels = await fetchRequest(
+                    "https://iptv-org.github.io/api/channels.json"
+                  ).then((r) => r.json());
+                  let streams = await fetchRequest(
+                    "https://iptv-org.github.io/api/streams.json"
+                  ).then((r) => r.json());
+                  //let lines = con.split(/\n+/);
 
-                    //let reg = /([^\s=]+)="(.*?)"/g;
-                    //  let allChannels = [];
-                    let types = [];
-                    let mapCount = {};
+                  //let reg = /([^\s=]+)="(.*?)"/g;
+                  //  let allChannels = [];
+                  let types = [];
+                  let mapCount = {};
 
-                    let streamsMap = {};
-                    for (let i = 0; i < streams.length; i++) {
-                      streamsMap[streams[i].channel] = streams[i];
-                    }
-                    allChannels = allChannels
-                      .filter((ch) => streamsMap[ch.id])
-                      .map((ch) => {
-                        ch["url"] = streamsMap[ch.id].url;
-                        //  console.log(ch);
-                        ch["vid"] = ch.id;
-                        ch[groupTitle] = ch.categories.join(",");
-                        ch.fav = 0;
-                        ch.title = ch.name + "/" + ch.languages;
-                        return ch;
-                      });
-                    /*for (let i = 0; i < lines.length; i++) {
+                  let streamsMap = {};
+                  for (let i = 0; i < streams.length; i++) {
+                    streamsMap[streams[i].channel] = streams[i];
+                  }
+                  allChannels = allChannels
+                    .filter((ch) => streamsMap[ch.id])
+                    .map((ch) => {
+                      ch["url"] = streamsMap[ch.id].url;
+                      //  console.log(ch);
+                      ch["vid"] = ch.id;
+                      ch[groupTitle] = ch.categories.join(",");
+                      ch.fav = 0;
+                      ch.title = ch.name + "/" + ch.languages;
+                      return ch;
+                    });
+                  /*for (let i = 0; i < lines.length; i++) {
                       let ch = {};
                       if (lines[i].indexOf("#EXTINF") == 0) {
                         let m;
@@ -561,36 +568,35 @@ export default {
                         }
                       }
                     }*/
-                    allChannels.sort((a, b) =>
-                      a[groupTitle].localeCompare(b[groupTitle])
-                    );
-                    types.sort();
-                    allChannels.forEach((e) => {
-                      if (e[groupTitle]) {
-                        e[groupTitle].split(";").forEach((g) => {
-                          let k = g;
-                          mapCount[k] = mapCount[k] ? mapCount[k] + 1 : 1;
-                          mapCount[g] = mapCount[g] ? mapCount[g] + 1 : 1;
-                        });
-                      }
-                    });
-                    let allChannels2 = this.mediaTypes[this.mediaType].data;
-                    let types2 = this.mediaTypes[this.mediaType].c;
-                    let mapCount2 = this.mediaTypes[this.mediaType].cnt;
-                    types2.length = allChannels2.length = 0;
-                    allChannels2.push(...allChannels);
-                    types2.push(...types);
-                    Object.assign(mapCount2, mapCount);
-                    storage.tvtime = new Date().getTime();
-                    break;
-                  } catch (e) {
-                    console.error(e);
-                    await this.sleep(2000);
-                    t++;
-                  }
+                  allChannels.sort((a, b) =>
+                    a[groupTitle].localeCompare(b[groupTitle])
+                  );
+                  types.sort();
+                  allChannels.forEach((e) => {
+                    if (e[groupTitle]) {
+                      e[groupTitle].split(";").forEach((g) => {
+                        let k = g;
+                        mapCount[k] = mapCount[k] ? mapCount[k] + 1 : 1;
+                        mapCount[g] = mapCount[g] ? mapCount[g] + 1 : 1;
+                      });
+                    }
+                  });
+                  let allChannels2 = this.mediaTypes[this.mediaType].data;
+                  let types2 = this.mediaTypes[this.mediaType].c;
+                  let mapCount2 = this.mediaTypes[this.mediaType].cnt;
+                  types2.length = allChannels2.length = 0;
+                  allChannels2.push(...allChannels);
+                  types2.push(...types);
+                  Object.assign(mapCount2, mapCount);
+                  storage.tvtime = new Date().getTime();
+                  break;
+                } catch (e) {
+                  console.error(e);
+                  await this.sleep(2000);
+                  t++;
                 }
+              }
               this.loading = 0;
-
             })();
           }
           break;
@@ -623,24 +629,26 @@ export default {
           }
 
           break;
-          case "Radio":
-          case "Custom":
-          case "TTS":
+        case "Radio":
+        case "Custom":
+        case "TTS":
           {
             if (this.loading) return;
             this.loading = 1;
-            let radiotime = localStorage[this.mediaType+"time"]|| 0;
+            let radiotime = localStorage[this.mediaType + "time"] || 0;
             let mediaType = this.mediaType;
             console.log(this);
-            let serverUrl =   "Custom"==mediaAlias?this.config.m3u8Repo:
-                      "https://smlog.github.io/data/"+mediaAlias.toLowerCase()+"s.json";
+            let serverUrl =
+              "Custom" == mediaAlias
+                ? this.config.m3u8Repo
+                : "https://smlog.github.io/data/" +
+                  mediaAlias.toLowerCase() +
+                  "s.json";
             (async () => {
               if (1 || new Date().getTime() - radiotime > 72 * 3600 * 1000) {
                 for (let t = 0; t < 10; t++) {
                   try {
-                    let radios = await fetchRequest(
-                      serverUrl
-                    )
+                    let radios = await fetchRequest(serverUrl)
                       .then((r) => r.json())
                       .then((resp) => {
                         this.loading = 0;
@@ -648,8 +656,8 @@ export default {
                         if (resp.content && resp.content.length) {
                           let data = resp.content.map((e) => {
                             e.vid = e.url;
-                              e.url = new URL( e.url, serverUrl).href
-  
+                            e.url = new URL(e.url, serverUrl).href;
+
                             return e;
                           });
                           return data;
@@ -663,7 +671,8 @@ export default {
                       console.log(radios);
                       this.mediaTypes[this.mediaType].data.push(...radios);
                       await this.saveCache(mediaAlias, radios);
-                      localStorage[this.mediaType+"time"]= new Date().getTime();
+                      localStorage[this.mediaType + "time"] =
+                        new Date().getTime();
                     }
                     break;
                   } catch (eee) {
@@ -676,10 +685,10 @@ export default {
 
               this.loadCache(mediaAlias)
                 .catch(() => {
-                  localStorage[mediaAlias+"time"] = 0;
+                  localStorage[mediaAlias + "time"] = 0;
                 })
                 .then((radios) => {
-                  if (!radios.length) localStorage[mediaAlias+"time"] = 0;
+                  if (!radios.length) localStorage[mediaAlias + "time"] = 0;
                   else {
                     this.mediaTypes[this.mediaType].data.length = 0;
                     console.log(radios);
@@ -755,7 +764,7 @@ export default {
     play(item, click, index, index2) {
       this.curVideoId = item.vid;
       console.log("vidoeId" + item.vid);
-      this.updateConfig2({mediaTypeText:mediaTypes[this.mediaType].n})
+      this.updateConfig2({ mediaTypeText: mediaTypes[this.mediaType].n });
       let run = 1;
       if (this.mediaType == 4) {
         index2 = index2 || 0;
@@ -786,12 +795,13 @@ export default {
       }
       if (run) {
         console.log(this.config2.playList);
-        let cPlayList =  this.config2.playList;
-         cPlayList.splice(0, cPlayList.length, ...this.pageList);
+        let cPlayList = this.config2.playList;
+        cPlayList.splice(0, cPlayList.length, ...this.pageList);
         this.updateConfig2({
-          mediaType:this.mediaType,
-          playList:cPlayList,playIndex:index});
-
+          mediaType: this.mediaType,
+          playList: cPlayList,
+          playIndex: index,
+        });
       }
 
       if (click) {
@@ -804,6 +814,20 @@ export default {
     },
   },
   mounted() {
+    if (location.href.indexOf("autoplay") > -1) {
+      var startPlay = () => {
+        var pageList = this.searchList();
+        console.log("autoplay", pageList);
+        if (pageList && pageList.length) {
+          this.play(pageList[0], 1, 0);
+          if (location.href.indexOf("fullscreen") > -1)
+            this.updateConfig({ viewMode: 0 });
+        }
+
+        document.removeEventListener("click", startPlay);
+      };
+      document.addEventListener("click", startPlay);
+    }
     PullToRefresh.init({
       mainElement: this.$refs.container2,
       triggerElement: this.$refs.container2,
@@ -823,7 +847,7 @@ export default {
         let add = reverse ? -1 : 1;
         let findit = -1;
         //search back or forward
-        console.log("end");
+        console.error("end");
         for (let j = i + add; j >= 0 && j < list.length; j += add) {
           if (this.config.isAudio && this.mediaType == 1) {
             if (list[j].audio === 0 || list[j].src == "cnn") continue;
@@ -877,12 +901,7 @@ export default {
 p {
   font-size: 20px;
 }
-table tr:nth-child(odd) {
-  background-color: #f5f5f5;
-}
-table tr:nth-child(even) {
-  background-color: #fff;
-}
+
 .ctrl {
   user-select: none;
   cursor: pointer;
@@ -916,7 +935,6 @@ table tr:nth-child(even) {
 }
 .result {
   padding: 5px;
-  background: white;
 }
 .del {
   color: red;

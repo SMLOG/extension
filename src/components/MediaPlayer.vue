@@ -7,7 +7,10 @@
         style="position: relative"
         v-show="!config.hi"
       >
-        <div class="custCue" v-show="!config.hi && config.custCue && custCue">
+        <div
+          class="custCue"
+          v-show="!config.hi && config.custCue && config.custCue < 3 && custCue"
+        >
           <div style="display: flex; justify-content: center">
             <div
               style="background: rgba(0, 0, 0, 0.5)"
@@ -20,19 +23,18 @@
         <font-awesome-icon
           class="pbtn"
           :icon="['fas', 'arrow-left']"
-          @click.stop.prevent="emit('PRE');"
+          @click.stop.prevent="emit('PRE')"
           style="left: 0"
-          @mouseenter=" updateConfig2({ touchstart: 1 });"
-          @mouseleave=" updateConfig2({ touchstart: 0 });"
+          @mouseenter="updateConfig2({ touchstart: 1 })"
+          @mouseleave="updateConfig2({ touchstart: 0 })"
         />
         <font-awesome-icon
           :icon="['fas', 'arrow-right']"
           @click.stop.prevent="emit('NEXT')"
           class="pbtn"
           style="right: 0"
-          @mouseenter=" updateConfig2({ touchstart: 1 });"
-          @mouseleave=" updateConfig2({ touchstart: 0 });"
-          
+          @mouseenter="updateConfig2({ touchstart: 1 })"
+          @mouseleave="updateConfig2({ touchstart: 0 })"
         />
         <div v-if="!isAliPlayer">
           <VideoJsPlayer
@@ -61,7 +63,7 @@
 
       <div
         style="position: relative; z-index: 10000"
-        v-show="config.viewMode<0 && (isMask < 2 || isTouch)"
+        v-show="(config.viewMode < 0 || config.hi) && (isMask < 2 || isTouch)"
       >
         <div :class="{ preload: preload }" id="bts" ref="bts">
           <a
@@ -107,6 +109,7 @@
             class="up"
             :class="{ selected: isAliPlayer }"
             @click="isAliPlayer = !isAliPlayer"
+            v-if="false"
           >
             <font-awesome-icon
               v-show="isAliPlayer"
@@ -148,12 +151,16 @@
           </a>
         </div>
       </div>
-      <div ref="text" class="text" v-show="isMask < 2 && config.viewMode!==0">
-        <a @click="clickUrl(videoUrl)" style="color: blue; cursor: pointer">{{
+      <div
+        ref="text"
+        class="text"
+        v-show="isMask < 2 && (config.hi || config.viewMode !== 0)"
+      >
+        <a v-if="false" @click="clickUrl(videoUrl)" style="cursor: pointer">{{
           title
         }}</a>
 
-        <div v-if="item.src">
+        <div v-if="false && item.src">
           source:<a target="_blank" :href="item.src">{{ item.src }}</a>
           <a v-if="item.org" style="padding-left: 5px">{{ item.org }}</a>
         </div>
@@ -196,7 +203,7 @@ export default {
       isCc: 0,
       mediaType: 1,
       videoUrl: "",
-      preloadNextUrl:'',
+      preloadNextUrl: "",
       show: 0,
       url: "",
       top: "0%",
@@ -233,7 +240,7 @@ export default {
     ResizeMask,
   },
   methods: {
-    selectVideo(mediaType, item, click, index, index2)  {
+    selectVideo(mediaType, item, click, index, index2) {
       if (click) this.show = 1;
       if (location.search.indexOf("hidePlayer=1") > -1) {
         this.show = 0;
@@ -247,7 +254,7 @@ export default {
       this.$store.commit("add2CurWords", [[], 1]);
       this.onCuesChangeSync2 = 0;
       this.text = "";
-
+      this.updateConfig2({ title: item.title });
       if (this.mediaType == 0) {
         this.videoUrl = this.url = item.url;
         this.av = 0;
@@ -261,7 +268,6 @@ export default {
           }
         })();
       }
-    
     },
     touchstartCustCue() {
       this.player && this.player.pause();
@@ -307,7 +313,7 @@ export default {
       this.player = player;
     },
     clickUrl() {
-     let mediaUrl =  this.$refs.jsplayer.getCurrentPlayerUrl();
+      let mediaUrl = this.$refs.jsplayer.getCurrentPlayerUrl();
       open(mediaUrl);
     },
 
@@ -382,7 +388,7 @@ export default {
         }, (player.duration() - player.currentTime()) * 1000);
       }
     },
-    scroll(clear) {
+    setUpScroll(clear) {
       clearInterval(this.scrollTimer);
       this.onCuesChangeSync = 0;
 
@@ -402,6 +408,7 @@ export default {
           $text.find("span").each(function () {
             if (!$(this).text().trim()) $(this).attr("skip", 1);
           });
+          console.error("cues", this.cues);
           this.onCuesChangeSync = () => {
             let sp = this.cues;
             //  console.log("scroll " + new Date().getSeconds());
@@ -410,12 +417,14 @@ export default {
             if (this.cueIndex >= sp.length) {
               this.cueIndex = 0;
               $text.find("span.cur").removeClass("cur");
+              if (sp.length == 0) this.setTimeout(this.setUpScroll, 100);
             }
 
             if (this.cueIndex > 0) {
               let t = sp.eq(this.cueIndex);
               t.addClass("cur");
-
+              //a bug , just simple fix
+              this.cueIndex < 4 && sp.eq(1).addClass("cur");
               if (this.dict) {
                 let title = t.find(".newWord").text().trim();
                 title && (this.title = title);
@@ -510,7 +519,7 @@ export default {
     },
     ajustTextHeight() {
       var topDom = this.$refs.text;
-console.log('ajustTextHeight');
+      console.log("ajustTextHeight");
       topDom.style.top =
         ($(this.$refs.videoCon).is(":hidden")
           ? 0
@@ -543,7 +552,7 @@ console.log('ajustTextHeight');
     },
     end(reverse) {
       this.cueIndex = 0;
-      this.scroll(true);
+      this.setUpScroll(true);
       this.$store.commit("nextUrl", "");
 
       bus.$emit(
@@ -557,6 +566,8 @@ console.log('ajustTextHeight');
     },
 
     cuechange(cue, track) {
+      console.error(cue.text, "oncue");
+
       if (this.onCuesChangeSync2) {
         this.onCuesChangeSync2(cue, track);
       }
@@ -700,54 +711,63 @@ console.log('ajustTextHeight');
           text = this.trans(raw);
 
           this.text = "";
-          setTimeout(() => {
-            this.text = this.caption2Text(raw);
-          }, 500);
+          //setTimeout(() => {
+          this.text = this.caption2Text(raw);
+          console.error(this.text);
+          // }, 0);
         } else {
           r = r.replace(/\.[\s]+/g, ".\n");
           this.markNewWords(r);
         }
-
-        setTimeout(() => this.scroll(), 1000);
+        this.$nextTick(() => {
+          console.error("this.setUpScroll()", $(this.$refs.text).find("span"));
+          setTimeout(() => this.setUpScroll(), 100);
+        });
       }
 
-      let player = this.player;
-      let tracks = player.textTracks();
-      for (var d = 0; d < tracks.length; d++) {
-        console.error(tracks[d].label);
+      setTimeout(() => {
+        let player = this.player;
 
-        if (tracks[d].label == "new word")
-          player.removeRemoteTextTrack(tracks[d]);
-      }
-console.log('loadTTV')
-      if (text.trim()) {
-        // console.error(raw);
+        let tracks = player.textTracks();
+        for (var d = 0; d < tracks.length; d++) {
+          console.error(tracks[d].label);
 
-        var subBlob = new Blob([raw]);
-        var subURL = URL.createObjectURL(subBlob);
-//self.config.custCue ? "metadata" :
-console.log(self.config.custCue);
-        player.addRemoteTextTrack(
-          {
-            kind:  "captions",
-            label: "new word",
-            mode: "showing",
-            srclang: "zh",
-            default: "true",
-            src: subURL,
-          },
-          true
-        );
-      }
+          if (tracks[d].label == "new word")
+            player.removeRemoteTextTrack(tracks[d]);
+        }
+        console.error("loadTTV");
+        if (text.trim()) {
+          // console.error(raw);
+
+          var subBlob = new Blob([raw]);
+          var subURL = URL.createObjectURL(subBlob);
+          //self.config.custCue ? "metadata" :
+          console.error(self.config.custCue, subURL);
+          player.addRemoteTextTrack(
+            {
+              kind: "captions",
+              label: "new word",
+              mode: "showing",
+              srclang: "zh",
+              default: "true",
+              src: subURL,
+            },
+            true
+          );
+        }
+      }, 0);
+
       return 0;
     },
     caption2Text(raw) {
+      console.error("caption2");
       return (
         "<span>" +
         raw
-          .split(/\n/)
-          .map((e) => e.replace(/^(\s*[A-Z][^A-Z]+)/g, "<br />$1"))
-          .join("\n")
+          .replace(/^WEBVTT[\s\n]*/, "")
+          //.split(/\n/)
+          //.map((e) => e.replace(/^(\s*[A-Z][^A-Z]+)/g, "<br />$1"))
+          //.join("\n")
           .replace(
             /(\d{2}):(\d{2}):(\d{2}).(\d{3}) --> (\d{2}):(\d{2}):(\d{2}).(\d{3})/g,
             (a, a1, a2, a3, a4, a5, a6, a7) =>
@@ -773,9 +793,8 @@ console.log(self.config.custCue);
       console.log("loadV");
       if (!item.vid) return;
 
-
       await getAndPrepareNextExtra(item, mediaType, nextItem);
-        console.log(item,nextItem);
+      console.log(item, nextItem);
       if (this.show && this.config.isAudio < 2) {
         try {
           if (!this.isAliPlayer) await this.loadTTV(item.cc);
@@ -863,7 +882,6 @@ console.log(self.config.custCue);
     $(window).on("resize", function () {
       self.ajustTextHeight();
     });
-
   },
 
   watch: {
@@ -871,12 +889,12 @@ console.log(self.config.custCue);
       handler(n) {
         let item = this.config2.playList[n];
         //mediaType, item, click, index, index2
-        this.show=1;
-        this.selectVideo(this.config2.mediaType,item,0,n);
-        console.log(n)
+        this.show = 1;
+        this.selectVideo(this.config2.mediaType, item, 0, n);
+        console.log(n);
       },
     },
-  
+
     videoUrl(videoUrl) {
       this.updateConfig2({ videoUrl: videoUrl });
     },
@@ -911,7 +929,7 @@ console.log(self.config.custCue);
       }, 0);
     },
     isAutoScroll() {
-      this.scroll();
+      this.setUpScroll();
     },
     show(n) {
       if (n) {
@@ -925,12 +943,11 @@ console.log(self.config.custCue);
         this.resize();
       },
     },
-    "$store.state.config.isLoop": {
+    /*  "$store.state.config.isLoop": {
       handler(b) {
         document.querySelector("video").loop = b ? true : false;
       },
-    },
-
+    },*/
   },
 };
 </script>
@@ -991,7 +1008,6 @@ video::cue(i),
 }
 
 .top {
-  background-color: white;
   overflow: scroll;
   width: 100%;
   top: 0;
@@ -1028,11 +1044,9 @@ video::cue(i),
   display: block;
   font-size: 24px;
   line-height: 1.5em;
-  color: #333;
+  color: #555;
   word-break: break-word;
   word-wrap: break-word;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
   border-radius: 4px;
 
   padding: 8px;
@@ -1045,7 +1059,6 @@ video::cue(i),
 }
 #bts {
   text-align: right;
-  background: white;
   display: flex;
   justify-content: space-around;
   padding: 0;
@@ -1062,8 +1075,6 @@ video::cue(i),
   outline: none;
   text-align: center;
   cursor: pointer;
-  color: white;
-  background-color: rgba(0, 64, 156, 0.8);
   user-select: none;
   line-height: 1.2em;
   flex-grow: 1;
