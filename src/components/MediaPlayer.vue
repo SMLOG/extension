@@ -28,8 +28,7 @@
           @mouseenter="updateConfig2({ touchstart: 1 })"
           @mouseleave="updateConfig2({ touchstart: 0 })"
         />
-        <font-awesome-icon
-          :icon="['fas', 'arrow-right']"
+        <font-awesome-icon :icon="['fas', 'arrow-right']"
           @click.stop.prevent="emit('NEXT')"
           class="pbtn"
           style="right: 0"

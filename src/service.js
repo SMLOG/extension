@@ -710,9 +710,8 @@ export async function removeDuplicate(rVideos = []) {
       let item = rVideos[i];
 
       if (item.title)
-        if (exitMap[item.title.replace(/[^0-9a-z]/gi, "")]) continue;
-
-      if (item.title) exitMap[item.title.replace(/[^0-9a-z]/gi, "")] = 1;
+        if (exitMap[item.title]) continue;
+      exitMap[item.title] = 1;
       videos.unshift(item);
     }
     // videos.sort((a, b) => b.dt - a.dt);
