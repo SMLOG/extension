@@ -2,8 +2,8 @@
   <div
     id="app"
     ref="app"
-    class="mytranslate-extension"
-    :class="'fs-' + config.fs + ' ' + config.theme + (config.hi ? ' hi' : '')"
+    class="mytranslate-extension" style="position: relative;"
+    :class="'fs-' + config.fs + ' ' + config.theme + (config.hi ? ' hi' : '') + (config2.title?' yes':'')"
   >
     <Editor />
     <div
@@ -676,5 +676,9 @@ export default {
 >>> .vjs-control-bar,
 >>> .vjs-big-play-button {
   transform: translateZ(1px);
+}
+.yes{
+  position: absolute!important;right: 0!important;left: 0!important;bottom: 0!important;
+  overflow: hidden;
 }
 </style>

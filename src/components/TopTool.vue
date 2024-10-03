@@ -219,7 +219,7 @@ table tr:nth-child(even) {
 }
 
 .op_tool {
-  position: fixed;
+  position: absolute;
   right: -1.5em;
   bottom: 50px;
   cursor: pointer;

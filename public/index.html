@@ -1,60 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <base href="" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <meta http-equiv="Cache-Control" content="public" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta content="no-referrer" name="referrer" />
+    <meta
+      name="theme-color"
+      content="#0066FF"
+      media="(prefers-color-scheme: light)"
+    />
 
-<head>
-  <base href="">
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
-  <meta http-equiv="Cache-Control" content="public" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta content="no-referrer" name="referrer" />
-  <meta name="theme-color" content="#0066FF" media="(prefers-color-scheme: light)">
-
-  <script type="text/javascript">window.chrome = {};</script>
-  <title>
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
-  <script>
-    /* 判断当前浏览器是否支持serviceWorker */
-    //'<%= process.env.NODE_ENV %>' != 'production' &&
-    if (false && 'serviceWorker' in navigator) {
-      /* 当页面加载完成就创建一个serviceWorker */
-      window.addEventListener('load', function () {
-        /* 创建并指定对应的执行内容 */
-        /* scope 参数是可选的，可以用来指定你想让 service worker 控制的内容的子目录。 在这个例子里，我们指定了 '/'，表示 根网域下的所有内容。这也是默认值。 */
-        //navigator.serviceWorker.register('./sw.js', { scope: './' })
-        navigator.serviceWorker.register('./service-worker.debug.js', { scope: './' })
-          .then(function (registration) {
-
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            document.title = 'ready'
-          })
-          .catch(function (err) {
-
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-  </script>
-
-</head>
-
-<body style="margin:0;">
-
-  <noscript>
-    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
-        properly without JavaScript enabled. Please enable it to
-        continue.</strong>
-  </noscript>
-  <div id="mytranslate_app"></div>
-  <!-- built files will be 
-       injected -->
-
-  </div>
-</body>
-
-
+    <script type="text/javascript">
+      window.chrome = {};
+    </script>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+    </style>
+  </head>
+  <body style="margin: 0;position: absolute;height: 100%;top: 0;right: 0;left: 0;bottom: 0;">
+      <div id="ad" >
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8176357303254013"
+          crossorigin="anonymous"
+        ></script>
+        <!-- bottom -->
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-8176357303254013"
+          data-ad-slot="6775864822"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+      <div id="mytranslate_app" style="position: relative;"></div>
+  </body>
 </html>
