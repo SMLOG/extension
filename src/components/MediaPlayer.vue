@@ -581,13 +581,13 @@ export default {
       if (this.config.follow && cue) {
         let text = cue.text.trim();
         if (text.length > 1) {
-          if (text.match(/[.?!]$/)) {
+          if (text.match(/[,.?!]$/)) {
             setTimeout(() => {
               this.player.pause();
               setTimeout(() => {
                 this.lastPauseTime = 0;
                 this.player.play();
-              }, new Date().getTime() - this.lastPauseTime);
+              }, (new Date().getTime() - this.lastPauseTime) * 1.5);
             }, (cue.endTime - cue.startTime) * 1000);
           }
         }
