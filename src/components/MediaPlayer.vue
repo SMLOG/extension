@@ -98,6 +98,14 @@
           >
             Hi</a
           >
+
+          <a
+            class="up"
+            :class="{ selected: config.follow }"
+            @click="updateConfig({ follow: !config.follow })"
+          >
+            F</a
+          >
           <a
             class="up"
             @click="updateConfig({ fs: config.fs >= 8 ? 1 : config.fs + 1 })"
@@ -429,7 +437,6 @@ export default {
                 let title = t.find(".newWord").text().trim();
                 title && (this.title = title);
               }
-
               if (!t.attr("skip")) this.scrollMid(t, $text);
               this.cueIndex++;
             } else
@@ -567,6 +574,24 @@ export default {
 
     cuechange(cue, track) {
       console.error(cue.text, "oncue");
+
+      if (!this.lastPauseTime) {
+        this.lastPauseTime = new Date().getTime();
+      }
+      if (this.config.follow && cue) {
+        let text = cue.text.trim();
+        if (text.length > 1) {
+          if (text.match(/[.?!]$/)) {
+            setTimeout(() => {
+              this.player.pause();
+              setTimeout(() => {
+                this.lastPauseTime = 0;
+                this.player.play();
+              }, new Date().getTime() - this.lastPauseTime);
+            }, (cue.endTime - cue.startTime) * 1000);
+          }
+        }
+      }
 
       if (this.onCuesChangeSync2) {
         this.onCuesChangeSync2(cue, track);

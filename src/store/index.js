@@ -54,6 +54,7 @@ export default new Vuex.Store({
       isAudio: 1,
       fs: 2,
       hi: 0,
+      follow: 0,
       keepNewsCount: 50,
       autoRefresh: 0,
       tranUrl: "",
