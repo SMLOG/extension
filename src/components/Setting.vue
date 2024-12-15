@@ -324,6 +324,7 @@
             style="width: 40px"
             v-model.number="config.backplay"
             min="0"
+            @change="upConfig()"
           />s
         </div>
         <div>
@@ -332,6 +333,16 @@
             style="width: 40px"
             v-model.number="config.waitTimes"
             min="0"
+            @change="upConfig()"
+          />
+        </div>
+        <div>
+          Follow Count:
+          <input
+            style="width: 40px"
+            v-model.number="config.followCnt"
+            min="1"
+            @change="upConfig()"
           />
         </div>
         <div>

@@ -575,20 +575,50 @@ export default {
     cuechange(cue, track) {
       console.error(cue.text, "oncue");
 
+      console.error("follow me", this.followme);
+
+      if (this.followme) {
+        console.error("follow me");
+        return;
+      }
       if (!this.lastPauseTime) {
-        this.lastPauseTime = new Date().getTime();
+        this.lastPauseTime = this.player.currentTime();
       }
       if (this.config.follow && cue) {
         let text = cue.text.trim();
         if (text.length > 1) {
           if (text.match(/[,.?!]$/)) {
-            setTimeout(() => {
+            let self = this;
+            let beginTime = this.lastPauseTime;
+            self.followme = true;
+
+            (async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, (cue.endTime - cue.startTime) * 1000)
+              );
+
               this.player.pause();
-              setTimeout(() => {
-                this.lastPauseTime = 0;
-                this.player.play();
-              }, (new Date().getTime() - this.lastPauseTime) * 1.5);
-            }, (cue.endTime - cue.startTime) * 1000);
+              let duration = this.player.currentTime() - beginTime;
+              let waittime = duration * 1.5 * 1000;
+              console.log(self.config.followCnt, self.config.followCnt - 1);
+              for (let i = 0; i < self.config.followCnt; i++) {
+                console.log(i, duration);
+                console.log(i, self.config.followCnt - 1, waittime);
+
+                await new Promise((resolve) => setTimeout(resolve, waittime));
+                this.player.currentTime(beginTime);
+                this.player.play().catch(() => {});
+                await new Promise((resolve) =>
+                  setTimeout(resolve, duration * 1000)
+                );
+                this.player.pause();
+              }
+              this.lastPauseTime = 0;
+              console.log("followme = false");
+              self.followme = false;
+
+              this.player.play().catch(() => {});
+            })();
           }
         }
       }

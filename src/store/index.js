@@ -55,6 +55,7 @@ export default new Vuex.Store({
       fs: 2,
       hi: 0,
       follow: 0,
+      followCnt: 1,
       keepNewsCount: 50,
       autoRefresh: 0,
       tranUrl: "",
