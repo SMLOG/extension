@@ -1198,7 +1198,8 @@ a.selected {
   max-width: calc(100vw - 20px);
 }
 .cueBotton .custCue {
-  bottom: 0;
+  bottom: 20px;
   top: auto;
+  padding:0 10px;
 }
 </style>
