@@ -232,6 +232,10 @@ export function transHtml() {
         `<style type = "text/css">
         .newWorda{ color: #f73131!important;} 
         .newWordb{ margin-left: 5px;color:brown!important;}
+
+        .custCue .newWorda{ color: #FFF!important;} 
+        .custCue .newWordb{ margin-left: 5px;color:#FFF!important;}
+
         .mousedown .mouseenter .newWordb  {
           display: none;
         }</style>`
