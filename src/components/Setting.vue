@@ -107,7 +107,7 @@
         </div>
         <div style="color: red; font-weight: bold">{{ tokenMessage }}</div>
       </div>
-      <div v-if="token">
+      <div v-if="tokenMessage">
         <div>
           Word upload:
           <a @click="mUpload()" style="cursor: pointer; color: red"
