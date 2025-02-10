@@ -400,6 +400,7 @@ import $ from "jquery";
 import { service } from "@/service";
 
 import bus from "@/bus";
+
 export default {
   data() {
     return {
@@ -709,6 +710,7 @@ export default {
     ...mapState(["curTab", "showApp", "curItem"]),
   },
   watch: {
+
     "$store.state.config.showvideos": {
       handler(n) {
         if (n && !Object.keys(this.config.urls).length) {

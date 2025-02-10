@@ -45,6 +45,8 @@ import { mapState } from "vuex";
 import $ from "jquery";
 import bus from "@/bus";
 import { service, transHtml, GetSelectedText } from "@/service";
+import { audioRead } from "@/audioRead";
+
 window.notinchromeextend = true;
 window.$ = $;
 let isMobile = navigator.userAgent.match(
@@ -159,13 +161,18 @@ export default {
         document.selection.empty();
       }
     },
-    playSound(item, wait, speeker) {
+   async playSound(item, wait, speeker) {
       let self = this;
       return new Promise((resolve) => {
-        clearTimeout(timer);
-        if (!self.autoSound) resolve();
-        else
-          timer = setTimeout(() => {
+       // clearTimeout(timer);
+        if (!self.autoSound) {
+          console.log('resolve')
+
+          resolve();
+        }
+        else{
+          console.log('else')
+         // timer = setTimeout(() => {
             this.sendMessage(
               null,
               { cmd: "audio", content: item.q, wait: wait, speeker: speeker },
@@ -174,7 +181,9 @@ export default {
                 if (response) resolve();
               }
             );
-          }, 100);
+         // }, 100);
+        }
+
       });
     },
     onEnterPlay(event, item) {
@@ -401,6 +410,13 @@ export default {
   watch: {
     showApp() {
       this.updatePos();
+    },
+    "$store.state.config.audioRead":{
+      handler(n) {
+        if (n) {
+          audioRead(this.playSound);
+        }
+      },
     },
   },
 };

@@ -29,12 +29,18 @@
         >{{ playMode }}</span
       >
       <font-awesome-icon
-        icon="volume-high"
+      icon="volume-high"
         fixed-width
         v-show="config.seeCurWords && config2.playing"
         @click="updateConfig2({ playing: !config2.playing })"
         size="lg"
       ></font-awesome-icon>
+      <font-awesome-icon
+        icon="volume-low"
+        fixed-width
+        @click="updateConfig({ audioRead: !config.audioRead })"
+        size="lg"
+      >AR</font-awesome-icon>
       <font-awesome-icon
         @click="updateConfig2({ playing: !config2.playing })"
         icon="volume-xmark"

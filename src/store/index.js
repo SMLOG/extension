@@ -36,6 +36,7 @@ export default new Vuex.Store({
       mediaTypeText: "",
     },
     config: {
+      audioRead:0,
       theme: "dark",
       fontSize: 100,
       m3u8Repo: "",
