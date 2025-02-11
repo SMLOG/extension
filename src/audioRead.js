@@ -1,3 +1,4 @@
+
 function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
     const result = [];
     let currentWord = '';
@@ -39,15 +40,14 @@ function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
 
     return result;
 }
+let wordCount = 0; // Initialize a counter for unique IDs
 
 function wrapWordsInTextNodes() {
-    let wordCount = 0; // Initialize a counter for unique IDs
-
     function wrapTextNode(node) {
         const text = node.nodeValue;
         const words = breakIntoWordsIncludingPunctuationAndFloats(text); // Use the custom function
         const wrappedWords = words.map((word) => {
-            return word.match(/[a-zA-Z0-9]/) && `<span class="word" id="word-${wordCount++}">${word}</span>` || `<span class="word2">${word}</span>`;
+            return word.match(/[a-zA-Z0-9]/)&& `<span class="word" id="word-${wordCount++}">${word}</span>`|| `<span class="word2">${word}</span>`;
         }).join(''); // Join back into a single string
         const wrapper = document.createElement('span'); // Create a new wrapper element
         wrapper.innerHTML = wrappedWords; // Set the inner HTML to the wrapped words
@@ -69,40 +69,89 @@ function wrapWordsInTextNodes() {
     traverseNodes(document.body); // Start traversal from the body
 }
 
-let clickTime=0;
-export function audioRead(playSound) {
-    // Call the function to wrap words
+// Call the function to wrap words
+let isRunning2 = false;
+let currentPromise;
+function scrollToElementInView(span) {
+    const rect = span.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    // Check if the element is in the viewport
+    if (rect.top < 0 || rect.bottom > windowHeight) {
+        // Calculate the scroll position to center the element
+        const scrollPosition = window.scrollY + rect.top - (windowHeight / 2) + (rect.height / 2);
+        
+        // Scroll to the calculated position
+        window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth' // Smooth scroll
+        });
+    }
+}
+async function printTime(startId) {
+    while (isRunning2) {
+        const now = new Date();
+        console.log(startId,now.toLocaleTimeString());
+
+        let word = document.querySelector('span#word-'+startId++);
+        // Wait for 1 second
+        if(startId>wordCount)break;
+        if(!word)continue;
+        scrollToElementInView(word)
+        word.style.backgroundColor = 'yellow';
+        try{
+            await playSound({ q: word.textContent }, true);
+        }catch(error){
+            console.error(error);
+        }
+
+       // await new Promise(resolve => setTimeout(resolve, 200));
+        word.style.backgroundColor = ''
+
+    }
+    isRunning2=false;
+}
+function startPrintingTime(startId) {
+    // Stop the previous loop if it's running
+    if (isRunning2) {
+        isRunning2 = false;
+        currentPromise.then(() => {
+            // Wait for the loop to finish before starting a new one
+            startNewLoop(startId);
+        });
+    } else {
+        startNewLoop(startId);
+    }
+}
+
+async function startNewLoop(startId) {
+    isRunning2 = true;
+    currentPromise = await printTime(startId);
+}
+let playSound;
+export function audioRead(call){
     wrapWordsInTextNodes();
-    document.body.addEventListener('click', function (event) {
+    if(playSound)return;
+    playSound = call;
+    document.body.addEventListener('click', function(event) {
         // Check if the clicked element is a span with the class 'word'
         if (event.target.tagName === 'SPAN' && event.target.classList.contains('word')) {
             // Unhighlight all spans with the class 'word'
-            const spans = document.querySelectorAll('span.word'); let status = event.target.style.backgroundColor;
+            const spans = document.querySelectorAll('span.word');
+            let status = event.target.style.backgroundColor;
             spans.forEach(span => {
                 span.style.backgroundColor = ''; // Remove highlight
             });
-
-            if(new Date().getTime()-clickTime>500){
-                 clickTime=+new Date();
-            }
+            let startId = parseInt(event.target.id.split('-')[1]);
             // Highlight the clicked span
-            if (status != 'yellow') event.target.style.backgroundColor = 'yellow'; // Apply highlight
-            if (event.target.style.backgroundColor == 'yellow') {
-                (async () => {
-                    let start = parseInt(event.target.id.replace('word-', ''));
-                    let time = clickTime;
-                    for (; ;) {
-                        if(time!=clickTime)break;
-                        let word = document.querySelector('#word-' + start++);
-                        if (!word) break;
-                        console.log(word.textContent);
-                        word.style.backgroundColor = 'yellow'
-                        await playSound({ q: word.textContent }, true);
-                        word.style.backgroundColor = '';
-                    }
-                })();
-
+            if(status!='yellow')event.target.style.backgroundColor = 'yellow'; // Apply highlight
+            if(event.target.style.backgroundColor == 'yellow'){
+                console.log('start it');
+                startPrintingTime(startId);
+            }else{
+                isRunning2=false;
             }
         }
     });
+
 }
