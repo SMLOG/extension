@@ -49,6 +49,20 @@ function responseAll() {
   }
 }
 
+function getPrefix (text){
+  let prefix= text.toLowerCase().replace(/[^a-z]/gi,'').substring(0,4);
+
+  let remap = text.replace(/[^a-zA-Z0-9-.]/g, (match) => {
+   return `-${match.charCodeAt(0)}-`;
+   });
+   remap = remap.replace(/^-|-$/g, '').replace(/[A-Z]/g, (match) => {
+     return `$${match}`;
+     });
+
+  return (prefix.length<4?'':prefix+'/')+remap;
+
+ }
+
 let json2jsonpProxy = async function (enable, url) {
   if (enable) {
     let jurl = `https://json2jsonp.com/?url=${encodeURIComponent(url)}`;
@@ -533,6 +547,9 @@ let serviceMap = {
       "https://dict.youdao.com/dictvoice?audio=" +
       encodeURIComponent(content) +
       "&type=2";
+
+      let LCTTS = `http://localhost:5000/data/audio/us/${getPrefix(content)}.mp3?q=${encodeURIComponent(content)}`;
+
     if (
       request.speeker == "BD" ||
       config.autoSound == "BD" ||
@@ -548,6 +565,15 @@ let serviceMap = {
         responseAll();
         return;
       } else audio.src = YDTTS;
+    }else if (
+      request.speeker == "LC" ||
+      config.autoSound == "LC" ||
+      (config.autoSound == "auto" && lastAutoSound == "LC")
+    ) {
+      if (lan != "en") {
+        responseAll();
+        return;
+      } else audio.src = LCTTS;
     }
 
     let tryTimes = 1;

@@ -8,10 +8,22 @@ async function sleep(t) {
     }, t);
   });
 }
+function getPrefix (text){
+  let prefix= text.toLowerCase().replace(/[^a-z]/gi,'').substring(0,4);
 
+  let remap = text.replace(/[^a-zA-Z0-9-.]/g, (match) => {
+   return `-${match.charCodeAt(0)}-`;
+   });
+   remap = remap.replace(/^-|-$/g, '').replace(/[A-Z]/g, (match) => {
+     return `$${match}`;
+     });
+
+  return (prefix.length<4?'':prefix+'/')+remap;
+
+ }
 const TTS_Providers = {
   YD: function (request) {
-    let lan = request.lang || "en";
+    let lan = request.lang || "en";TTS_Providers
     let content = request.content;
     if (lan == "zh")
       return `https://tts.youdao.com/fanyivoice?word=${encodeURIComponent(
@@ -47,6 +59,11 @@ const TTS_Providers = {
     return `https://fanyi.sogou.com/reventondc/synthesis?text=${encodeURIComponent(
       content
     )}&speed=1&lang=zh-CHS&from=translateweb&speaker=1`;
+  },
+  LC: function (request) {
+    let content = request.content;
+
+    return `http://localhost:5000/data/audio/us/${getPrefix(content)}.mp3?q=${encodeURIComponent(content)}`;
   },
 };
 

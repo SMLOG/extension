@@ -412,7 +412,7 @@ export default {
       showSetting: 1,
       refreshIndicator: 0,
       uploadDate: "",
-      voices: ["YD", "BD", "BK", "SG"],
+      voices: ["YD", "BD", "BK", "SG","LC"],
       rssIndex: -1,
     };
   },
