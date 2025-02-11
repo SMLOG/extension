@@ -41,6 +41,7 @@
 
 <script>
 var timer;
+var timer2;
 import { mapState } from "vuex";
 import $ from "jquery";
 import bus from "@/bus";
@@ -164,7 +165,7 @@ export default {
    async playSound(item, wait, speeker) {
       let self = this;
       return new Promise((resolve) => {
-       // clearTimeout(timer);
+        clearTimeout(timer2);
         if (!self.autoSound) {
           console.log('resolve')
 
@@ -172,7 +173,7 @@ export default {
         }
         else{
           console.log('else')
-         // timer = setTimeout(() => {
+          timer2 = setTimeout(() => {
             this.sendMessage(
               null,
               { cmd: "audio", content: item.q, wait: wait, speeker: speeker },
@@ -181,7 +182,7 @@ export default {
                 if (response) resolve();
               }
             );
-         // }, 100);
+          }, 100);
         }
 
       });

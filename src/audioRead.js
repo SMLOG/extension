@@ -137,11 +137,8 @@ export function audioRead(call){
         // Check if the clicked element is a span with the class 'word'
         if (event.target.tagName === 'SPAN' && event.target.classList.contains('word')) {
             // Unhighlight all spans with the class 'word'
-            const spans = document.querySelectorAll('span.word');
             let status = event.target.style.backgroundColor;
-            spans.forEach(span => {
-                span.style.backgroundColor = ''; // Remove highlight
-            });
+           
             let startId = parseInt(event.target.id.split('-')[1]);
             // Highlight the clicked span
             if(status!='yellow')event.target.style.backgroundColor = 'yellow'; // Apply highlight
