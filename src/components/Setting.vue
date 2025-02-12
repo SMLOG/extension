@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-no-word="1">
     <div style="font-size: 0.8em; color: white">
       <div class="t_1">
         <span><input type="checkbox" @click="toggleHl()" />HL</span>

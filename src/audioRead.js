@@ -89,19 +89,22 @@ function scrollToElementInView(span) {
         });
     }
 }
+let lastword;
 async function printTime(startId) {
     while (isRunning2) {
         const now = new Date();
         console.log(startId,now.toLocaleTimeString());
-
+        if(lastword)lastword.style.backgroundColor = ''
         let word = document.querySelector('span#word-'+startId++);
         // Wait for 1 second
         if(startId>wordCount)break;
         if(!word)continue;
         scrollToElementInView(word)
         word.style.backgroundColor = 'yellow';
+        lastword = word;
         try{
-            await playSound({ q: word.textContent }, true);
+              await playSound({ q: word.textContent }, true);
+
         }catch(error){
             console.error(error);
         }
@@ -142,8 +145,9 @@ export function audioRead(call){
            
             let startId = parseInt(event.target.id.split('-')[1]);
             // Highlight the clicked span
-            if(status!='yellow')event.target.style.backgroundColor = 'yellow'; // Apply highlight
-            if(event.target.style.backgroundColor == 'yellow'){
+            let direct=0;
+            if(status!='yellow')direct=1; // Apply highlight
+            if(direct){
                 console.log('start it');
                 startPrintingTime(startId);
             }else{
