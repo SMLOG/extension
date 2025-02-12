@@ -61,6 +61,7 @@ function wrapWordsInTextNodes() {
             parent.replaceChild(wrappedNode, node); // Replace original text node with new wrapped node
         } else {
             for (let child of node.childNodes) {
+                if(!child.hasAttribute||!child.hasAttribute('data-no-word'))
                 traverseNodes(child); // Recursively traverse child nodes
             }
         }

@@ -1,5 +1,5 @@
 <template>
-  <div ref="hello" style="padding: 5px">
+  <div ref="hello" style="padding: 5px" data-no-word="1">
     <div class="wrap">
       <div class="row" style="display: inline-block">
         {{ curItem.q }}
