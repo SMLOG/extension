@@ -41,7 +41,10 @@ function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
     return result;
 }
 let wordCount = 0; // Initialize a counter for unique IDs
-
+function isElementVisible(element) {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+}
 function wrapWordsInTextNodes() {
     function wrapTextNode(node) {
         const text = node.nodeValue;
@@ -57,11 +60,14 @@ function wrapWordsInTextNodes() {
     function traverseNodes(node) {
         if (node.nodeType === Node.TEXT_NODE) {
             const parent = node.parentNode;
-            const wrappedNode = wrapTextNode(node);
-            parent.replaceChild(wrappedNode, node); // Replace original text node with new wrapped node
+            if(isElementVisible(parent)){
+                const wrappedNode = wrapTextNode(node);
+                parent.replaceChild(wrappedNode, node); // Replace original text node with new wrapped node
+            }
+
         } else {
             for (let child of node.childNodes) {
-                if(!child.hasAttribute||!child.hasAttribute('data-no-word'))
+                if(!child.hasAttribute||!child.hasAttribute('data-no-word') && isElementVisible(child))
                 traverseNodes(child); // Recursively traverse child nodes
             }
         }
@@ -90,6 +96,7 @@ function scrollToElementInView(span) {
     }
 }
 let lastword;
+
 async function printTime(startId) {
     while (isRunning2) {
         const now = new Date();
