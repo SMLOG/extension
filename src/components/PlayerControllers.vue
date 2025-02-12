@@ -12,6 +12,7 @@
     @touchmove="updateConfig2({ showList: 1 })"
     @touchstart="updateConfig2({ showList: 1 })"
     ref="listContainer"
+    v-if="config.showvideos"
   >
     <div ref="mediaList" class="listCon">
       <Video

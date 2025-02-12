@@ -49,20 +49,59 @@ function responseAll() {
   }
 }
 
+
+
+ const replacements = {
+  ' ': '_',  // Space to $1
+  ',': '_',  // Comma to $2
+  '!': '_',  // Exclamation mark to $3
+  '#': '_',  // Hash to $4
+  '\\': '_', // Backslash (Windows) to $5
+  '/': '_slash_',  // Forward slash (Linux and Windows) to $6
+  ':': '_',  // Colon (Windows) to $7
+  '*': '_',  // Asterisk (Windows) to $8
+  '?': '_',  // Question mark (Windows) to $9
+  '"': '_', // Double quote (Windows) to $10
+  '<': '_', // Less than (Windows) to $11
+  '>': '_', // Greater than (Windows) to $12
+  '|': '_', // Vertical bar (Windows) to $13
+  '\0': '_' // Null character (Linux) to $14
+};
+
+// Create reverse mapping for decoding
+/*const reverseReplacements = Object.fromEntries(
+  Object.entries(replacements).map(([key, value]) => [value, key])
+);*/
+
+// Encoding function
+function encodeFilename(inputString) {
+  return inputString.split('').map(char => replacements[char] || char).join('');
+}
+
+// Decoding function
+/*function decodeFilename(encodedString) {
+  let decodedString = encodedString;
+  for (const [encodedChar, originalChar] of Object.entries(reverseReplacements)) {
+      decodedString = decodedString.split(encodedChar).join(originalChar); // Replace all occurrences
+  }
+  return decodedString;
+}*/
+
 function getPrefix (text){
   let prefix= text.toLowerCase().replace(/[^a-z]/gi,'').substring(0,4);
 
-  let remap = text.replace(/[^a-zA-Z0-9-.]/g, (match) => {
+ /* let remap = text.replace(/[^a-zA-Z0-9-.]/g, (match) => {
    return `-${match.charCodeAt(0)}-`;
    });
    remap = remap.replace(/^-|-$/g, '').replace(/[A-Z]/g, (match) => {
      return `$${match}`;
-     });
+     });*/
 
-  return (prefix.length<4?'':prefix+'/')+remap;
+  return (prefix.length<4?'':prefix+'/')+encodeFilename(text.replace(/[A-Z]/g, (match) => {
+    return `$${match}`;
+    }));
 
  }
-
 let json2jsonpProxy = async function (enable, url) {
   if (enable) {
     let jurl = `https://json2jsonp.com/?url=${encodeURIComponent(url)}`;

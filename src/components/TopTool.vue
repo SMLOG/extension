@@ -36,7 +36,15 @@
         size="lg"
       ></font-awesome-icon>
       <font-awesome-icon
-        icon="volume-low"
+        v-if="config.audioRead"
+        icon="ear-listen"
+        fixed-width
+        @click="updateConfig({ audioRead: !config.audioRead })"
+        size="lg"
+      >AR</font-awesome-icon>
+      <font-awesome-icon
+        v-else
+        icon="ear-deaf"
         fixed-width
         @click="updateConfig({ audioRead: !config.audioRead })"
         size="lg"
