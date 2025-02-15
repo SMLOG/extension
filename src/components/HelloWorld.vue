@@ -81,7 +81,8 @@ export default {
     },
     updatePos() {
       let root = $(bus.root);
-
+      if(root.length==0)root = $("#root_1")
+    
       try {
         var r = window.getSelection
           ? window.getSelection().getRangeAt(0)
