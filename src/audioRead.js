@@ -97,17 +97,25 @@ function scrollToElementInView(span) {
 }
 let lastword;
 
+function active(word,yes){
+	word.style.borderBottom=yes?'2px solid yellow':'';
+
+}
+function isWordActive(word){
+	return word.style.borderBottom=='2px solid yellow';
+}
 async function printTime(startId) {
     while (isRunning2) {
         const now = new Date();
         console.log(startId,now.toLocaleTimeString());
-        if(lastword)lastword.style.backgroundColor = ''
+        if(lastword)active(lastword,false);
         let word = document.querySelector('span#word-'+startId++);
         // Wait for 1 second
         if(startId>wordCount)break;
         if(!word)continue;
         scrollToElementInView(word)
-        word.style.backgroundColor = 'yellow';
+	active(word,true);
+
         lastword = word;
         try{
               await playSound({ q: word.textContent }, true);
@@ -117,7 +125,7 @@ async function printTime(startId) {
         }
 
        // await new Promise(resolve => setTimeout(resolve, 200));
-        word.style.backgroundColor = ''
+	active(word,false);
 
     }
     isRunning2=false;
@@ -148,12 +156,12 @@ export function audioRead(call){
         // Check if the clicked element is a span with the class 'word'
         if (event.target.tagName === 'SPAN' && event.target.classList.contains('word')) {
             // Unhighlight all spans with the class 'word'
-            let status = event.target.style.backgroundColor;
+            let status = isWordActive(event.target);
            
             let startId = parseInt(event.target.id.split('-')[1]);
             // Highlight the clicked span
             let direct=0;
-            if(status!='yellow')direct=1; // Apply highlight
+            if(!status)direct=1; // Apply highlight
             if(direct){
                 console.log('start it');
                 startPrintingTime(startId);
