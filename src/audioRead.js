@@ -19,12 +19,12 @@ function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
                 currentWord = '';
             }
             result.push(char);
-        } else if (/\d/.test(char) || char === '.') {
-            // If the char is a digit or a decimal point, build the current number
+        } else if (/\d/.test(char) || char === '.' || char === ',') {
+            // If the char is a digit, decimal point, or comma, build the current number
             currentWord += char;
         } else {
             // If currentWord is a number, push it and start a new word
-            if (currentWord && /\d/.test(currentWord)) {
+            if (currentWord && (/\d/.test(currentWord) || /,/.test(currentWord))) {
                 result.push(currentWord);
                 currentWord = '';
             }
