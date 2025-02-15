@@ -123,6 +123,12 @@ export default {
     });
   },*/
   methods: {
+    handleKeyDown(event) {
+      if (event.code === 'Space') {
+        if(this.players[this.activeIndex].paused())this.players[this.activeIndex].play();
+        else this.players[this.activeIndex].pause();
+      }
+    },
     loopPlay() {
       this.players[this.activeIndex].currentTime(0);
       this.players[this.activeIndex].play();
@@ -676,8 +682,11 @@ export default {
       }, 1000);
     });
     console.log("dev", this.config.dev);
+    window.addEventListener('keydown', this.handleKeyDown);
   },
-
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  },
   watch: {
     "$store.state.config.isAudio": {
       handler() {
