@@ -22,7 +22,8 @@ const replacements = {
   '<': '_', // Less than (Windows) to $11
   '>': '_', // Greater than (Windows) to $12
   '|': '_', // Vertical bar (Windows) to $13
-  '\0': '_' // Null character (Linux) to $14
+  '\0': '_', // Null character (Linux) to $14
+  '%': '_percent' // Null character (Linux) to $14
 };
 
 // Create reverse mapping for decoding

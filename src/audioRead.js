@@ -12,19 +12,19 @@ function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
             }
             // Push the space as a separate element
             result.push(char);
-        } else if (/[.,！?;:"]/.test(char)) {
+        } else if (/[.,！?;:""]/g.test(char)) {
             // If the char is punctuation, push the current word (if any), then the punctuation
             if (currentWord) {
                 result.push(currentWord);
                 currentWord = '';
             }
             result.push(char);
-        } else if (/\d/.test(char) || char === '.' || char === ',') {
-            // If the char is a digit, decimal point, or comma, build the current number
+        } else if (/\d/.test(char) || char === '.' || char === ',' || char === '%') {
+            // If the char is a digit, decimal point, comma, or percentage sign, build the current number/word
             currentWord += char;
         } else {
-            // If currentWord is a number, push it and start a new word
-            if (currentWord && (/\d/.test(currentWord) || /,/.test(currentWord))) {
+            // If currentWord is a number/percentage, push it and start a new word
+            if (currentWord && (/\d/.test(currentWord) || /,/.test(currentWord) || /%/.test(currentWord))) {
                 result.push(currentWord);
                 currentWord = '';
             }
