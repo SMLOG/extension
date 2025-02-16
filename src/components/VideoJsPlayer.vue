@@ -127,6 +127,10 @@ export default {
       if (event.code === 'Space') {
         if(this.players[this.activeIndex].paused())this.players[this.activeIndex].play();
         else this.players[this.activeIndex].pause();
+      }else if(event.code==='KeyN'||event.code === 'ArrowRight'){
+          bus.$emit("NEXT");
+      }else if(event.code==='KeyP'||event.code === 'ArrowLeft'){
+          bus.$emit("PRE");
       }
     },
     loopPlay() {
