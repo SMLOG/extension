@@ -155,7 +155,7 @@ import storejs from "storejs";
 import { sources } from "@/config";
 
 const myFavKey = "my";
-
+console.log('hre')
 let myList = storejs.get(myFavKey) || [];
 
 let mediaTypes = [
@@ -816,15 +816,29 @@ export default {
     },
   },
   mounted() {
+    console.log(location.href)
     if (location.href.indexOf("autoplay") > -1) {
       var startPlay = () => {
-        var pageList = this.searchList();
-        console.log("autoplay", pageList);
-        if (pageList && pageList.length) {
-          this.play(pageList[0], 1, 0);
-          if (location.href.indexOf("fullscreen") > -1)
-            this.updateConfig({ viewMode: 0 });
-        }
+
+        (async()=>{
+          let loop =true;
+          while(loop){
+            var pageList = this.searchList();
+            console.log("autoplay", pageList);
+            if (pageList && pageList.length) {
+              this.play(pageList[0], 1, 0);
+              if (location.href.indexOf("fullscreen") > -1)
+                this.updateConfig({ viewMode: 0 });
+                loop=false;
+              break;
+            }else{
+              await new Promise((resolve)=>setTimeout(resolve,1000));
+            }
+
+          }
+
+        })();
+
 
         document.removeEventListener("click", startPlay);
       };
