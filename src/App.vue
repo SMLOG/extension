@@ -298,11 +298,12 @@ export default {
         this.$refs.app.parentElement.classList.remove(
           n == "dark" ? "light" : "dark"
         );
-        document.querySelector("meta[name=theme-color]").content =
-          n == "dark" ? "#000000" : "#BFD9FF";
-        document.querySelector(
+        let colorEl=document.querySelector("meta[name=theme-color]");
+        colorEl&&(colorEl.content = n == "dark" ? "#000000" : "#BFD9FF");
+        colorEl=document.querySelector(
           "meta[name=theme-color]"
-        ).media = `(prefers-color-scheme: ${n})`;
+        );
+        colorEl&&(colorEl.media = `(prefers-color-scheme: ${n})`);
       }
     },
     touchMask() {

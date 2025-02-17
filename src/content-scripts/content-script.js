@@ -12,8 +12,9 @@ let activeApp = () => {
 
 let lastTime = 0;
 let ls = localStorage;
+let run_tran_always =(ls.getItem('run_tran_always')||'false')=='true';
 
-if (ls.run_tran_always == 'true') {
+if (run_tran_always ) {
   setTimeout(() => {
     activeApp();
   }, 1000);
@@ -29,8 +30,8 @@ document.addEventListener("keyup", (event) => {
       }
     } else if (new Date().getTime() - lastTime < 500) {
 
-      ls.run_tran_always =  confirm(ls.run_tran_always?'cancel the site always run translate?':'make the site always run translate?') && !ls.run_tran_always;
-
+      run_tran_always =  confirm(run_tran_always?'cancel the site always run translate?':'make the site always run translate?') && !run_tran_always;
+      ls.setItem('run_tran_always',run_tran_always);
 
     }
     lastTime = new Date().getTime();
