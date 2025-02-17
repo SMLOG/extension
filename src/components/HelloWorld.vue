@@ -415,9 +415,7 @@ export default {
     },
     "$store.state.config.audioRead":{
       handler(n) {
-        if (n) {
-          audioRead(this.playSound);
-        }
+        audioRead(this.playSound,n);
       },
     },
   },

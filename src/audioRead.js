@@ -105,7 +105,7 @@ function isWordActive(word){
 	return word.style.borderBottom=='2px solid yellow';
 }
 async function printTime(startId) {
-    while (isRunning2) {
+    while (isRunning2 && enableRead) {
         const now = new Date();
         console.log(startId,now.toLocaleTimeString());
         if(lastword)active(lastword,false);
@@ -148,7 +148,14 @@ async function startNewLoop(startId) {
     currentPromise = await printTime(startId);
 }
 let playSound;
-export function audioRead(call){
+let enableRead=false;
+export function audioRead(call,canRead){
+    isRunning2=enableRead=canRead;
+    if(!enableRead) {
+      
+         console.error('stop');
+         return;
+    }
     wrapWordsInTextNodes();
     if(playSound)return;
     playSound = call;
