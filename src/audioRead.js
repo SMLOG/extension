@@ -2,8 +2,9 @@
 function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
     const result = [];
     let currentWord = '';
-
-    for (let char of sentence) {
+    
+    for (let i=0,char=''; i< sentence.length;i++) {
+        char = sentence[i];
         if (char.trim() === '') {
             // If currentWord is not empty, push it to result first
             if (currentWord) {
@@ -15,10 +16,18 @@ function breakIntoWordsIncludingPunctuationAndFloats(sentence) {
         } else if (/[.,！?;:""]/g.test(char)) {
             // If the char is punctuation, push the current word (if any), then the punctuation
             if (currentWord) {
-                result.push(currentWord);
-                currentWord = '';
+                if(char==='.'&& /\d$/.test(currentWord)&&/\d/.test(sentence[i+1])){
+                    result.push(char);
+                }
+                else{
+                    result.push(currentWord);
+                    currentWord = '';
+                }
+
+            }else{
+                result.push(char);
             }
-            result.push(char);
+           
         } else if (/\d/.test(char) || char === '.' || char === ',' || char === '%') {
             // If the char is a digit, decimal point, comma, or percentage sign, build the current number/word
             currentWord += char;
