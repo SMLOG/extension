@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service build --mode development --watch",
+    "extend": "vue-cli-service build --mode development --watch --dest /c/work/test/translate",
     "https": "browser-sync start --server --files \"../testdemo\"",
     "build": "vue-cli-service build   --mode development",
     "build22": "export NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build  --mode development",

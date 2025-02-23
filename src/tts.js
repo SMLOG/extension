@@ -45,7 +45,7 @@ function encodeFilename(inputString) {
   return decodedString;
 }*/
 
-function getPrefix (text){
+export function getPrefix (text){
   let prefix= text.toLowerCase().replace(/[^a-z]/gi,'').substring(0,4);
 
  /* let remap = text.replace(/[^a-zA-Z0-9-.]/g, (match) => {
@@ -55,9 +55,9 @@ function getPrefix (text){
      return `$${match}`;
      });*/
 
-  return (prefix.length<4?'':prefix+'/')+encodeFilename(text.replace(/[A-Z]/g, (match) => {
-    return `$${match}`;
-    }));
+  return (prefix.length<4?'':prefix+'/')+encodeFilename(text.replace(/[^a-z]/g, (match) => {
+    return `${match.charCodeAt(0)}-`;
+    }).toLocaleLowerCase().replace(/^-|-$/g, ''));
 
  }
 const TTS_Providers = {
