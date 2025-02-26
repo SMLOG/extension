@@ -36,7 +36,7 @@ export async function translateG(q) {
       )
         .then((r) => r.json())
         .then((encode) => {
-          let dictData = (dictData = encode.anc
+          let dictData = (encode.anc
             ? decode(encode.anc)
             : decode2(encode.enc));
 
